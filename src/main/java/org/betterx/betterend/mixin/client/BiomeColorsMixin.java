@@ -11,7 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
 
-import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLLoader;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,12 +27,12 @@ public class BiomeColorsMixin {
     private static final int POISON_COLOR = ColorUtil.color(92, 160, 78);
     private static final int STREAM_COLOR = ColorUtil.color(105, 213, 244);
     private static final Point[] OFFSETS = buildOffsets();
-    private static Boolean hasSodium;
+    private static final boolean hasSodium = FMLLoader.getLoadingModList().getModFileById("sodium") != null;
 
     @Inject(method = "getAverageWaterColor", at = @At("RETURN"), cancellable = true)
     private static void be_getWaterColor(BlockAndTintGetter world, BlockPos pos, CallbackInfoReturnable<Integer> info) {
         if (Configs.CLIENT_CONFIG.sulfurWaterColor.get()) {
-            BlockAndTintGetter view = hasSodium() ? Minecraft.getInstance().level : world;
+            BlockAndTintGetter view = hasSodium ? Minecraft.getInstance().level : world;
             MutableBlockPos mut = new MutableBlockPos();
             mut.setY(pos.getY());
             for (int i = 0; i < OFFSETS.length; i++) {
@@ -58,17 +58,5 @@ public class BiomeColorsMixin {
         }
         Arrays.sort(offsets, Comparator.comparingInt(pos -> MHelper.sqr(pos.x) + MHelper.sqr(pos.y)));
         return offsets;
-    }
-
-    private static boolean hasSodium() {
-        if (hasSodium != null) {
-            return hasSodium.booleanValue();
-        }
-        ModList list = ModList.get();
-        if (list == null) {
-            return false;
-        }
-        hasSodium = list.isLoaded("sodium");
-        return hasSodium;
     }
 }
