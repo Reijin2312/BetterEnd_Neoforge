@@ -58,7 +58,9 @@ public class TerrainGenerator {
     public static void initNoise(long seed, BiomeSource biomeSource, Sampler sampler) {
         TerrainGenerator.config = resolveEndConfig(biomeSource);
         if (config == null) {
-            throw new IllegalStateException("Biome source config is not set");
+            TerrainGenerator.biomeSource = null;
+            TerrainGenerator.sampler = null;
+            return;
         }
 
         RandomSource random = new LegacyRandomSource(seed);
@@ -262,6 +264,7 @@ public class TerrainGenerator {
                     BETargetChecker.class
                             .cast(sHolder.value())
                             .be_setTarget(false);
+                    return;
                 }
 
             }
