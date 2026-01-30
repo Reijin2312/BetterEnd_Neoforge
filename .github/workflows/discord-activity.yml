@@ -1,0 +1,387 @@
+name: Discord GitHub Feed (Final Pretty)
+
+on:
+  push:
+  pull_request:
+    types: [opened, reopened, closed, ready_for_review]
+  issues:
+    types: [opened, reopened, closed]
+  issue_comment:
+    types: [created]
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+
+          REPO: ${{ github.repository }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+
+          # Push
+          REF: ${{ github.ref_name }}
+          COMPARE_URL: ${{ github.event.compare }}
+          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          HEAD_COMMIT_ID: ${{ github.event.head_commit.id }}
+
+          # PR
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+          PR_HEAD: ${{ github.event.pull_request.head.ref }}
+          PR_MERGED: ${{ github.event.pull_request.merged }}
+
+          # Issues (also available in issue_comment)
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ', ') }}
+
+          # Comment
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_URL: ${{ github.event.comment.html_url }}
+
+          # Release
+          REL_NAME: ${{ github.event.release.name }}
+          REL_TAG: ${{ github.event.release.tag_name }}
+          REL_URL: ${{ github.event.release.html_url }}
+          REL_BODY: ${{ github.event.release.body }}
+
+          # Sender
+          SENDER: ${{ github.actor }}
+          SENDER_AVATAR: ${{ github.event.sender.avatar_url }}
+        run: |
+          python - <<'PY'
+          import os, json, re, urllib.request, datetime
+
+          # ---------- helpers ----------
+          def clamp(s, n):
+            s = (s or "").strip()
+            return s[:n] if len(s) > n else s
+
+          def clean(s):
+            s = (s or "").replace("\r\n","\n").replace("\r","\n")
+            s = re.sub(r"\n{3,}", "\n\n", s).strip()
+            return s
+
+          def md_link(text, url):
+            return f"[{text}]({url})" if url else text
+
+          def safe_fields(fields):
+            # enforce Discord limits
+            out = []
+            for f in fields:
+              if len(out) >= 25:
+                break
+              name = clamp(f.get("name",""), 256) or "Field"
+              val  = clamp(f.get("value",""), 1024) or "-"
+              out.append({"name": name, "value": val, "inline": bool(f.get("inline", False))})
+            return out
+
+          def parse_sections(body: str):
+            """
+            Parse markdown sections:
+              ### Title
+              content...
+            Returns list of (title, content)
+            """
+            body = clean(body)
+            if not body:
+              return []
+            lines = body.split("\n")
+            sections = []
+            cur = None
+            buf = []
+            heading = re.compile(r"^(#{3,4})\s+(.*)\s*$")  # ### / ####
+
+            def flush():
+              nonlocal cur, buf
+              if cur is not None:
+                text = clean("\n".join(buf)).strip()
+                if text:
+                  sections.append((cur, text))
+              cur = None
+              buf = []
+
+            for line in lines:
+              m = heading.match(line)
+              if m:
+                flush()
+                cur = m.group(2).strip()
+              else:
+                if cur is not None:
+                  buf.append(line)
+            flush()
+            return sections
+
+          def pick(sections, wanted_title):
+            wt = wanted_title.strip().lower()
+            for k,v in sections:
+              if k.strip().lower() == wt:
+                return v
+            return None
+
+          def remove_titles(sections, titles_lower_set):
+            out=[]
+            for k,v in sections:
+              if k.strip().lower() not in titles_lower_set:
+                out.append((k,v))
+            return out
+
+          def labels_to_list(labels_str):
+            return [x.strip() for x in (labels_str or "").split(",") if x.strip()]
+
+          def label_emoji(labels):
+            low = [x.lower() for x in labels]
+            if any("crash" in x for x in low): return "💥"
+            if any("bug" in x for x in low): return "🐛"
+            if any("feature" in x or "enhancement" in x for x in low): return "✨"
+            if any("question" in x for x in low): return "❓"
+            if any("worldgen" in x or "generation" in x for x in low): return "🌍"
+            return "🧩"
+
+          def color_for(kind):
+            return {
+              "issue_open": 15158332,     # red
+              "issue_close": 3066993,     # green
+              "issue_reopen": 10181046,   # purple
+              "comment": 3447003,         # blue
+              "pr_open": 3447003,         # blue
+              "pr_merge": 3066993,        # green
+              "pr_close": 15158332,       # red
+              "push": 7506394,            # gold
+              "release": 10494192         # purple
+            }.get(kind, 9807270)
+
+          # ---------- env ----------
+          webhook = os.environ["WEBHOOK"]
+          event   = os.environ.get("EVENT","")
+          action  = os.environ.get("ACTION","")
+
+          repo    = os.environ.get("REPO","")
+          repo_url = os.environ.get("REPO_URL","")
+          sender  = os.environ.get("SENDER","")
+          sender_avatar = os.environ.get("SENDER_AVATAR","")
+
+          issue_number = os.environ.get("ISSUE_NUMBER","")
+          issue_title  = os.environ.get("ISSUE_TITLE","") or ""
+          issue_url    = os.environ.get("ISSUE_URL","") or ""
+          issue_body   = os.environ.get("ISSUE_BODY","") or ""
+          issue_labels_str = os.environ.get("ISSUE_LABELS","") or "none"
+          labels = labels_to_list(issue_labels_str)
+          em = label_emoji(labels)
+
+          embed = {
+            "author": {"name": sender, "icon_url": sender_avatar},
+            "footer": {"text": f"{repo} • GitHub"},
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+          }
+
+          repo_field = {"name": "Repository", "value": md_link(repo, repo_url), "inline": True}
+
+          # ---------- Issues ----------
+          if event == "issues":
+            embed["url"] = issue_url  # makes title clickable
+            embed["title"] = f"[{repo}] {em} Issue #{issue_number}: {issue_title}"
+
+            base_fields = [
+              repo_field,
+              {"name":"Labels", "value": clamp(", ".join(labels) if labels else "none", 1024), "inline": True},
+              {"name":"Issue link", "value": md_link("Open on GitHub", issue_url), "inline": True},
+            ]
+
+            if action == "opened":
+              embed["color"] = color_for("issue_open")
+
+              sections = parse_sections(issue_body)
+
+              # Pull versions to the top as individual fields
+              version_titles = [
+                "BetterEnd (NeoForge)",
+                "BetterNether (NeoForge)",
+                "BCLib (NeoForge)",
+                "WorldWeaver (NeoForge)",
+                "NeoForge",
+                "Minecraft",
+              ]
+              version_fields = []
+              for t in version_titles:
+                v = pick(sections, t)
+                if v is not None and v.strip():
+                  version_fields.append({"name": t, "value": clamp(v, 1024), "inline": True})
+
+              # Common form sections
+              what = pick(sections, "What happened?")
+              logs = pick(sections, "Relevant log output")
+              other_mods = pick(sections, "Other Mods")
+
+              # Remove those so we can append remaining sections later
+              remove_set = {x.lower() for x in version_titles + ["What happened?", "Relevant log output", "Other Mods"]}
+              remaining = remove_titles(sections, remove_set)
+
+              fields = []
+              fields.extend(base_fields)
+
+              # versions block (each as its own field, inline)
+              if version_fields:
+                fields.append({"name":"Versions", "value":"(see fields below)", "inline": False})
+                fields.extend(version_fields)
+
+              # main content fields
+              if what:
+                fields.append({"name":"What happened?", "value": clamp(what, 1024), "inline": False})
+
+              if logs:
+                # If logs contain a URL, keep it clickable
+                fields.append({"name":"Relevant log output", "value": clamp(logs, 1024), "inline": False})
+
+              if other_mods:
+                fields.append({"name":"Other Mods", "value": clamp(other_mods, 1024), "inline": False})
+
+              # Append any remaining sections from the form
+              for k,v in remaining:
+                fields.append({"name": k, "value": clamp(v, 1024), "inline": False})
+
+              # If parsing failed, fallback to body in description
+              if len(fields) <= len(base_fields):
+                embed["description"] = clamp(clean(issue_body), 3500) or "*No description provided.*"
+                embed["fields"] = safe_fields(base_fields)
+              else:
+                embed["description"] = ""  # clean like your screenshot
+                embed["fields"] = safe_fields(fields)
+
+            elif action == "reopened":
+              embed["color"] = color_for("issue_reopen")
+              embed["description"] = f"🔁 Issue reopened by **{sender}**.\n{md_link('Open issue', issue_url)}"
+              embed["fields"] = safe_fields(base_fields)
+
+            elif action == "closed":
+              embed["color"] = color_for("issue_close")
+              embed["description"] = f"✅ Issue closed by **{sender}**.\n{md_link('Open issue', issue_url)}"
+              embed["fields"] = safe_fields(base_fields)
+
+            else:
+              embed["color"] = 9807270
+              embed["description"] = f"Event: **{action}**\n{md_link('Open issue', issue_url)}"
+              embed["fields"] = safe_fields(base_fields)
+
+          # ---------- Issue comments ----------
+          elif event == "issue_comment" and action == "created":
+            comment_body = os.environ.get("COMMENT_BODY","") or ""
+            comment_url  = os.environ.get("COMMENT_URL","") or issue_url
+
+            embed["color"] = color_for("comment")
+            embed["url"] = comment_url
+            embed["title"] = f"[{repo}] 💬 Comment on {em} Issue #{issue_number}: {issue_title}"
+
+            embed["description"] = clamp(clean(comment_body), 3500) or "*No content.*"
+            embed["fields"] = safe_fields([
+              repo_field,
+              {"name":"Issue", "value": md_link(f"#{issue_number} {issue_title}", issue_url), "inline": False},
+              {"name":"Labels", "value": clamp(", ".join(labels) if labels else "none", 1024), "inline": True},
+              {"name":"Comment link", "value": md_link("View comment", comment_url), "inline": True},
+            ])
+
+          # ---------- Pull requests ----------
+          elif event == "pull_request":
+            pr_number = os.environ.get("PR_NUMBER","")
+            pr_title  = os.environ.get("PR_TITLE","")
+            pr_url    = os.environ.get("PR_URL","")
+            pr_body   = os.environ.get("PR_BODY","") or ""
+            pr_base   = os.environ.get("PR_BASE","")
+            pr_head   = os.environ.get("PR_HEAD","")
+            merged    = os.environ.get("PR_MERGED","false")
+
+            embed["url"] = pr_url
+            embed["title"] = f"[{repo}] 🔀 PR #{pr_number}: {pr_title}"
+
+            if action == "opened":
+              embed["color"] = color_for("pr_open")
+              embed["description"] = clamp(clean(pr_body), 2000) or "*No description provided.*"
+            elif action == "reopened":
+              embed["color"] = 10181046
+              embed["description"] = f"🔁 PR reopened by **{sender}**."
+            elif action == "ready_for_review":
+              embed["color"] = 3447003
+              embed["description"] = f"🟦 Marked **ready for review** by **{sender}**."
+            elif action == "closed" and merged == "true":
+              embed["color"] = color_for("pr_merge")
+              embed["description"] = f"✅ PR **merged** by **{sender}**."
+            elif action == "closed":
+              embed["color"] = color_for("pr_close")
+              embed["description"] = f"🛑 PR **closed** by **{sender}**."
+            else:
+              embed["color"] = 9807270
+              embed["description"] = f"PR event: **{action}**."
+
+            embed["fields"] = safe_fields([
+              repo_field,
+              {"name":"Branch", "value": f"**{pr_base}** ← **{pr_head}**", "inline": False},
+              {"name":"PR link", "value": md_link("Open PR on GitHub", pr_url), "inline": True},
+            ])
+
+          # ---------- Push ----------
+          elif event == "push":
+            ref = os.environ.get("REF","")
+            compare = os.environ.get("COMPARE_URL","") or repo_url
+            commit_msg = os.environ.get("HEAD_COMMIT_MESSAGE","") or ""
+            commit_id  = (os.environ.get("HEAD_COMMIT_ID","") or "")[:7]
+
+            embed["color"] = color_for("push")
+            embed["url"] = compare
+            embed["title"] = f"[{repo}] 📌 Push to {ref}"
+            embed["description"] = f"**{sender}** pushed `{commit_id}`"
+
+            fields = [repo_field]
+            fields.append({"name":"Compare", "value": md_link("View changes", compare), "inline": True})
+            if commit_msg:
+              fields.append({"name":"Head commit", "value": clamp(commit_msg, 1024), "inline": False})
+            embed["fields"] = safe_fields(fields)
+
+          # ---------- Release ----------
+          elif event == "release":
+            rel_name = os.environ.get("REL_NAME","") or "Release"
+            rel_tag  = os.environ.get("REL_TAG","") or ""
+            rel_url  = os.environ.get("REL_URL","") or ""
+            rel_body = os.environ.get("REL_BODY","") or ""
+
+            embed["color"] = color_for("release")
+            embed["url"] = rel_url
+            embed["title"] = f"[{repo}] ✨ Release {rel_tag}"
+            embed["description"] = f"**{rel_name}**\n\n{clamp(clean(rel_body), 2500) or '*No release notes.*'}"
+            embed["fields"] = safe_fields([
+              repo_field,
+              {"name":"Release link", "value": md_link("Open release on GitHub", rel_url), "inline": True},
+            ])
+
+          else:
+            embed["color"] = 9807270
+            embed["url"] = repo_url
+            embed["title"] = f"[{repo}] GitHub event: {event} ({action})"
+            embed["description"] = md_link("Open repository", repo_url)
+
+          payload = {
+            "content": "",
+            "allowed_mentions": {"parse": []},
+            "embeds": [embed],
+          }
+
+          req = urllib.request.Request(
+            webhook,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST"
+          )
+          with urllib.request.urlopen(req) as r:
+            r.read()
+          PY
