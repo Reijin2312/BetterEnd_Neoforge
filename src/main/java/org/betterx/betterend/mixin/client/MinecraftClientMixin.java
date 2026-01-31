@@ -48,7 +48,15 @@ public class MinecraftClientMixin {
                                             .getNoiseBiomeAtPosition(this.player.blockPosition())
                                             .value()
                                             .getBackgroundMusic()
-                                            .orElse(Musics.END);
+                                            .orElse(null);
+                    if (sound == null) {
+                        sound = new Music(
+                                Musics.END.getEvent(),
+                                Musics.END.getMinDelay(),
+                                Musics.END.getMaxDelay(),
+                                false
+                        );
+                    }
                     info.setReturnValue(sound);
                 }
                 info.cancel();
