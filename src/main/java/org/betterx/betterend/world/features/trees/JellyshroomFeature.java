@@ -58,7 +58,7 @@ public class JellyshroomFeature extends DefaultFeature {
         sdf.setReplaceFunction(REPLACE).addPostProcess((info) -> {
             if (EndBlocks.JELLYSHROOM.isTreeLog(info.getState())) {
                 if (EndBlocks.JELLYSHROOM.isTreeLog(info.getStateUp()) && EndBlocks.JELLYSHROOM.isTreeLog(info.getStateDown())) {
-                    return EndBlocks.JELLYSHROOM.getLog().defaultBlockState();
+                    return EndBlocks.JELLYSHROOM.getBark().defaultBlockState();
                 }
             } else if (info.getState().is(EndBlocks.JELLYSHROOM_CAP_PURPLE)) {
                 float dx = info.getPos().getX() - pos.getX() - last.x();
