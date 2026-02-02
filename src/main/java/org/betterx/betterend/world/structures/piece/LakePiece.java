@@ -40,7 +40,7 @@ import java.util.Map;
 public class LakePiece extends BasePiece {
     private static final BlockState ENDSTONE = Blocks.END_STONE.defaultBlockState();
     private static final BlockState WATER = Blocks.WATER.defaultBlockState();
-    private final Map<Integer, Byte> heightmap = Maps.newHashMap();
+    private final Map<Integer, Byte> heightmap = Maps.newConcurrentMap();
     private OpenSimplexNoise noise;
     private BlockPos center;
     private float radius;

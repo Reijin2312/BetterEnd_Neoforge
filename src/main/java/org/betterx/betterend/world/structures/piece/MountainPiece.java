@@ -24,7 +24,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 
 public abstract class MountainPiece extends BasePiece {
-    protected Map<Integer, Integer> heightmap = Maps.newHashMap();
+    protected Map<Integer, Integer> heightmap = Maps.newConcurrentMap();
     protected OpenSimplexNoise noise1;
     protected OpenSimplexNoise noise2;
     protected BlockPos center;
