@@ -3,7 +3,6 @@ package org.betterx.betterend.mixin.client;
 import org.betterx.betterend.config.Configs;
 
 import net.minecraft.sounds.Music;
-import net.minecraft.sounds.Musics;
 import net.minecraft.world.level.Level;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -70,7 +69,7 @@ public class MusicTrackerMixin {
                 // Fade out current music
                 volumeChanged = true;
                 volume -= FADE_SPEED * TICK_DELTA;
-                nextSongDelay = random.nextInt(0, targetMusic.getMinDelay() / 2);
+                nextSongDelay = random.nextInt(0, Math.max(targetMusic.getMinDelay() / 2, 1));
                 if (volume <= 0.0f) {
                     thisObj.stopPlaying();
                 }
