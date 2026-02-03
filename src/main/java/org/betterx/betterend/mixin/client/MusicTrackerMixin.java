@@ -27,9 +27,9 @@ public class MusicTrackerMixin {
     // The difference from this constant will only be noticeable if the game's TPS is extremely low
     // If the game is lagging to that extent, smooth music blending is the least of the player's worries
 
-    @Unique private final MusicManager thisObj = (MusicManager)(Object)this;
-    @Unique private static boolean waitChange = false;
-    @Unique private static float volume = 1.0f;
+    @Unique private final MusicManager be_thisObj = (MusicManager)(Object)this;
+    @Unique private boolean be_waitChange = false;
+    @Unique private float be_volume = 1.0f;
 
     @Shadow @Final private Minecraft minecraft;
     @Shadow @Final private RandomSource random;
@@ -49,7 +49,7 @@ public class MusicTrackerMixin {
 
     @Inject(method = "startPlaying", at = @At("TAIL"))
     public void be_startPlaying(Music music, CallbackInfo ci) {
-        volume = 0.0f; // Mostly to fix issues when the blending system becomes desynced due to other dims
+        be_volume = 0.0f; // Mostly to fix issues when the blending system becomes desynced due to other dims
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
@@ -64,34 +64,34 @@ public class MusicTrackerMixin {
         }
 
         boolean volumeChanged = false;
-        if (waitChange || be_shouldChangeMusic(targetMusic)) {
-            if (volume > 0.0f) {
+        if (be_waitChange || be_shouldChangeMusic(targetMusic)) {
+            if (be_volume > 0.0f) {
                 // Fade out current music
                 volumeChanged = true;
-                volume -= FADE_SPEED * TICK_DELTA;
+                be_volume -= FADE_SPEED * TICK_DELTA;
                 nextSongDelay = random.nextInt(0, Math.max(targetMusic.getMinDelay() / 2, 1));
-                if (volume <= 0.0f) {
-                    thisObj.stopPlaying();
+                if (be_volume <= 0.0f) {
+                    be_thisObj.stopPlaying();
                 }
             } else if (nextSongDelay > 0) {
                 // In-between music delay
                 nextSongDelay -= 1;
-                waitChange = true;
+                be_waitChange = true;
             } else {
                 // Start new music
-                waitChange = false;
-                thisObj.startPlaying(targetMusic);
+                be_waitChange = false;
+                be_thisObj.startPlaying(targetMusic);
             }
-        } else if (volume < 1.0f) {
+        } else if (be_volume < 1.0f) {
             // Fade in new music
             volumeChanged = true;
-            volume += FADE_SPEED * TICK_DELTA;
+            be_volume += FADE_SPEED * TICK_DELTA;
         }
 
         if (volumeChanged) {
-            volume = Mth.clamp(volume, 0.0f, 1.0f);
+            be_volume = Mth.clamp(be_volume, 0.0f, 1.0f);
             if (currentMusic instanceof AbstractSoundInstanceAccessor accessor) {
-                accessor.setVolume(volume);
+                accessor.setVolume(be_volume);
                 minecraft.getSoundManager().updateSourceVolume(currentMusic.getSource(), currentMusic.getVolume());
             }
         }
