@@ -104,7 +104,7 @@ public class HelixTreeFeature extends DefaultFeature {
         SplineHelper.fillSplineForce(
                 spline2,
                 world,
-                EndBlocks.HELIX_TREE.getLog().defaultBlockState(),
+                EndBlocks.HELIX_TREE.getBark().defaultBlockState(),
                 leafStart,
                 BlockBehaviour.BlockStateBase::canBeReplaced
         );
@@ -212,7 +212,7 @@ public class HelixTreeFeature extends DefaultFeature {
     private Function<PosInfo, BlockState> postProcessFunc() {
         return (info) -> {
             if (EndBlocks.HELIX_TREE.isTreeLog(info.getStateUp()) && EndBlocks.HELIX_TREE.isTreeLog(info.getStateDown())) {
-                return EndBlocks.HELIX_TREE.getLog().defaultBlockState();
+                return EndBlocks.HELIX_TREE.getBark().defaultBlockState();
             }
             return info.getState();
         };
