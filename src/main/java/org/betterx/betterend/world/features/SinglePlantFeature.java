@@ -5,6 +5,7 @@ import org.betterx.bclib.blocks.BaseCropBlock;
 import org.betterx.bclib.blocks.BaseDoublePlantBlock;
 import org.betterx.bclib.util.BlocksHelper;
 import org.betterx.betterend.blocks.basis.EndPlantWithAgeBlock;
+import org.betterx.wover.tag.api.predefined.CommonBlockTags;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -21,6 +22,9 @@ public class SinglePlantFeature extends ScatterFeature<SinglePlantFeatureConfig>
 
     @Override
     protected BlockPos getCenterGround(SinglePlantFeatureConfig cfg, WorldGenLevel world, BlockPos pos) {
+        if (world.isEmptyBlock(pos) && world.getBlockState(pos.below()).is(CommonBlockTags.END_STONES)) {
+            return pos;
+        }
         return cfg.rawHeightmap
                 ? DefaultFeature.getPosOnSurfaceWG(world, pos)
                 : DefaultFeature.getPosOnSurface(world, pos);

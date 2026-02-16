@@ -31,6 +31,9 @@ public abstract class ScatterFeature<FC extends ScatterFeatureConfig> extends Fe
     public abstract void generate(FC cfg, WorldGenLevel world, RandomSource random, BlockPos blockPos);
 
     protected BlockPos getCenterGround(FC cfg, WorldGenLevel world, BlockPos pos) {
+        if (world.isEmptyBlock(pos) && world.getBlockState(pos.below()).is(CommonBlockTags.END_STONES)) {
+            return pos;
+        }
         return DefaultFeature.getPosOnSurfaceWG(world, pos);
     }
 

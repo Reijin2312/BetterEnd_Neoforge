@@ -5,13 +5,11 @@ import org.betterx.betterend.config.Configs;
 import org.betterx.betterend.registry.EndBlocks;
 import org.betterx.ui.ColorUtil;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
-
-import net.neoforged.fml.ModList;
+import net.minecraft.world.level.chunk.MissingPaletteEntryException;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,21 +25,24 @@ public class BiomeColorsMixin {
     private static final int POISON_COLOR = ColorUtil.color(92, 160, 78);
     private static final int STREAM_COLOR = ColorUtil.color(105, 213, 244);
     private static final Point[] OFFSETS = buildOffsets();
-    private static Boolean hasSodium;
 
     @Inject(method = "getAverageWaterColor", at = @At("RETURN"), cancellable = true)
     private static void be_getWaterColor(BlockAndTintGetter world, BlockPos pos, CallbackInfoReturnable<Integer> info) {
         if (Configs.CLIENT_CONFIG.sulfurWaterColor.get()) {
-            BlockAndTintGetter view = hasSodium() ? Minecraft.getInstance().level : world;
+            BlockAndTintGetter view = world;
             MutableBlockPos mut = new MutableBlockPos();
             mut.setY(pos.getY());
-            for (int i = 0; i < OFFSETS.length; i++) {
-                mut.setX(pos.getX() + OFFSETS[i].x);
-                mut.setZ(pos.getZ() + OFFSETS[i].y);
-                if ((view.getBlockState(mut).is(EndBlocks.BRIMSTONE))) {
-                    info.setReturnValue(i < 4 ? POISON_COLOR : STREAM_COLOR);
-                    return;
+            try {
+                for (int i = 0; i < OFFSETS.length; i++) {
+                    mut.setX(pos.getX() + OFFSETS[i].x);
+                    mut.setZ(pos.getZ() + OFFSETS[i].y);
+                    if ((view.getBlockState(mut).is(EndBlocks.BRIMSTONE))) {
+                        info.setReturnValue(i < 4 ? POISON_COLOR : STREAM_COLOR);
+                        return;
+                    }
                 }
+            } catch (MissingPaletteEntryException ignored) {
+                // Avoid crashing on render-thread palette races (e.g., Sodium)
             }
         }
     }
@@ -60,15 +61,4 @@ public class BiomeColorsMixin {
         return offsets;
     }
 
-    private static boolean hasSodium() {
-        if (hasSodium != null) {
-            return hasSodium.booleanValue();
-        }
-        ModList list = ModList.get();
-        if (list == null) {
-            return false;
-        }
-        hasSodium = list.isLoaded("sodium");
-        return hasSodium;
-    }
 }

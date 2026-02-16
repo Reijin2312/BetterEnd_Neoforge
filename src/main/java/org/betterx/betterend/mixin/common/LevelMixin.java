@@ -19,8 +19,7 @@ public class LevelMixin {
         if (GeneratorOptions.changeSpawn()) {
             if ((Object) this instanceof ServerLevel server) {
                 if (server.dimension() == Level.END) {
-                    BlockPos pos = GeneratorOptions.getSpawn();
-                    info.setReturnValue(pos);
+                    info.setReturnValue(GeneratorOptions.getSpawn());
                 }
             }
         }

@@ -16,9 +16,26 @@ def modId = project.findProperty('mod_id') ?: project.archives_base_name
 def refmapName = "${modId}.refmap.json"
 def neoformMappingsDir = file("${gradle.gradleUserHomeDir}/caches/neoformruntime/intermediate_results")
 def neoformMappingCandidates = fileTree(neoformMappingsDir) { include "mergeMappings*_output.tsrg" }
+def mappingHasToken = { File file, String token ->
+    def found = false
+    file.withReader("UTF-8") { reader ->
+        String line
+        while ((line = reader.readLine()) != null) {
+            if (line.contains(token)) {
+                found = true
+                break
+            }
+        }
+    }
+    return found
+}
 def resolveNeoformMappingFile = {
     def candidates = neoformMappingCandidates.files
-    return candidates.isEmpty() ? null : candidates.max { it.lastModified() }
+    if (candidates.isEmpty()) {
+        return null
+    }
+    def preferred = candidates.find { mappingHasToken(it, "loadBlockStateDefinitions") }
+    return preferred ?: candidates.max { it.lastModified() }
 }
 def mixinMappingsFile = layout.buildDirectory.file("mappings/${modId}-mixin-reobf.tsrg")
 def mixinOutMappingsFile = layout.buildDirectory.file("mappings/${modId}-mixin-out.tsrg")
@@ -452,8 +469,9 @@ tasks.register("copyModrinthJars", Copy) {
 }
 
 tasks.named("build") {
+    finalizedBy("copyModrinthJars")
     if (!simpleBuildRequested) {
-        finalizedBy("copyDistJars", "copyModrinthJars")
+        finalizedBy("copyDistJars")
     }
 }
 

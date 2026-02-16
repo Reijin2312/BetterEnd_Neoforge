@@ -26,6 +26,8 @@
     "NoiseInterpolatorAccessor",
     "PlayerAdvancementsMixin",
     "PlayerMixin",
+    "RecipeOutputMixin",
+    "RecipeOutputExtensionMixin",
     "RegistrationEventsMixin",
     "ServerLevelMixin",
     "SlimeMixin",

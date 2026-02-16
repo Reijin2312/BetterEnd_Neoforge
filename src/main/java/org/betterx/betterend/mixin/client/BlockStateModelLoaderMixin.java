@@ -13,7 +13,13 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(BlockStateModelLoader.class)
 public abstract class BlockStateModelLoaderMixin {
-    @ModifyArg(method = "loadBlockStateDefinitions", at = @At(value = "INVOKE", target = "Lnet/minecraft/resources/FileToIdConverter;idToFile(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;"))
+    @ModifyArg(
+            method = "loadBlockStateDefinitions",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/resources/FileToIdConverter;idToFile(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;"
+            )
+    )
     public ResourceLocation be_switchModelOnLoad(ResourceLocation loc) {
         //this should allways be a block state, as it is supplied a BLOCKSTATE_LISTER
         if (GeneratorOptions.changeChorusPlant() && be_changeModel(loc)) {
