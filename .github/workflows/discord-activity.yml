@@ -17,7 +17,8 @@ jobs:
     steps:
       - name: Send to Discord
         env:
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # Prefer secret, fallback to repository variable for convenience.
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL || vars.DISCORD_WEBHOOK_URL }}
 
           EVENT: ${{ github.event_name }}
           ACTION: ${{ github.event.action }}
@@ -45,7 +46,7 @@ jobs:
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
           ISSUE_BODY: ${{ github.event.issue.body }}
-          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ', ') }}
+          ISSUE_LABELS: ${{ github.event.issue && join(github.event.issue.labels.*.name, ', ') || '' }}
 
           # Comment
           COMMENT_BODY: ${{ github.event.comment.body }}
@@ -62,7 +63,7 @@ jobs:
           SENDER_AVATAR: ${{ github.event.sender.avatar_url }}
         run: |
           python - <<'PY'
-          import os, json, re, urllib.request, datetime
+          import os, json, re, urllib.request, urllib.error, datetime
 
           # ---------- helpers ----------
           def clamp(s, n):
@@ -164,7 +165,10 @@ jobs:
             }.get(kind, 9807270)
 
           # ---------- env ----------
-          webhook = os.environ["WEBHOOK"]
+          webhook = os.environ.get("WEBHOOK", "").strip()
+          if not webhook:
+            print("DISCORD_WEBHOOK_URL is empty (neither secret nor repository variable is set). Skip notify.")
+            raise SystemExit(0)
           event   = os.environ.get("EVENT","")
           action  = os.environ.get("ACTION","")
 
@@ -172,6 +176,7 @@ jobs:
           repo_url = os.environ.get("REPO_URL","")
           sender  = os.environ.get("SENDER","")
           sender_avatar = os.environ.get("SENDER_AVATAR","")
+          user_agent = f"{repo or 'BetterMods'}/discord-webhook-notifier"
 
           issue_number = os.environ.get("ISSUE_NUMBER","")
           issue_title  = os.environ.get("ISSUE_TITLE","") or ""
@@ -379,9 +384,19 @@ jobs:
           req = urllib.request.Request(
             webhook,
             data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
+            headers={
+              "Content-Type": "application/json",
+              "User-Agent": user_agent
+            },
             method="POST"
           )
-          with urllib.request.urlopen(req) as r:
-            r.read()
+          try:
+            with urllib.request.urlopen(req) as r:
+              r.read()
+          except urllib.error.HTTPError as e:
+            # Print Discord response body so workflow logs show why payload was rejected.
+            body = e.read().decode("utf-8", errors="replace")
+            print(f"Discord webhook failed: HTTP {e.code} {e.reason}")
+            print(body)
+            raise
           PY
