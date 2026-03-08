@@ -59,7 +59,10 @@ public class FlamboyantRefabricatedIntegration extends ModIntegration {
     private static void addColor(String hex, String name, Map<Integer, String> colors, Map<Integer, ItemLike> dyes) {
         int color = ColorUtil.color(hex);
         colors.put(color, name);
-        dyes.put(color, BuiltInRegistries.ITEM.get(BetterEnd.FLAMBOYANT.mk(name + "_dye")));
+        ItemLike dye = BuiltInRegistries.ITEM.getValue(BetterEnd.FLAMBOYANT.mk(name + "_dye"));
+        if (dye != null) {
+            dyes.put(color, dye);
+        }
 
         System.out.println(name + " " + color + " " + new Color(color));
     }

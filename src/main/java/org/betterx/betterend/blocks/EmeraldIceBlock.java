@@ -11,7 +11,7 @@ import org.betterx.wover.loot.api.LootLookupProvider;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EmeraldIceBlock extends HalfTransparentBlock implements RenderLayerProvider, RuntimeBlockModelProvider, BehaviourIce, BlockLootProvider {
     public EmeraldIceBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.ICE));
+        super(BlockBehaviour.Properties.ofLegacyCopy(Blocks.ICE));
     }
 
     @Override
@@ -53,7 +53,7 @@ public class EmeraldIceBlock extends HalfTransparentBlock implements RenderLayer
     ) {
         super.playerDestroy(world, player, pos, state, blockEntity, stack);
         if (EnchantmentUtils.getItemEnchantmentLevel(world, Enchantments.SILK_TOUCH, stack) == 0) {
-            if (world.dimensionType().ultraWarm()) {
+            if (world.dimension() == Level.NETHER) {
                 world.removeBlock(pos, false);
                 return;
             }
@@ -69,30 +69,30 @@ public class EmeraldIceBlock extends HalfTransparentBlock implements RenderLayer
     @Override
     @SuppressWarnings("deprecation")
     public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
-        if (world.getBrightness(LightLayer.BLOCK, pos) > 11 - state.getLightBlock(world, pos)) {
+        if (world.getBrightness(LightLayer.BLOCK, pos) > 11 - state.getLightBlock()) {
             this.melt(state, world, pos);
         }
 
     }
 
     protected void melt(BlockState state, Level world, BlockPos pos) {
-        if (world.dimensionType().ultraWarm()) {
+        if (world.dimension() == Level.NETHER) {
             world.removeBlock(pos, false);
         } else {
             world.setBlockAndUpdate(pos, Blocks.WATER.defaultBlockState());
-            world.neighborChanged(pos, Blocks.WATER, pos);
+            world.neighborChanged(pos, Blocks.WATER, null);
         }
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public BlockModel getItemModel(ResourceLocation resourceLocation) {
+    public BlockModel getItemModel(Identifier resourceLocation) {
         return getBlockModel(resourceLocation, defaultBlockState());
     }
 
     @Override
     public LootTable.Builder registerBlockLoot(
-            @NotNull ResourceLocation location,
+            @NotNull Identifier location,
             @NotNull LootLookupProvider provider,
             @NotNull ResourceKey<LootTable> tableKey
     ) {

@@ -7,10 +7,10 @@ import org.betterx.betterend.entity.*;
 import org.betterx.ui.ColorUtil;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier.Builder;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
 
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -21,12 +21,12 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 
 public class EndEntities {
-    public static final ResourceLocation DRAGONFLY_ID = BetterEnd.C.mk("dragonfly");
-    public static final ResourceLocation END_SLIME_ID = BetterEnd.C.mk("end_slime");
-    public static final ResourceLocation END_FISH_ID = BetterEnd.C.mk("end_fish");
-    public static final ResourceLocation SHADOW_WALKER_ID = BetterEnd.C.mk("shadow_walker");
-    public static final ResourceLocation CUBOZOA_ID = BetterEnd.C.mk("cubozoa");
-    public static final ResourceLocation SILK_MOTH_ID = BetterEnd.C.mk("silk_moth");
+    public static final Identifier DRAGONFLY_ID = BetterEnd.C.mk("dragonfly");
+    public static final Identifier END_SLIME_ID = BetterEnd.C.mk("end_slime");
+    public static final Identifier END_FISH_ID = BetterEnd.C.mk("end_fish");
+    public static final Identifier SHADOW_WALKER_ID = BetterEnd.C.mk("shadow_walker");
+    public static final Identifier CUBOZOA_ID = BetterEnd.C.mk("cubozoa");
+    public static final Identifier SILK_MOTH_ID = BetterEnd.C.mk("silk_moth");
 
     private static final EntityType<DragonflyEntity> DRAGONFLY_TYPE = buildEntityType(
             DragonflyEntity::new, MobCategory.AMBIENT, 0.6F, 0.5F, DRAGONFLY_ID
@@ -108,7 +108,7 @@ public class EndEntities {
 
     private static <T extends Mob> void registerMob(
             RegisterEvent.RegisterHelper<EntityType<?>> helper,
-            ResourceLocation id,
+            Identifier id,
             EntityType<T> type,
             AttributeSupplier.Builder attributes,
             int eggColor,
@@ -124,9 +124,12 @@ public class EndEntities {
             MobCategory category,
             float width,
             float height,
-            ResourceLocation id
+            Identifier id
     ) {
-        return EntityType.Builder.of(factory, category).sized(width, height).build(id.toString());
+        return EntityType.Builder
+                .of(factory, category)
+                .sized(width, height)
+                .build(ResourceKey.create(Registries.ENTITY_TYPE, id));
     }
 
     private static void registerAttribute(EntityType<? extends LivingEntity> entity, AttributeSupplier.Builder builder) {

@@ -3,7 +3,6 @@ package org.betterx.betterend.particle;
 import org.betterx.betterend.registry.EndParticles;
 import org.betterx.ui.ColorUtil;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -17,8 +16,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 public class InfusionParticleType extends ParticleType<InfusionParticleType> implements ParticleOptions {
-    public static final MapCodec<InfusionParticleType> CODEC = Codec
-            .withAlternative(ItemStack.SINGLE_ITEM_CODEC, ItemStack.ITEM_NON_AIR_CODEC, ItemStack::new)
+    public static final MapCodec<InfusionParticleType> CODEC = ItemStack.SINGLE_ITEM_CODEC
             .xmap((itemStack) -> new InfusionParticleType(EndParticles.INFUSION, itemStack), (itemParticleOption) -> itemParticleOption.itemStack)
             .fieldOf("item");
 

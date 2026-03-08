@@ -9,6 +9,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class AmaranitaStemBlock extends BaseRotatedPillarBlock {
     public AmaranitaStemBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).mapColor(MapColor.COLOR_LIGHT_GREEN));
+        super(BlockBehaviour.Properties.ofLegacyCopy(Blocks.OAK_PLANKS).mapColor(MapColor.COLOR_LIGHT_GREEN));
     }
 }

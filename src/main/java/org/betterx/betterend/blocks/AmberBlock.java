@@ -10,6 +10,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class AmberBlock extends BaseBlock implements BehaviourStone {
     public AmberBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.DIAMOND_BLOCK).mapColor(MapColor.COLOR_YELLOW));
+        super(BlockBehaviour.Properties.ofLegacyCopy(Blocks.DIAMOND_BLOCK).mapColor(MapColor.COLOR_YELLOW));
     }
 }

@@ -6,6 +6,7 @@ import org.betterx.wover.complex.api.equipment.ArmorSlot;
 
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.equipment.ArmorType;
 
 public class CrystaliteHelmet extends CrystaliteArmor {
     private static Properties defaultSettings() {
@@ -27,6 +28,6 @@ public class CrystaliteHelmet extends CrystaliteArmor {
     }
 
     public CrystaliteHelmet() {
-        super(Type.HELMET, defaultSettings());
+        super(ArmorType.HELMET, defaultSettings());
     }
 }

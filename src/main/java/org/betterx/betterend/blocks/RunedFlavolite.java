@@ -24,7 +24,7 @@ public class RunedFlavolite extends BaseBlock.Stone {
     public static final BooleanProperty ACTIVATED = BlockProperties.ACTIVE;
 
     public RunedFlavolite(boolean unbreakable) {
-        super(BlockBehaviour.Properties.ofFullCopy(EndBlocks.FLAVOLITE.polished)
+        super(BlockBehaviour.Properties.ofLegacyCopy(EndBlocks.FLAVOLITE.polished)
                                  .strength(
                                          unbreakable ? -1 : 1,
                                          unbreakable

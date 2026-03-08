@@ -13,13 +13,13 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -49,7 +49,7 @@ public class HydrothermalVentBlock extends BaseBlockNotFull.Stone implements Ent
         super(BehaviourBuilders
                 .createStone()
                 .sound(SoundType.STONE)
-                .noCollission()
+                .noCollision()
                 .requiresCorrectToolForDrops()
         );
         this.registerDefaultState(defaultBlockState().setValue(WATERLOGGED, true).setValue(ACTIVATED, false));
@@ -67,7 +67,7 @@ public class HydrothermalVentBlock extends BaseBlockNotFull.Stone implements Ent
 
     @Override
     public boolean canPlaceLiquid(
-            @Nullable Player player,
+            @Nullable LivingEntity player,
             BlockGetter blockGetter,
             BlockPos blockPos,
             BlockState blockState,
@@ -91,16 +91,18 @@ public class HydrothermalVentBlock extends BaseBlockNotFull.Stone implements Ent
     @Override
     public BlockState updateShape(
             BlockState state,
-            Direction facing,
-            BlockState neighborState,
-            LevelAccessor world,
+            LevelReader world,
+            ScheduledTickAccess scheduledTickAccess,
             BlockPos pos,
-            BlockPos neighborPos
+            Direction facing,
+            BlockPos neighborPos,
+            BlockState neighborState,
+            RandomSource random
     ) {
         if (!canSurvive(state, world, pos)) {
             return Blocks.WATER.defaultBlockState();
         } else if (state.getValue(WATERLOGGED) && facing == Direction.UP && neighborState.is(Blocks.WATER)) {
-            world.scheduleTick(pos, this, 20);
+            scheduledTickAccess.scheduleTick(pos, this, 20);
         }
         return state;
     }

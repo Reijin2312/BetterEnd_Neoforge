@@ -9,6 +9,7 @@ import net.minecraft.client.particle.SimpleAnimatedParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -88,7 +89,8 @@ public class ParticleGlowingSphere extends SimpleAnimatedParticle {
                 double z,
                 double vX,
                 double vY,
-                double vZ
+                double vZ,
+                RandomSource random
         ) {
             return new ParticleGlowingSphere(world, x, y, z, sprites, 1, 1, 1);
         }

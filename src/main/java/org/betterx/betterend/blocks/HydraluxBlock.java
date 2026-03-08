@@ -76,7 +76,7 @@ public class HydraluxBlock extends UnderwaterPlantBlock implements BehaviourWate
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public ItemStack getCloneItemStack(LevelReader levelReader, BlockPos blockPos, BlockState blockState) {
+    public ItemStack getCloneItemStack(LevelReader levelReader, BlockPos blockPos, BlockState blockState, boolean includeData) {
         return new ItemStack(EndBlocks.HYDRALUX_SAPLING);
     }
 

@@ -31,7 +31,7 @@ public class GlowingPillarRootsBlock extends UpDownPlantBlock {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public ItemStack getCloneItemStack(LevelReader levelReader, BlockPos blockPos, BlockState blockState) {
+    public ItemStack getCloneItemStack(LevelReader levelReader, BlockPos blockPos, BlockState blockState, boolean includeData) {
         return new ItemStack(EndBlocks.GLOWING_PILLAR_SEED);
     }
 }

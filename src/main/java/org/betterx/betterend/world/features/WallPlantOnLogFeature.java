@@ -9,18 +9,16 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class WallPlantOnLogFeature extends WallPlantFeature {
     @Override
-    public boolean generate(
+    public boolean canGenerate(
             WallPlantFeatureConfig cfg,
             WorldGenLevel world,
             RandomSource random,
             BlockPos pos,
             Direction dir
     ) {
+        plant = cfg.getPlantState(random, pos);
         BlockPos blockPos = pos.relative(dir.getOpposite());
         BlockState blockState = world.getBlockState(blockPos);
-        if (!blockState.is(BlockTags.LOGS)) {
-            return false;
-        }
-        return super.generate(cfg, world, random, pos, dir);
+        return blockState.is(BlockTags.LOGS);
     }
 }

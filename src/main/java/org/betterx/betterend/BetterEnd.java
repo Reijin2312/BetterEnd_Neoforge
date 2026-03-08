@@ -23,7 +23,7 @@ import org.betterx.wover.core.api.ModCore;
 import org.betterx.wover.generator.api.biomesource.end.BiomeDecider;
 import org.betterx.wover.state.api.WorldConfig;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -43,10 +43,10 @@ public class BetterEnd {
     public static final ModCore HYDROGEN = ModCore.create("hydrogen");
     public static final ModCore TRINKETS_CORE = ModCore.create("trinkets");
     public static final boolean ENABLE_GUIDEBOOK = false;
-    public static final ResourceLocation BYG_ADDITIONS_PACK = C.addDatapack(BYG);
-    public static final ResourceLocation NOURISH_ADDITIONS_PACK = C.addDatapack(NOURISH);
-    public static final ResourceLocation FLAMBOYANT_ADDITIONS_PACK = C.addDatapack(FLAMBOYANT);
-    public static final ResourceLocation PATCHOULI_ADDITIONS_PACK = ENABLE_GUIDEBOOK
+    public static final Identifier BYG_ADDITIONS_PACK = C.addDatapack(BYG);
+    public static final Identifier NOURISH_ADDITIONS_PACK = C.addDatapack(NOURISH);
+    public static final Identifier FLAMBOYANT_ADDITIONS_PACK = C.addDatapack(FLAMBOYANT);
+    public static final Identifier PATCHOULI_ADDITIONS_PACK = ENABLE_GUIDEBOOK
             ? C.addDatapack(PATCHOULI)
             : null;
 
@@ -67,9 +67,9 @@ public class BetterEnd {
         modBus.addListener(RegisterEvent.class, EndPotions::onRegister);
         modBus.addListener(RegisterEvent.class, BECriteria::onRegister);
         modBus.addListener(RegisterEvent.class, CreativeTabs::onRegister);
-        if (BYG.isLoaded()) {
-            modBus.addListener(RegisterEvent.class, BYGFeatures::onRegister);
-        }
+        // BYG-specific placed features are bundled in BetterEnd data; keep feature types
+        // registered so registry parsing does not fail when BYG is absent.
+        modBus.addListener(RegisterEvent.class, BYGFeatures::onRegister);
 
         // Гарантируем, что блоки/предметы подготавливаются до фактической регистрации, даже если порядок
         // обработчиков событий изменится (иначе остаются незарегистрованные intrusive holders).
@@ -78,7 +78,8 @@ public class BetterEnd {
         org.betterx.wover.item.api.ItemRegistry.hook(modBus);
         if (ModCore.isDatagen()) {
             BetterEndDatagen datagen = new BetterEndDatagen();
-            modBus.addListener(datagen::onGatherData);
+            modBus.addListener(net.neoforged.neoforge.data.event.GatherDataEvent.Client.class, datagen::onGatherData);
+            modBus.addListener(net.neoforged.neoforge.data.event.GatherDataEvent.Server.class, datagen::onGatherData);
         }
         initialize();
     }
@@ -139,6 +140,9 @@ public class BetterEnd {
     private void registerFeatures(RegisterEvent event) {
         if (event.getRegistryKey().equals(net.minecraft.core.registries.Registries.FEATURE)) {
             EndFeatures.onRegister(event);
+            // Keep BYG integration features attached to the same FEATURE pass so
+            // placed-feature JSONs never reference missing feature IDs.
+            BYGFeatures.onRegister(event);
         }
     }
 }

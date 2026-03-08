@@ -9,6 +9,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class MissingTileBlock extends BaseBlock implements BehaviourStone {
     public MissingTileBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.END_STONE));
+        super(BlockBehaviour.Properties.ofLegacyCopy(Blocks.END_STONE));
     }
 }

@@ -7,7 +7,7 @@ import org.betterx.wover.recipe.api.RecipeBuilder;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
@@ -29,7 +29,7 @@ public class DyeDepotIntegration extends ModIntegration {
             if (color.getId() < 16) {
                 continue;
             }
-            ItemLike dye = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(
+            ItemLike dye = BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(
                     "dye_depot",
                     color.getName() + "_dye"
             ));
@@ -84,8 +84,8 @@ public class DyeDepotIntegration extends ModIntegration {
             ItemLike dye,
             boolean craftEight
     ) {
-        ResourceLocation blockId = BetterEnd.C.mk(baseName + "_" + color.getName());
-        Block result = BuiltInRegistries.BLOCK.get(blockId);
+        Identifier blockId = BetterEnd.C.mk(baseName + "_" + color.getName());
+        Block result = BuiltInRegistries.BLOCK.getValue(blockId);
         if (result == Blocks.AIR) {
             return;
         }

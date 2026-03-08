@@ -1,0 +1,21 @@
+{
+  "type": "betterend:biome",
+  "biome": "betterend:nightshade_forest",
+  "fogDensity": 1.5,
+  "generation_data": {
+    "intended_placement": "wover:is_end/land"
+  },
+  "has_caves": true,
+  "surface": {
+    "alt": {
+      "Name": "minecraft:air"
+    },
+    "floor_rule": true,
+    "top": {
+      "Name": "minecraft:air"
+    },
+    "under": {
+      "Name": "minecraft:end_stone"
+    }
+  }
+}

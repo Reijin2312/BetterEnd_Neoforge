@@ -6,10 +6,10 @@ import org.betterx.betterend.registry.EndItems;
 import org.betterx.betterend.registry.EndTemplates;
 import org.betterx.wover.loot.api.LootTableManager;
 
-import net.minecraft.advancements.critereon.LocationPredicate;
+import net.minecraft.advancements.criterion.LocationPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -49,7 +49,7 @@ public class LootTableUtil {
     }
 
     private static void onLootTableLoad(LootTableLoadEvent event) {
-        final ResourceLocation id = event.getName();
+        final Identifier id = event.getName();
         final LootTable table = event.getTable();
 
         final LootItemCondition.Builder IN_END = LocationCheck.checkLocation(LocationPredicate.Builder

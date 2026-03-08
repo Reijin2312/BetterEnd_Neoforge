@@ -10,10 +10,9 @@ import org.betterx.wover.block.api.model.BlockModelProvider;
 import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 import org.betterx.wover.block.api.model.WoverBlockModelGeneratorsAccess;
 
-import net.minecraft.data.models.BlockModelGenerators;
-import net.minecraft.data.models.model.TextureMapping;
-import net.minecraft.data.models.model.TextureSlot;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import net.neoforged.api.distmarker.Dist;
@@ -36,13 +35,13 @@ public class HydraluxPetalColoredBlock extends HydraluxPetalBlock implements Cus
 
 //    @Override
 //    @OnlyIn(Dist.CLIENT)
-//    public @Nullable BlockModel getBlockModel(ResourceLocation resourceLocation, BlockState blockState) {
+//    public @Nullable BlockModel getBlockModel(Identifier resourceLocation, BlockState blockState) {
 //        String path = "betterend:block/block_petal_colored";
 //        Optional<String> pattern = Patterns.createJson(Patterns.BLOCK_PETAL_COLORED, path, path);
 //        return ModelsHelper.fromPattern(pattern);
 //    }
 
-    private static ResourceLocation PETAL_MODEL;
+    private static Identifier PETAL_MODEL;
 
     @Override
     @OnlyIn(Dist.CLIENT)

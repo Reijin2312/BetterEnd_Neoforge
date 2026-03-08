@@ -7,7 +7,6 @@ import org.betterx.betterend.blocks.entities.*;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -26,34 +25,34 @@ public class EndBlockEntities {
     public static void register(RegisterEvent event) {
         if (!event.getRegistryKey().equals(Registries.BLOCK_ENTITY_TYPE)) return;
         event.register(Registries.BLOCK_ENTITY_TYPE, helper -> {
-            END_STONE_SMELTER = BlockEntityType.Builder.of(
+            END_STONE_SMELTER = new BlockEntityType<>(
                     EndStoneSmelterBlockEntity::new,
                     EndBlocks.END_STONE_SMELTER
-            ).build(null);
+            );
             helper.register(BetterEnd.C.mk(EndStoneSmelter.ID), END_STONE_SMELTER);
 
-            PEDESTAL = BlockEntityType.Builder.of(
+            PEDESTAL = new BlockEntityType<>(
                     PedestalBlockEntity::new,
                     getPedestals()
-            ).build(null);
+            );
             helper.register(BetterEnd.C.mk("pedestal"), PEDESTAL);
 
-            ETERNAL_PEDESTAL = BlockEntityType.Builder.of(
+            ETERNAL_PEDESTAL = new BlockEntityType<>(
                     EternalPedestalEntity::new,
                     EndBlocks.ETERNAL_PEDESTAL
-            ).build(null);
+            );
             helper.register(BetterEnd.C.mk("eternal_pedestal"), ETERNAL_PEDESTAL);
 
-            INFUSION_PEDESTAL = BlockEntityType.Builder.of(
+            INFUSION_PEDESTAL = new BlockEntityType<>(
                     InfusionPedestalEntity::new,
                     EndBlocks.INFUSION_PEDESTAL
-            ).build(null);
+            );
             helper.register(BetterEnd.C.mk("infusion_pedestal"), INFUSION_PEDESTAL);
 
-            HYDROTHERMAL_VENT = BlockEntityType.Builder.of(
+            HYDROTHERMAL_VENT = new BlockEntityType<>(
                     BlockEntityHydrothermalVent::new,
                     EndBlocks.HYDROTHERMAL_VENT
-            ).build(null);
+            );
             helper.register(BetterEnd.C.mk("hydrother_malvent"), HYDROTHERMAL_VENT);
         });
     }

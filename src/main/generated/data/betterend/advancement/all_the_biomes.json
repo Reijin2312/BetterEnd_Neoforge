@@ -33,6 +33,22 @@
       },
       "trigger": "minecraft:location"
     },
+    "betterend:bulbis_gardens": {
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "betterend:bulbis_gardens"
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:location"
+    },
     "betterend:chorus_forest": {
       "conditions": {
         "player": [
@@ -321,6 +337,22 @@
       },
       "trigger": "minecraft:location"
     },
+    "betterend:nightshade_forest": {
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "betterend:nightshade_forest"
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:location"
+    },
     "betterend:painted_mountains": {
       "conditions": {
         "player": [
@@ -423,6 +455,9 @@
       "betterend:blossoming_spires"
     ],
     [
+      "betterend:bulbis_gardens"
+    ],
+    [
       "betterend:chorus_forest"
     ],
     [
@@ -475,6 +510,9 @@
     ],
     [
       "betterend:neon_oasis"
+    ],
+    [
+      "betterend:nightshade_forest"
     ],
     [
       "betterend:painted_mountains"

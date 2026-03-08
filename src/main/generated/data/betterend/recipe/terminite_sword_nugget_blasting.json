@@ -3,9 +3,7 @@
   "category": "misc",
   "cookingtime": 100,
   "experience": 0.0,
-  "ingredient": {
-    "item": "betterend:terminite_sword"
-  },
+  "ingredient": "betterend:terminite_sword",
   "result": {
     "count": 1,
     "id": "betterend:terminite_nugget"

@@ -36,15 +36,15 @@ public class EndPotions {
         if (!event.getRegistryKey().equals(Registries.POTION)) return;
         event.register(Registries.POTION, helper -> {
             helper.register(
-                    END_VEIL_KEY.location(),
+                    END_VEIL_KEY.identifier(),
                     new Potion(BetterEnd.MOD_ID + "_end_veil", new MobEffectInstance(EndStatusEffects.END_VEIL, 3600))
             );
             helper.register(
-                    LONG_END_VEIL_KEY.location(),
+                    LONG_END_VEIL_KEY.identifier(),
                     new Potion(BetterEnd.MOD_ID + "_long_end_veil", new MobEffectInstance(EndStatusEffects.END_VEIL, 9600))
             );
-            END_VEIL = BuiltInRegistries.POTION.getHolder(END_VEIL_KEY).orElseThrow();
-            LONG_END_VEIL = BuiltInRegistries.POTION.getHolder(LONG_END_VEIL_KEY).orElseThrow();
+            END_VEIL = BuiltInRegistries.POTION.get(END_VEIL_KEY).orElseThrow();
+            LONG_END_VEIL = BuiltInRegistries.POTION.get(LONG_END_VEIL_KEY).orElseThrow();
         });
     }
 

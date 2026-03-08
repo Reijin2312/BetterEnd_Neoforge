@@ -16,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk.EntityCreationType;
@@ -72,7 +73,7 @@ public class InfusionRitual implements Container {
         for (int i = 0; i < catalysts.length; i++) {
             Point point = PEDESTALS_MAP[i];
             MutableBlockPos checkPos = worldPos.mutable().move(Direction.EAST, point.x).move(Direction.NORTH, point.y);
-            BlockEntity catalystEntity = world.isClientSide
+            BlockEntity catalystEntity = world.isClientSide()
                     ? world.getChunkAt(checkPos).getBlockEntity(checkPos, EntityCreationType.CHECK)
                     : world.getBlockEntity(checkPos);
             if (catalystEntity instanceof PedestalBlockEntity) {
@@ -85,8 +86,7 @@ public class InfusionRitual implements Container {
 
     public boolean checkRecipe() {
         if (!isValid()) return false;
-        RecipeHolder<InfusionRecipe> recipe = world
-                .getRecipeManager()
+        RecipeHolder<InfusionRecipe> recipe = ((RecipeManager) world.recipeAccess())
                 .getRecipeFor(InfusionRecipe.TYPE, new InfusionInput(), world)
                 .orElse(null);
         if (hasRecipe()) {
@@ -261,9 +261,9 @@ public class InfusionRitual implements Container {
 
     public void fromTag(CompoundTag tag) {
         if (tag.contains("recipe")) {
-            hasRecipe = tag.getBoolean("recipe");
-            progress = tag.getInt("progress");
-            time = tag.getInt("time");
+            hasRecipe = tag.getBooleanOr("recipe", false);
+            progress = tag.getIntOr("progress", 0);
+            time = tag.getIntOr("time", 0);
         }
     }
 

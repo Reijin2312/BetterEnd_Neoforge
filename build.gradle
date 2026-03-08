@@ -3,9 +3,21 @@ plugins {
     id 'maven-publish'
 
     id 'net.neoforged.moddev' version "${moddev_version}"
+    id "com.diffplug.spotless" version "6.25.0"
 
     id "com.modrinth.minotaur" version "2.+"
     id "com.matthewprenger.cursegradle" version "1.4.0"
+}
+
+spotless {
+    java {
+        target 'src/*/java/**/*.java'
+        targetExclude 'src/main/generated/**'
+        trimTrailingWhitespace()
+        endWithNewline()
+        removeUnusedImports()
+        indentWithSpaces(4)
+    }
 }
 
 archivesBaseName = project.archives_base_name
@@ -43,6 +55,8 @@ def local_bclib = findProject(':BCLib') != null
 def local_wunderlib = findProject(':wunderlib') != null
 def local_wover = findProject(':WorldWeaver') != null
 def simpleBuildRequested = gradle.startParameter.taskNames.contains("simpleBuild")
+def enableEmiRuntime = (project.findProperty("enable_emi_runtime")?.toString()?.toBoolean()) ?: false
+def enableWthitRuntime = (project.findProperty("enable_wthit_runtime")?.toString()?.toBoolean()) ?: false
 
 java {
     toolchain {
@@ -61,13 +75,14 @@ neoForge {
         server {
             server()
         }
-        data {
-            data()
+        clientData {
+            clientData()
             programArguments.addAll(
                     "--mod", modId,
                     "--all",
                     "--output", file("src/main/generated").toString(),
-                    "--existing", file("src/main/resources").toString()
+                    "--existing", file("src/main/resources").toString(),
+                    "--existing", file("src/main/generated").toString()
             )
         }
     }
@@ -102,11 +117,19 @@ dependencies {
 
     // compile against the API
     compileOnly "mcp.mobius.waila:wthit-api:neo-${project.wthit_version}"
-    // run against the full jar
-    runtimeOnly "mcp.mobius.waila:wthit:neo-${project.wthit_version}"
+    // WTHIT runtime currently crashes on 1.21.11 datagen (mixin target drift in NoteBlockAccess).
+    if (enableWthitRuntime) {
+        runtimeOnly "mcp.mobius.waila:wthit:neo-${project.wthit_version}"
+    } else {
+        println "WTHIT runtime disabled (set -Penable_wthit_runtime=true to re-enable)"
+    }
 
     compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
-    runtimeOnly "dev.emi:emi-neoforge:${emi_version}"
+    if (enableEmiRuntime) {
+        runtimeOnly "dev.emi:emi-neoforge:${emi_version}"
+    } else {
+        println "EMI runtime disabled (set -Penable_emi_runtime=true to re-enable)"
+    }
 
     println "Using local BCLib: ${local_bclib}"
     if (local_bclib) {
@@ -136,22 +159,27 @@ dependencies {
 
 sourceSets {
     main {
+        if (!enableEmiRuntime) {
+            java {
+                exclude 'org/betterx/betterend/integration/emi/**'
+            }
+        }
         resources {
             srcDirs += ['src/main/generated']
         }
     }
 }
 
-def datagenTaskDeps = [tasks.matching { it.name == "runData" }]
+def datagenTaskDeps = [tasks.matching { it.name == "runClientData" }]
 if (!simpleBuildRequested) {
     if (local_bclib) {
-        datagenTaskDeps << project(":BCLib").tasks.matching { it.name == "runData" }
+        datagenTaskDeps << project(":BCLib").tasks.matching { it.name == "runClientData" }
     }
     if (local_wunderlib) {
-        datagenTaskDeps << project(":wunderlib").tasks.matching { it.name == "runData" }
+        datagenTaskDeps << project(":wunderlib").tasks.matching { it.name == "runClientData" }
     }
     if (local_wover) {
-        datagenTaskDeps << project(":WorldWeaver").tasks.matching { it.name == "runData" }
+        datagenTaskDeps << project(":WorldWeaver").tasks.matching { it.name == "runClientData" }
     }
 }
 
@@ -359,10 +387,10 @@ tasks.register("generateMixinMappings") {
 
 tasks.register("fixMixinRefmap") {
     def refmapFile = layout.buildDirectory.file("resources/main/${refmapName}")
-    inputs.file(refmapFile).optional(true)
+    inputs.files(refmapFile).optional()
     outputs.file(refmapFile)
-    dependsOn(tasks.named("processResources"))
     dependsOn(tasks.named("compileJava"))
+    mustRunAfter(tasks.named("processResources"))
     doLast {
         def file = refmapFile.get().asFile
         if (!file.exists()) {
@@ -417,14 +445,21 @@ tasks.register("fixMixinRefmap") {
 }
 
 tasks.named("compileJava") {
+    mustRunAfter(tasks.named("processResources"))
     finalizedBy(tasks.named("fixMixinRefmap"))
 }
 
-tasks.matching { it.name == "runData" }.configureEach {
+tasks.matching { it.name == "runClientData" }.configureEach {
     dependsOn(tasks.named("fixMixinRefmap"))
     finalizedBy(tasks.named("syncGeneratedResources"))
     // Datagen runs against named classes; disable refmap remapping to avoid obf targets.
     systemProperty "mixin.env.disableRefMap", "true"
+}
+
+tasks.register("runData") {
+    group = "neoforge"
+    description = "Compatibility alias for runClientData (NeoForge ModDev 2.x)."
+    dependsOn(tasks.named("runClientData"))
 }
 
 tasks.matching { it.name == "createMinecraftArtifacts" }.configureEach {
@@ -439,7 +474,7 @@ jar {
 
 // Collect built jars for BetterEnd and its local BetterX libraries into one folder
 def distDir = new File(rootProject.projectDir.parentFile, "betterx-dist")
-def modrinthModsDir = new File("C:/Users/Redmi/AppData/Roaming/ModrinthApp/profiles/1.21.1 Server ArchiTech/mods")
+def modrinthModsDir = new File("C:/Users/Redmi/AppData/Roaming/ModrinthApp/profiles/1.21.11/mods")
 tasks.register("copyDistJars", Copy) {
     dependsOn(
             tasks.named("jar"),

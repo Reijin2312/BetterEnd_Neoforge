@@ -36,7 +36,6 @@ public class BYGFeatures {
     }
 
     public static void onRegister(RegisterEvent event) {
-        if (!BetterEnd.BYG.isLoaded()) return;
         if (!event.getRegistryKey().equals(Registries.FEATURE)) return;
         event.register(Registries.FEATURE, BYGFeatures::register);
     }

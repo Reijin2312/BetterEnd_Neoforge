@@ -9,12 +9,10 @@ import org.betterx.betterend.noise.OpenSimplexNoise;
 import org.betterx.betterend.registry.EndBlocks;
 
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlimeBlock;
@@ -37,7 +35,7 @@ public class UmbrellaTreeMembraneBlock extends SlimeBlock implements RenderLayer
     private static final OpenSimplexNoise NOISE = new OpenSimplexNoise(0);
 
     public UmbrellaTreeMembraneBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.SLIME_BLOCK));
+        super(BlockBehaviour.Properties.ofLegacyCopy(Blocks.SLIME_BLOCK));
     }
 
     @Override
@@ -72,7 +70,7 @@ public class UmbrellaTreeMembraneBlock extends SlimeBlock implements RenderLayer
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter world, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state) {
         return state.getValue(COLOR) > 0;
     }
 
@@ -87,7 +85,7 @@ public class UmbrellaTreeMembraneBlock extends SlimeBlock implements RenderLayer
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public BlockModel getItemModel(ResourceLocation resourceLocation) {
+    public BlockModel getItemModel(Identifier resourceLocation) {
         return getBlockModel(resourceLocation, defaultBlockState());
     }
 }

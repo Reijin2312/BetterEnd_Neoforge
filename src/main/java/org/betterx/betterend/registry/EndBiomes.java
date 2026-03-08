@@ -82,22 +82,22 @@ public class EndBiomes {
             LevelStem levelStem,
             long seed
     ) {
-        final Registry<Biome> registry = WorldState.allStageRegistryAccess().registryOrThrow(Registries.BIOME);
+        final Registry<Biome> registry = WorldState.allStageRegistryAccess().lookupOrThrow(Registries.BIOME);
         var dataRegistry = WorldState
                 .allStageRegistryAccess()
-                .registry(BiomeDataRegistry.BIOME_DATA_REGISTRY)
+                .lookup(BiomeDataRegistry.BIOME_DATA_REGISTRY)
                 .orElseThrow();
 
 
         if (CAVE_BIOMES == null || CAVE_BIOMES.biomeRegistry != registry) {
             CAVE_BIOMES = new WoverBiomePicker(Biomes.END_HIGHLANDS);
-            registry.getTag(EndTags.IS_END_CAVE)
+            registry.get(EndTags.IS_END_CAVE)
                     .map(tag -> tag
                             .stream()
                             .map(Holder::unwrapKey)
                             .filter(Optional::isPresent)
                             .map(Optional::orElseThrow)
-                            .map(k -> dataRegistry.get(k.location()))
+                            .map(k -> dataRegistry.getOptional(BiomeDataRegistry.createKey(k)).orElse(null))
                             .filter(Objects::nonNull)
                     ).ifPresent(
                             list -> list.forEach(data -> CAVE_BIOMES.addBiome(data))

@@ -155,10 +155,10 @@ public class EndCaveBiome extends EndBiome {
             super();
             this.populatorFeature = PlacedFeatureManager
                     .createKey(BetterEnd.C.mk(key.key
-                            .location()
+                            .identifier()
                             .getPath() + "_cave_populator"))
                     .setDecoration(GenerationStep.Decoration.UNDERGROUND_DECORATION);
-            this.populatorConfig = new CaveChunkPopulatorFeatureConfig(key.dataKey.location());
+            this.populatorConfig = new CaveChunkPopulatorFeatureConfig(key.dataKey.identifier());
         }
 
 
@@ -274,7 +274,7 @@ public class EndCaveBiome extends EndBiome {
         if (access == null) {
             return;
         }
-        Registry<ConfiguredFeature<?, ?>> registry = access.registry(Registries.CONFIGURED_FEATURE).orElse(null);
+        Registry<ConfiguredFeature<?, ?>> registry = access.lookup(Registries.CONFIGURED_FEATURE).orElse(null);
         if (registry == null) {
             return;
         }
@@ -293,7 +293,7 @@ public class EndCaveBiome extends EndBiome {
         for (int i = 0; i < keys.size(); i++) {
             ResourceKey<ConfiguredFeature<?, ?>> key = keys.get(i);
             final float weight = keys.getWeight(i);
-            registry.getHolder(key).ifPresent(holder -> target.add((Holder) holder, weight));
+            registry.get(key).ifPresent(holder -> target.add((Holder) holder, weight));
         }
     }
 

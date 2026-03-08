@@ -11,7 +11,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class ParticleSnowflake extends TextureSheetParticle {
+public class ParticleSnowflake extends SingleQuadParticle {
     private int ticks;
     private double preVX;
     private double preVY;
@@ -30,8 +30,8 @@ public class ParticleSnowflake extends TextureSheetParticle {
             double b,
             SpriteSet sprites
     ) {
-        super(world, x, y, z, r, g, b);
-        pickSprite(sprites);
+        super(world, x, y, z, r, g, b, sprites.first());
+        setSprite(sprites.get(random));
 
         this.lifetime = MHelper.randRange(150, 300, random);
         this.quadSize = MHelper.randRange(0.05F, 0.2F, random);
@@ -81,8 +81,8 @@ public class ParticleSnowflake extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    protected Layer getLayer() {
+        return Layer.TRANSLUCENT;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -103,7 +103,8 @@ public class ParticleSnowflake extends TextureSheetParticle {
                 double z,
                 double vX,
                 double vY,
-                double vZ
+                double vZ,
+                net.minecraft.util.RandomSource random
         ) {
             return new ParticleSnowflake(world, x, y, z, 1, 1, 1, sprites);
         }

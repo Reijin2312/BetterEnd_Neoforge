@@ -5,7 +5,7 @@ import org.betterx.betterend.blocks.EndStoneSmelter;
 import org.betterx.betterend.client.gui.EndStoneSmelterMenu;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -26,7 +26,7 @@ public class EndMenuTypes {
     }
 
     static <T extends AbstractContainerMenu> MenuType<T> registerSimple(
-            ResourceLocation id,
+            Identifier id,
             BiFunction<Integer, Inventory, T> factory
     ) {
         MenuType<T> type = new MenuType<>(factory::apply, FeatureFlags.DEFAULT_FLAGS);

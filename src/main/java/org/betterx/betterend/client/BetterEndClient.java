@@ -1,9 +1,9 @@
 package org.betterx.betterend.client;
 
 import org.betterx.betterend.BetterEnd;
+import org.betterx.betterend.client.render.BetterEndSkyEffect;
 import org.betterx.betterend.config.Configs;
 import org.betterx.betterend.config.screen.ConfigScreen;
-import org.betterx.betterend.client.render.BetterEndSkyEffect;
 import org.betterx.betterend.events.ItemTooltipCallback;
 import org.betterx.betterend.interfaces.MultiModelItem;
 import org.betterx.betterend.item.CrystaliteArmor;
@@ -11,11 +11,11 @@ import org.betterx.betterend.registry.*;
 import org.betterx.betterend.world.generator.GeneratorOptions;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -25,29 +25,22 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = BetterEnd.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = BetterEnd.MOD_ID, value = Dist.CLIENT)
 public class BetterEndClient {
-    private static final ModelResourceLocation CHECK_FLOWER_ID = ModelResourceLocation.inventory(
-            ResourceLocation.withDefaultNamespace("chorus_flower")
-    );
-    private static final ModelResourceLocation CHECK_PLANT_ID = ModelResourceLocation.inventory(
-            ResourceLocation.withDefaultNamespace("chorus_plant")
-    );
-    private static final ModelResourceLocation TO_LOAD_FLOWER_ID = ModelResourceLocation.standalone(
-            BetterEnd.C.mk("item/custom_chorus_flower")
-    );
-    private static final ModelResourceLocation TO_LOAD_PLANT_ID = ModelResourceLocation.standalone(
-            BetterEnd.C.mk("item/custom_chorus_plant")
-    );
+    private static final Identifier END_SKYBOX_ID = BetterEnd.C.mk("end_skybox");
+    private static final Identifier CHECK_FLOWER_ID = Identifier.withDefaultNamespace("chorus_flower");
+    private static final Identifier CHECK_PLANT_ID = Identifier.withDefaultNamespace("chorus_plant");
+    private static final Identifier TO_LOAD_FLOWER_ID = BetterEnd.C.mk("custom_chorus_flower");
+    private static final Identifier TO_LOAD_PLANT_ID = BetterEnd.C.mk("custom_chorus_plant");
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
@@ -77,14 +70,6 @@ public class BetterEndClient {
     }
 
     @SubscribeEvent
-    public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
-        if (!Configs.CLIENT_CONFIG.customSky.get()) {
-            return;
-        }
-        event.register(ResourceLocation.withDefaultNamespace("the_end"), new BetterEndSkyEffect());
-    }
-
-    @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         EndEntitiesRenders.registerRenderers(event);
         EndBlockEntityRenders.registerRenderers(event);
@@ -96,24 +81,28 @@ public class BetterEndClient {
     }
 
     @SubscribeEvent
-    public static void onRegisterAdditionalModels(ModelEvent.RegisterAdditional event) {
-        if (!GeneratorOptions.changeChorusPlant()) return;
-        event.register(TO_LOAD_FLOWER_ID);
-        event.register(TO_LOAD_PLANT_ID);
+    public static void registerEnvironmentEffects(RegisterCustomEnvironmentEffectRendererEvent event) {
+        if (!Configs.CLIENT_CONFIG.customSky.get()) {
+            return;
+        }
+        event.registerSkyboxRenderer(END_SKYBOX_ID, new BetterEndSkyEffect());
     }
 
     @SubscribeEvent
     public static void onModifyBakedModels(ModelEvent.ModifyBakingResult event) {
-        Map<ModelResourceLocation, net.minecraft.client.resources.model.BakedModel> models = event.getModels();
-        if (GeneratorOptions.changeChorusPlant()) {
-            var flowerModel = models.get(TO_LOAD_FLOWER_ID);
-            var plantModel = models.get(TO_LOAD_PLANT_ID);
-            if (flowerModel != null) {
-                models.put(CHECK_FLOWER_ID, flowerModel);
-            }
-            if (plantModel != null) {
-                models.put(CHECK_PLANT_ID, plantModel);
-            }
+        if (!GeneratorOptions.changeChorusPlant()) {
+            return;
+        }
+
+        Map<Identifier, ItemModel> models = event.getBakingResult().itemStackModels();
+        ItemModel flowerModel = models.get(TO_LOAD_FLOWER_ID);
+        ItemModel plantModel = models.get(TO_LOAD_PLANT_ID);
+
+        if (flowerModel != null) {
+            models.put(CHECK_FLOWER_ID, flowerModel);
+        }
+        if (plantModel != null) {
+            models.put(CHECK_PLANT_ID, plantModel);
         }
     }
 

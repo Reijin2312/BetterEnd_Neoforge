@@ -7,7 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ public class EndStructureHelper {
     private EndStructureHelper() {
     }
 
-    public static StructureTemplate readStructure(ResourceLocation resource) {
+    public static StructureTemplate readStructure(Identifier resource) {
         if (!BetterEnd.MOD_ID.equals(resource.getNamespace())) {
             return StructureHelper.readStructure(resource);
         }
@@ -32,7 +32,7 @@ public class EndStructureHelper {
         return StructureHelper.readStructure(path);
     }
 
-    private static StructureTemplate readStructureFromBetterEnd(ResourceLocation resource) {
+    private static StructureTemplate readStructureFromBetterEnd(Identifier resource) {
         String path = "/data/" + resource.getNamespace() + "/structure/" + resource.getPath() + ".nbt";
         InputStream stream = BetterEnd.class.getResourceAsStream(path);
         if (stream == null) {
@@ -45,7 +45,7 @@ public class EndStructureHelper {
         try (InputStream input = stream) {
             CompoundTag tag = NbtIo.readCompressed(input, NbtAccounter.unlimitedHeap());
             StructureTemplate template = new StructureTemplate();
-            template.load(BuiltInRegistries.BLOCK.asLookup(), tag);
+            template.load(BuiltInRegistries.BLOCK, tag);
             return template;
         } catch (IOException e) {
             throw new IllegalStateException("Failed to read structure " + path, e);

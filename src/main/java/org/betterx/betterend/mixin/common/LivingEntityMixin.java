@@ -17,6 +17,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,9 +39,6 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow
     public abstract AttributeMap getAttributes();
 
-    @Shadow
-    public abstract Iterable<ItemStack> getArmorSlots();
-
     @Unique
     private Entity be_lastAttacker;
 
@@ -56,7 +54,7 @@ public abstract class LivingEntityMixin extends Entity {
             if (CrystaliteArmor.hasFullSet(owner)) {
                 CrystaliteArmor.applySetEffect(owner);
             }
-            getArmorSlots().forEach(itemStack -> {
+            be_forEachArmorSlot(owner, itemStack -> {
                 if (itemStack.getItem() instanceof MobEffectApplier) {
                     ((MobEffectApplier) itemStack.getItem()).applyEffect(owner);
                 }
@@ -75,12 +73,17 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "hurt", at = @At("HEAD"))
-    public void be_hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
+    @Inject(method = "hurtServer", at = @At("HEAD"), remap = false)
+    public void be_hurt(ServerLevel serverLevel, DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
         this.be_lastAttacker = source.getEntity();
     }
 
-    @ModifyArg(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;knockback(DDD)V"), index = 0)
+    @ModifyArg(
+            method = "hurtServer",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;knockback(DDD)V"),
+            index = 0,
+            remap = false
+    )
     private double be_increaseKnockback(double value, double x, double z) {
         if (be_lastAttacker != null && be_lastAttacker instanceof LivingEntity) {
             LivingEntity attacker = (LivingEntity) be_lastAttacker;
@@ -100,5 +103,13 @@ public abstract class LivingEntityMixin extends Entity {
 
         });
         return res[0];
+    }
+
+    @Unique
+    private void be_forEachArmorSlot(LivingEntity owner, java.util.function.Consumer<ItemStack> consumer) {
+        consumer.accept(owner.getItemBySlot(EquipmentSlot.HEAD));
+        consumer.accept(owner.getItemBySlot(EquipmentSlot.CHEST));
+        consumer.accept(owner.getItemBySlot(EquipmentSlot.LEGS));
+        consumer.accept(owner.getItemBySlot(EquipmentSlot.FEET));
     }
 }

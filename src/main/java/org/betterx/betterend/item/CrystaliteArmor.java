@@ -1,22 +1,25 @@
 package org.betterx.betterend.item;
 
 import org.betterx.bclib.items.BaseArmorItem;
-import org.betterx.betterend.effects.EndStatusEffects;
-import org.betterx.betterend.item.material.EndArmorMaterial;
-import org.betterx.betterend.item.model.CrystaliteArmorRenderer;
 import org.betterx.bclib.client.render.HumanoidArmorRenderer;
+import org.betterx.betterend.effects.EndStatusEffects;
+import org.betterx.betterend.item.model.CrystaliteArmorRenderer;
+import org.betterx.betterend.item.material.EndArmorMaterial;
 
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
@@ -28,12 +31,13 @@ public class CrystaliteArmor extends BaseArmorItem {
     public final static MutableComponent BOOTS_DESC;
     private boolean clientInitDone;
 
-    public CrystaliteArmor(Type type, Properties settings) {
+    public CrystaliteArmor(ArmorType type, Properties settings) {
         super(EndArmorMaterial.CRYSTALITE, type, settings);
     }
 
     public static boolean hasFullSet(LivingEntity owner) {
-        for (ItemStack armorStack : owner.getArmorSlots()) {
+        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+            ItemStack armorStack = owner.getItemBySlot(slot);
             if (!(armorStack.getItem() instanceof CrystaliteArmor)) {
                 return false;
             }
@@ -55,32 +59,51 @@ public class CrystaliteArmor extends BaseArmorItem {
         BOOTS_DESC.setStyle(descStyle);
     }
 
-    @Override
     @OnlyIn(Dist.CLIENT)
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        if (clientInitDone) {
-            return;
-        }
-        clientInitDone = true;
-        consumer.accept(new IClientItemExtensions() {
-            @Override
-            public HumanoidModel<?> getHumanoidArmorModel(
-                    LivingEntity livingEntity,
-                    ItemStack stack,
-                    EquipmentSlot slot,
-                    HumanoidModel<?> original
-            ) {
-                CrystaliteArmorRenderer renderer = CrystaliteArmorRenderer.getInstance();
-                HumanoidModel<LivingEntity> model = renderer.modelFor(livingEntity, slot);
-                if (model == null) return original;
-                @SuppressWarnings("unchecked")
-                HumanoidModel<LivingEntity> originalTyped = (HumanoidModel<LivingEntity>) original;
-                originalTyped.copyPropertiesTo(model);
-                if (model instanceof HumanoidArmorRenderer.CopyExtraState copy) {
-                    copy.copyPropertiesFrom(originalTyped);
+        if (!clientInitDone) {
+            clientInitDone = true;
+            consumer.accept(new IClientItemExtensions() {
+                @Override
+                public Model getHumanoidArmorModel(
+                        ItemStack itemStack,
+                        EquipmentClientInfo.LayerType layerType,
+                        Model original
+                ) {
+                    if (layerType != EquipmentClientInfo.LayerType.HUMANOID
+                            && layerType != EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS) {
+                        return original;
+                    }
+                    EquipmentSlot slot = slotFor(itemStack, layerType);
+                    HumanoidModel<?> model = CrystaliteArmorRenderer.getInstance().modelFor(null, slot);
+                    return model != null ? model : original;
                 }
-                return model;
-            }
-        });
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public Model getGenericArmorModel(
+                        ItemStack itemStack,
+                        EquipmentClientInfo.LayerType layerType,
+                        Model original
+                ) {
+                    Model model = IClientItemExtensions.super.getGenericArmorModel(itemStack, layerType, original);
+                    if (model instanceof HumanoidArmorRenderer.CopyExtraState copy
+                            && original instanceof HumanoidModel<?> originalHumanoid) {
+                        copy.copyPropertiesFrom((HumanoidModel<?>) originalHumanoid);
+                    }
+                    return model;
+                }
+            });
+        }
+    }
+
+    private static EquipmentSlot slotFor(ItemStack itemStack, EquipmentClientInfo.LayerType layerType) {
+        Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
+        if (equippable != null) {
+            return equippable.slot();
+        }
+        return layerType == EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS
+                ? EquipmentSlot.LEGS
+                : EquipmentSlot.CHEST;
     }
 }

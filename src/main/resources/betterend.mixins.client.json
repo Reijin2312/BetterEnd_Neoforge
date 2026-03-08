@@ -3,18 +3,7 @@
   "minVersion": "0.8",
   "package": "org.betterx.betterend.mixin.client",
   "compatibilityLevel": "JAVA_21",
-  "client": [
-    "AbstractSoundInstanceAccessor",
-    "ArmorStandRendererMixin",
-    "BiomeColorsMixin",
-    "BlockStateModelLoaderMixin",
-    "CapeLayerMixin",
-    "HumanoidMobRendererMixin",
-    "ItemStackMixin",
-    "MinecraftClientMixin",
-    "MusicTrackerMixin",
-    "PlayerRendererMixin"
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
   }

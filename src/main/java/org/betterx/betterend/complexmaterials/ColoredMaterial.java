@@ -8,9 +8,10 @@ import org.betterx.wover.recipe.api.RecipeBuilder;
 import org.betterx.wover.tag.api.event.context.ItemTagBootstrapContext;
 import org.betterx.wover.tag.api.event.context.TagBootstrapContext;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
@@ -85,10 +86,11 @@ public class ColoredMaterial implements MaterialManager.Material {
         String id = requireBaseName(baseName, source);
         colors.forEach((color, name) -> {
             String blockName = id + "_" + name;
+            String preparedBlockName = EndBlocks.prepareBlockPath(blockName);
             Block block = constructor.apply(BlockBehaviour.Properties
-                    .ofFullCopy(source)
+                    .ofLegacyCopy(source)
                     .mapColor(MapColor.COLOR_BLACK));
-            EndBlocks.registerBlock(blockName, block);
+            EndBlocks.registerBlock(preparedBlockName, block);
             if (ModCore.isDatagen()) {
                 ItemLike dye = dyes.get(color);
                 if (dye != null && dye != Items.AIR) {
@@ -138,10 +140,13 @@ public class ColoredMaterial implements MaterialManager.Material {
         if (dye != null && dye != Items.AIR) {
             return dye;
         }
-        Item depotDye = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(
+        Item depotDye = BuiltInRegistries.ITEM
+                .get(Identifier.fromNamespaceAndPath(
                 "dye_depot",
                 color.getName() + "_dye"
-        ));
+        ))
+                .map(Holder.Reference::value)
+                .orElse(Items.AIR);
         if (depotDye != Items.AIR) {
             return depotDye;
         }
@@ -166,7 +171,7 @@ public class ColoredMaterial implements MaterialManager.Material {
     }
 
     private static String resolveBaseName(Block source) {
-        ResourceLocation key = BuiltInRegistries.BLOCK.getKey(source);
+        Identifier key = BuiltInRegistries.BLOCK.getKey(source);
         if (key == null) {
             throw new IllegalStateException("ColoredMaterial base block is not registered yet: " + source);
         }

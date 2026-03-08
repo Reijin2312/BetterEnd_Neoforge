@@ -11,7 +11,7 @@ import org.betterx.wover.tag.api.predefined.CommonBlockTags;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -32,7 +32,7 @@ public class EndstoneDustBlock extends FallingBlock implements BlockTagProvider,
 
     public EndstoneDustBlock() {
         super(BlockBehaviour.Properties
-                .ofFullCopy(Blocks.SAND)
+                .ofLegacyCopy(Blocks.SAND)
                 .mapColor(Blocks.END_STONE.defaultMapColor())
         );
     }
@@ -44,7 +44,7 @@ public class EndstoneDustBlock extends FallingBlock implements BlockTagProvider,
 
     @Override
     public LootTable.Builder registerBlockLoot(
-            @NotNull ResourceLocation location,
+            @NotNull Identifier location,
             @NotNull LootLookupProvider provider,
             @NotNull ResourceKey<LootTable> tableKey
     ) {
@@ -57,7 +57,7 @@ public class EndstoneDustBlock extends FallingBlock implements BlockTagProvider,
     }
 
     @Override
-    public void registerBlockTags(ResourceLocation location, TagBootstrapContext<Block> context) {
+    public void registerBlockTags(Identifier location, TagBootstrapContext<Block> context) {
         context.add(this, CommonBlockTags.END_STONES);
     }
 }

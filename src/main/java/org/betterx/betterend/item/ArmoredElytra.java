@@ -9,19 +9,18 @@ import org.betterx.wover.complex.api.equipment.ArmorTier;
 import org.betterx.wover.item.api.ItemTagProvider;
 import org.betterx.wover.tag.api.event.context.ItemTagBootstrapContext;
 
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.equipment.ArmorType;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, BetterEndElytra, ItemTagProvider {
-    private final ResourceLocation wingTexture;
+    private final Identifier wingTexture;
     private final Item repairItem;
     private final double movementFactor;
     private final float toughness;
@@ -35,11 +34,10 @@ public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, Bett
             boolean fireproof
     ) {
         final float defense = material.armorMaterial
-                .value()
-                .getDefense(Type.CHESTPLATE) / defenseDivider;
+                .defense()
+                .getOrDefault(ArmorType.CHESTPLATE, 0) / defenseDivider;
 
         final float toughness = material.armorMaterial
-                .value()
                 .toughness() / toughnessDivider;
 
         final Properties props = EndArmorItem.createDefaultEndArmorSettings(
@@ -69,18 +67,17 @@ public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, Bett
     ) {
         super(
                 material.armorMaterial,
-                Type.CHESTPLATE,
+                ArmorType.CHESTPLATE,
                 defaultSettings(material, durability, defenseDivider, toughnessDivider, fireproof)
         );
         this.wingTexture = BetterEnd.C.mk("textures/entity/" + name + ".png");
         this.repairItem = repairItem;
         this.movementFactor = movementFactor;
         this.defense = (int) (material.armorMaterial
-                .value()
-                .getDefense(Type.CHESTPLATE) / defenseDivider);
+                .defense()
+                .getOrDefault(ArmorType.CHESTPLATE, 0) / defenseDivider);
 
         this.toughness = material.armorMaterial
-                .value()
                 .toughness() / toughnessDivider;
 
     }
@@ -92,21 +89,18 @@ public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, Bett
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public ResourceLocation getModelTexture() {
+    public Identifier getModelTexture() {
         return wingTexture;
     }
 
-    @Override
     public boolean isValidRepairItem(ItemStack itemStack, ItemStack itemStack2) {
-        return super.isValidRepairItem(itemStack, itemStack2) || itemStack2.getItem() == repairItem;
+        return itemStack2.getItem() == repairItem;
     }
 
-    @Override
     public int getDefense() {
         return defense;
     }
 
-    @Override
     public float getToughness() {
         return toughness;
     }
@@ -114,15 +108,11 @@ public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, Bett
     @Override
     @OnlyIn(Dist.CLIENT)
     public void registerModelPredicate() {
-        ItemProperties.register(
-                this,
-                ResourceLocation.withDefaultNamespace("broken"),
-                (itemStack, clientLevel, livingEntity, id) -> ElytraItem.isFlyEnabled(itemStack) ? 0.0F : 1.0F
-        );
+        // In 1.21+, item model conditions are data-driven and "broken" is a built-in property.
     }
 
     @Override
-    public void registerItemTags(ResourceLocation location, ItemTagBootstrapContext context) {
+    public void registerItemTags(Identifier location, ItemTagBootstrapContext context) {
         context.add(this, ItemTags.DURABILITY_ENCHANTABLE, ItemTags.EQUIPPABLE_ENCHANTABLE);
     }
 }

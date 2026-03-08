@@ -1,49 +1,24 @@
 package org.betterx.betterend.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.DimensionSpecialEffects;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.renderer.state.LevelRenderState;
+import net.minecraft.client.renderer.state.SkyRenderState;
+import net.neoforged.neoforge.client.CustomSkyboxRenderer;
 import org.joml.Matrix4f;
 
-public class BetterEndSkyEffect extends DimensionSpecialEffects {
+public class BetterEndSkyEffect implements CustomSkyboxRenderer {
     private final BetterEndSkyRenderer renderer = new BetterEndSkyRenderer();
-
-    public BetterEndSkyEffect() {
-        super(Float.NaN, false, SkyType.END, true, false);
-    }
-
-    @Override
-    public Vec3 getBrightnessDependentFogColor(Vec3 color, float sunHeight) {
-        return color.scale(0.15F);
-    }
-
-    @Override
-    public float[] getSunriseColor(float timeOfDay, float partialTicks) {
-        return null;
-    }
-
-    @Override
-    public boolean isFoggyAt(int x, int z) {
-        return false;
-    }
 
     @Override
     public boolean renderSky(
-            ClientLevel level,
-            int ticks,
-            float partialTick,
+            LevelRenderState levelRenderState,
+            SkyRenderState skyRenderState,
             Matrix4f modelViewMatrix,
-            Camera camera,
-            Matrix4f projectionMatrix,
-            boolean isFoggy,
             Runnable setupFog
     ) {
         PoseStack poseStack = new PoseStack();
-        poseStack.last().pose().set(modelViewMatrix);
-        float time = (float) (((level.getDayTime() + (double) partialTick) % 360000L) * 0.000017453292F);
-        renderer.renderSkyboxWithStars(poseStack, projectionMatrix, time);
+        float time = (float) ((levelRenderState.gameTime % 360000L) * 0.000017453292F);
+        renderer.renderSkyboxWithStars(poseStack, time, setupFog);
         return true;
     }
 }

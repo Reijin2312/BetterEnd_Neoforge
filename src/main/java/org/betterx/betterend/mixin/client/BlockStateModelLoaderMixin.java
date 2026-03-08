@@ -4,7 +4,7 @@ import org.betterx.betterend.BetterEnd;
 import org.betterx.betterend.world.generator.GeneratorOptions;
 
 import net.minecraft.client.resources.model.BlockStateModelLoader;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -14,14 +14,15 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(BlockStateModelLoader.class)
 public abstract class BlockStateModelLoaderMixin {
     @ModifyArg(
-            method = "loadBlockStateDefinitions",
+            method = "loadBlockStates",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/resources/FileToIdConverter;idToFile(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;"
-            )
+                    target = "Lnet/minecraft/resources/FileToIdConverter;fileToId(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/resources/Identifier;"
+            ),
+            remap = false
     )
-    public ResourceLocation be_switchModelOnLoad(ResourceLocation loc) {
-        //this should allways be a block state, as it is supplied a BLOCKSTATE_LISTER
+    private static Identifier be_switchModelOnLoad(Identifier loc) {
+        // This is always a block state id because it comes from BLOCKSTATE_LISTER.
         if (GeneratorOptions.changeChorusPlant() && be_changeModel(loc)) {
             String path = loc.getPath().replace("chorus", "custom_chorus");
             return BetterEnd.C.mk(path);
@@ -30,7 +31,7 @@ public abstract class BlockStateModelLoaderMixin {
     }
 
     @Unique
-    private boolean be_changeModel(ResourceLocation id) {
+    private static boolean be_changeModel(Identifier id) {
         if (id.getNamespace().equals("minecraft")) {
             if (id.getPath().equals("chorus_plant") || id.getPath().equals("chorus_flower")) {
                 return true;

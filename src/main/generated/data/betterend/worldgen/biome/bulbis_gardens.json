@@ -1,0 +1,76 @@
+{
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "mood": {
+        "block_search_extent": 8,
+        "offset": 2.0,
+        "sound": "betterend:betterend.ambient.dust_wastelands",
+        "tick_delay": 6000
+      }
+    },
+    "minecraft:audio/background_music": {
+      "default": {
+        "max_delay": 2400,
+        "min_delay": 600,
+        "replace_current_music": true,
+        "sound": "minecraft:music.end"
+      }
+    },
+    "minecraft:visual/ambient_particles": [
+      {
+        "particle": {
+          "type": "minecraft:reverse_portal"
+        },
+        "probability": 0.002
+      }
+    ],
+    "minecraft:visual/fog_color": "#d784cf",
+    "minecraft:visual/sky_color": "#000000",
+    "minecraft:visual/water_fog_color": "#280038",
+    "neoforge:custom_skybox": "betterend:end_skybox"
+  },
+  "carvers": [],
+  "downfall": 0.5,
+  "effects": {
+    "foliage_color": "#7a119b",
+    "water_color": "#280038"
+  },
+  "features": [
+    [
+      "betterend:round_cave",
+      "betterend:tunel_cave"
+    ],
+    [
+      "betterend:end_lake_rare"
+    ],
+    [],
+    [],
+    [
+      "minecraft:end_gateway_return",
+      "betterend:crashed_ship"
+    ],
+    [],
+    [
+      "betterend:thallasium_ore",
+      "betterend:ender_ore"
+    ],
+    [],
+    [],
+    [
+      "betterend:old_bulbis_tree"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.5
+}

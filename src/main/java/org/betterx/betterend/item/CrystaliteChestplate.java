@@ -8,10 +8,13 @@ import org.betterx.wover.complex.api.equipment.ArmorSlot;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.equipment.ArmorType;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class CrystaliteChestplate extends CrystaliteArmor implements MobEffectApplier {
     private static Properties defaultSettings() {
@@ -25,7 +28,7 @@ public class CrystaliteChestplate extends CrystaliteArmor implements MobEffectAp
     }
 
     public CrystaliteChestplate() {
-        super(Type.CHESTPLATE, defaultSettings());
+        super(ArmorType.CHESTPLATE, defaultSettings());
     }
 
     @Override
@@ -36,12 +39,13 @@ public class CrystaliteChestplate extends CrystaliteArmor implements MobEffectAp
     @Override
     public void appendHoverText(
             ItemStack itemStack,
-            TooltipContext tooltipContext,
-            List<Component> lines,
+            Item.TooltipContext tooltipContext,
+            TooltipDisplay tooltipDisplay,
+            Consumer<Component> consumer,
             TooltipFlag tooltipFlag
     ) {
-        super.appendHoverText(itemStack, tooltipContext, lines, tooltipFlag);
-        lines.add(1, Component.empty());
-        lines.add(2, CHEST_DESC);
+        super.appendHoverText(itemStack, tooltipContext, tooltipDisplay, consumer, tooltipFlag);
+        consumer.accept(Component.empty());
+        consumer.accept(CHEST_DESC);
     }
 }

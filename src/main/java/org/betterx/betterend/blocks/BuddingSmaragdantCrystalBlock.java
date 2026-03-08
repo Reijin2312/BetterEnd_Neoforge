@@ -32,7 +32,7 @@ public class BuddingSmaragdantCrystalBlock extends LitPillarBlock implements Beh
                 .randomTicks()
                 .pushReaction(PushReaction.DESTROY));
     }
-    
+
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
         return Collections.emptyList();

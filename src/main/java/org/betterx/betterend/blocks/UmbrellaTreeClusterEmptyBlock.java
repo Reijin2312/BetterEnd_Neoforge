@@ -21,7 +21,7 @@ public class UmbrellaTreeClusterEmptyBlock extends BaseBlock {
 
     public UmbrellaTreeClusterEmptyBlock() {
         super(BlockBehaviour.Properties
-                .ofFullCopy(Blocks.NETHER_WART_BLOCK)
+                .ofLegacyCopy(Blocks.NETHER_WART_BLOCK)
                 .mapColor(MapColor.COLOR_PURPLE)
                 .randomTicks()
         );

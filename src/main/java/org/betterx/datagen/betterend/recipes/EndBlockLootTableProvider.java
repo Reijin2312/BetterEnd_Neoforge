@@ -24,7 +24,7 @@ public class EndBlockLootTableProvider extends WoverLootTableProvider {
     ) {
         // Ensure blocks are loaded before generating loot tables
         EndBlocks.ensureStaticallyLoaded();
-        
+
         // Use BlockRegistry.bootstrapBlockLoot() which automatically handles
         // all blocks implementing BlockLootProvider (including BaseOreBlock)
         EndBlocks.getBlockRegistry().bootstrapBlockLoot(lookup, biConsumer);

@@ -4,22 +4,26 @@ import net.minecraft.world.level.levelgen.NoiseChunk;
 import net.minecraft.world.level.levelgen.NoiseSettings;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(NoiseChunk.class)
-public interface NoiseChunkAccessor {
-    @Accessor("noiseSettings")
-    NoiseSettings bnv_getNoiseSettings();
+public abstract class NoiseChunkAccessor {
+    public NoiseSettings bnv_getNoiseSettings() {
+        return null;
+    }
 
-    @Accessor("cellCountXZ")
-    int bnv_getCellCountXZ();
+    public int bnv_getCellCountXZ() {
+        return 0;
+    }
 
-    @Accessor("cellCountY")
-    int bnv_getCellCountY();
+    public int bnv_getCellCountY() {
+        return 0;
+    }
 
-    @Accessor("firstCellZ")
-    int bnv_getFirstCellZ();
+    public int bnv_getFirstCellZ() {
+        return 0;
+    }
 
-    @Accessor("cellNoiseMinY")
-    int bnv_getCellNoiseMinY();
+    public int bnv_getCellNoiseMinY() {
+        return 0;
+    }
 }

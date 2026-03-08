@@ -7,13 +7,14 @@ import org.betterx.betterend.client.models.EndModels;
 import org.betterx.wover.block.api.model.BlockModelProvider;
 import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 
+import com.mojang.math.Quadrant;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.PropertyDispatch;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.renderer.block.model.VariantMutator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.data.models.blockstates.MultiVariantGenerator;
-import net.minecraft.data.models.blockstates.PropertyDispatch;
-import net.minecraft.data.models.blockstates.Variant;
-import net.minecraft.data.models.blockstates.VariantProperties;
-import net.minecraft.data.models.model.TextureMapping;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,9 +32,9 @@ public class ChandelierBlock extends BaseAttachedBlock.Metal implements RenderLa
     private static final EnumMap<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(Direction.class);
 
     public ChandelierBlock(Block source) {
-        super(BlockBehaviour.Properties.ofFullCopy(source)
+        super(BlockBehaviour.Properties.ofLegacyCopy(source)
                                  .lightLevel((bs) -> 15)
-                                 .noCollission()
+                                 .noCollision()
                                  .noOcclusion()
                                  .requiresCorrectToolForDrops());
     }
@@ -61,24 +62,22 @@ public class ChandelierBlock extends BaseAttachedBlock.Metal implements RenderLa
         final var modelWall = EndModels.CHANDELIER_WALL.createWithSuffix(this, "_wall", mapping, generator.modelOutput());
         final var modelFloor = EndModels.CHANDELIER_FLOOR.createWithSuffix(this, "_floor", mapping, generator.modelOutput());
 
-        final var prop = PropertyDispatch.property(FACING);
-        prop.select(Direction.DOWN, Variant.variant().with(VariantProperties.MODEL, modelCeil));
-        prop.select(Direction.UP, Variant.variant().with(VariantProperties.MODEL, modelFloor));
-        prop.select(Direction.EAST, Variant
-                .variant()
-                .with(VariantProperties.MODEL, modelWall)
-                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270));
-        prop.select(Direction.SOUTH, Variant.variant().with(VariantProperties.MODEL, modelWall));
-        prop.select(Direction.WEST, Variant
-                .variant()
-                .with(VariantProperties.MODEL, modelWall)
-                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90));
-        prop.select(Direction.NORTH, Variant
-                .variant()
-                .with(VariantProperties.MODEL, modelWall)
-                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180));
+        final var prop = PropertyDispatch
+                .initial(FACING)
+                .select(Direction.DOWN, BlockModelGenerators.plainVariant(modelCeil))
+                .select(Direction.UP, BlockModelGenerators.plainVariant(modelFloor))
+                .select(Direction.EAST, BlockModelGenerators
+                        .plainVariant(modelWall)
+                        .with(VariantMutator.Y_ROT.withValue(Quadrant.R270)))
+                .select(Direction.SOUTH, BlockModelGenerators.plainVariant(modelWall))
+                .select(Direction.WEST, BlockModelGenerators
+                        .plainVariant(modelWall)
+                        .with(VariantMutator.Y_ROT.withValue(Quadrant.R90)))
+                .select(Direction.NORTH, BlockModelGenerators
+                        .plainVariant(modelWall)
+                        .with(VariantMutator.Y_ROT.withValue(Quadrant.R180)));
 
-        generator.acceptBlockState(MultiVariantGenerator.multiVariant(this).with(prop));
+        generator.acceptBlockState(MultiVariantGenerator.dispatch(this).with(prop));
         generator.delegateItemModel(this, modelCeil);
     }
 

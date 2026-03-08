@@ -27,7 +27,7 @@ public class EndStatusEffects {
             true
     );
     public final static MobEffectInstance CRYSTALITE_DIG_SPEED = new MobEffectInstance(
-            MobEffects.DIG_SPEED,
+            MobEffects.HASTE,
             80,
             0,
             true,
@@ -35,7 +35,7 @@ public class EndStatusEffects {
             true
     );
     public final static MobEffectInstance CRYSTALITE_MOVE_SPEED = new MobEffectInstance(
-            MobEffects.MOVEMENT_SPEED,
+            MobEffects.SPEED,
             80,
             0,
             true,
@@ -48,8 +48,8 @@ public class EndStatusEffects {
     public static void onRegister(RegisterEvent event) {
         if (!event.getRegistryKey().equals(Registries.MOB_EFFECT)) return;
         event.register(Registries.MOB_EFFECT, helper -> {
-            helper.register(END_VEIL_KEY.location(), new EndVeilEffect());
-            END_VEIL = BuiltInRegistries.MOB_EFFECT.getHolder(END_VEIL_KEY).orElseThrow();
+            helper.register(END_VEIL_KEY.identifier(), new EndVeilEffect());
+            END_VEIL = BuiltInRegistries.MOB_EFFECT.get(END_VEIL_KEY).orElseThrow();
         });
     }
 

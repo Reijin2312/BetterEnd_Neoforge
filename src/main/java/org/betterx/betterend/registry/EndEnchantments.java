@@ -5,6 +5,7 @@ import org.betterx.betterend.effects.EndStatusEffects;
 import org.betterx.wover.enchantment.api.EnchantmentKey;
 import org.betterx.wover.enchantment.api.EnchantmentManager;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -30,7 +31,7 @@ public class EndEnchantments {
             final DataComponentType<Unit> type = DataComponentType.<Unit>builder()
                     .persistent(Unit.CODEC)
                     .build();
-            helper.register(END_VEIL_STATE_KEY.location(), type);
+            helper.register(END_VEIL_STATE_KEY.identifier(), type);
             END_VEIL_STATE = type;
         });
     }
@@ -42,7 +43,10 @@ public class EndEnchantments {
 
     @SuppressWarnings("unchecked")
     private static DataComponentType<Unit> getFromRegistry() {
-        return (DataComponentType<Unit>) BuiltInRegistries.ENCHANTMENT_EFFECT_COMPONENT_TYPE.get(END_VEIL_STATE_KEY.location());
+        return (DataComponentType<Unit>) BuiltInRegistries.ENCHANTMENT_EFFECT_COMPONENT_TYPE
+                .get(END_VEIL_STATE_KEY)
+                .map(Holder.Reference::value)
+                .orElse(null);
     }
 
     @ApiStatus.Internal

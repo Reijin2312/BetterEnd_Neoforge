@@ -10,8 +10,7 @@ import org.betterx.betterend.world.biome.EndBiome;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
@@ -25,7 +24,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 public class NBTPiece extends BasePiece {
-    private ResourceLocation structureID;
+    private Identifier structureID;
     private Rotation rotation;
     private Mirror mirror;
     private StructureTemplate structure;
@@ -34,7 +33,7 @@ public class NBTPiece extends BasePiece {
     private boolean cover;
 
     public NBTPiece(
-            ResourceLocation structureID,
+            Identifier structureID,
             StructureTemplate structure,
             BlockPos pos,
             int erosion,
@@ -64,18 +63,18 @@ public class NBTPiece extends BasePiece {
         tag.putInt("rotation", rotation.ordinal());
         tag.putInt("mirror", mirror.ordinal());
         tag.putInt("erosion", erosion);
-        tag.put("pos", NbtUtils.writeBlockPos(pos));
+        tag.store("pos", BlockPos.CODEC, pos);
         tag.putBoolean("cover", cover);
     }
 
     @Override
     protected void fromNbt(CompoundTag tag) {
-        structureID = ResourceLocation.parse(tag.getString("structureID"));
-        rotation = Rotation.values()[tag.getInt("rotation")];
-        mirror = Mirror.values()[tag.getInt("mirror")];
-        erosion = tag.getInt("erosion");
-        pos = NbtUtils.readBlockPos(tag, "pos").orElse(BlockPos.ZERO);
-        cover = tag.getBoolean("cover");
+        structureID = Identifier.parse(tag.getStringOr("structureID", "minecraft:empty"));
+        rotation = Rotation.values()[tag.getIntOr("rotation", 0)];
+        mirror = Mirror.values()[tag.getIntOr("mirror", 0)];
+        erosion = tag.getIntOr("erosion", 0);
+        pos = tag.read("pos", BlockPos.CODEC).orElse(BlockPos.ZERO);
+        cover = tag.getBooleanOr("cover", false);
         structure = EndStructureHelper.readStructure(structureID);
     }
 

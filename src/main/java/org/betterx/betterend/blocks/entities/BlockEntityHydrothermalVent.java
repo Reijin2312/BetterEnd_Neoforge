@@ -9,10 +9,10 @@ import org.betterx.betterend.util.GlobalState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ElytraItem;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -75,7 +75,7 @@ public class BlockEntityHydrothermalVent extends BlockEntity {
         if (entities.size() > 0) {
             while (POS.getY() < box.maxY) {
                 BlockState blockState = level.getBlockState(POS);
-                if (blockState.isSolidRender(level, POS)) break;
+                if (blockState.isSolidRender()) break;
                 if (blockState.isAir()) {
                     double mult = active ? 3.0 : 5.0;
                     float force = (float) ((1.0 - (POS.getY() / box.maxY)) / mult);
@@ -90,7 +90,7 @@ public class BlockEntityHydrothermalVent extends BlockEntity {
     }
 
     private boolean hasElytra(LivingEntity entity) {
-        Item item = entity.getItemBySlot(EquipmentSlot.CHEST).getItem();
-        return item instanceof ElytraItem;
+        ItemStack chest = entity.getItemBySlot(EquipmentSlot.CHEST);
+        return chest.has(DataComponents.GLIDER);
     }
 }

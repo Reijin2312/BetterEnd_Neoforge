@@ -12,7 +12,7 @@ import org.betterx.wover.loot.api.LootLookupProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class AncientEmeraldIceBlock extends BaseBlock implements BehaviourIce, BlockLootProvider {
     public AncientEmeraldIceBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.BLUE_ICE).randomTicks());
+        super(BlockBehaviour.Properties.ofLegacyCopy(Blocks.BLUE_ICE).randomTicks());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class AncientEmeraldIceBlock extends BaseBlock implements BehaviourIce, B
 
     @Override
     public LootTable.Builder registerBlockLoot(
-            @NotNull ResourceLocation location,
+            @NotNull Identifier location,
             @NotNull LootLookupProvider provider,
             @NotNull ResourceKey<LootTable> tableKey
     ) {

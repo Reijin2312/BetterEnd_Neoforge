@@ -2,7 +2,18 @@ package org.betterx.betterend.registry;
 
 import org.betterx.bclib.particles.BCLParticleType;
 import org.betterx.betterend.BetterEnd;
-import org.betterx.betterend.particle.*;
+import org.betterx.betterend.particle.FireflyParticle;
+import org.betterx.betterend.particle.InfusionParticle;
+import org.betterx.betterend.particle.InfusionParticleType;
+import org.betterx.betterend.particle.ParticleBlackSpore;
+import org.betterx.betterend.particle.ParticleGeyser;
+import org.betterx.betterend.particle.ParticleGlowingSphere;
+import org.betterx.betterend.particle.ParticleJungleSpore;
+import org.betterx.betterend.particle.ParticleSnowflake;
+import org.betterx.betterend.particle.ParticleSulphur;
+import org.betterx.betterend.particle.ParticleTenaneaPetal;
+import org.betterx.betterend.particle.PaticlePortalSphere;
+import org.betterx.betterend.particle.SmaragdantParticle;
 
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;

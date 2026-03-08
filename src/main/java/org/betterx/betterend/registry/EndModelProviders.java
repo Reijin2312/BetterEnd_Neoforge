@@ -8,7 +8,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class EndModelProviders {
     public final static void register() {
-        // Armor models are provided via CrystaliteArmor.initializeClient
         CrystaliteArmorRenderer.getInstance();
     }
 }

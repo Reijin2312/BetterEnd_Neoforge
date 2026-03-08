@@ -12,6 +12,10 @@
     "betterend:ender_ore",
     "betterend:endstone_dust",
     "betterend:flavolite",
+    {
+      "id": "byg:ivis_phylium",
+      "required": false
+    },
     "betterend:jungle_moss",
     "betterend:pallidium_full",
     "betterend:pallidium_heavy",

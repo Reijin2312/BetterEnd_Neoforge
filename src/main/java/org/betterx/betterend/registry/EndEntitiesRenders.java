@@ -1,20 +1,28 @@
 package org.betterx.betterend.registry;
 
 import org.betterx.betterend.BetterEnd;
-import org.betterx.betterend.entity.model.*;
-import org.betterx.betterend.entity.render.*;
-import org.betterx.betterend.item.model.*;
+import org.betterx.betterend.entity.model.CubozoaEntityModel;
+import org.betterx.betterend.entity.model.DragonflyEntityModel;
+import org.betterx.betterend.entity.model.EndFishEntityModel;
+import org.betterx.betterend.entity.model.EndSlimeEntityModel;
+import org.betterx.betterend.entity.model.SilkMothEntityModel;
+import org.betterx.betterend.entity.render.RendererEntityCubozoa;
+import org.betterx.betterend.entity.render.RendererEntityDragonfly;
+import org.betterx.betterend.entity.render.RendererEntityEndFish;
+import org.betterx.betterend.entity.render.RendererEntityEndSlime;
+import org.betterx.betterend.entity.render.RendererEntityShadowWalker;
+import org.betterx.betterend.entity.render.SilkMothEntityRenderer;
+import org.betterx.betterend.item.model.ArmoredElytraModel;
+import org.betterx.betterend.item.model.CrystaliteBootsModel;
+import org.betterx.betterend.item.model.CrystaliteChestplateModel;
+import org.betterx.betterend.item.model.CrystaliteHelmetModel;
+import org.betterx.betterend.item.model.CrystaliteLeggingsModel;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.world.entity.EntityType;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-
-import java.util.function.Function;
 
 @OnlyIn(Dist.CLIENT)
 public class EndEntitiesRenders {
@@ -34,12 +42,12 @@ public class EndEntitiesRenders {
     public static final ModelLayerLocation CRYSTALITE_BOOTS = registerMain("crystalite_boots");
 
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        register(event, EndEntities.DRAGONFLY.type(), RendererEntityDragonfly::new);
-        register(event, EndEntities.END_SLIME.type(), RendererEntityEndSlime::new);
-        register(event, EndEntities.END_FISH.type(), RendererEntityEndFish::new);
-        register(event, EndEntities.SHADOW_WALKER.type(), RendererEntityShadowWalker::new);
-        register(event, EndEntities.CUBOZOA.type(), RendererEntityCubozoa::new);
-        register(event, EndEntities.SILK_MOTH.type(), SilkMothEntityRenderer::new);
+        event.registerEntityRenderer(EndEntities.DRAGONFLY.type(), RendererEntityDragonfly::new);
+        event.registerEntityRenderer(EndEntities.END_SLIME.type(), RendererEntityEndSlime::new);
+        event.registerEntityRenderer(EndEntities.END_FISH.type(), RendererEntityEndFish::new);
+        event.registerEntityRenderer(EndEntities.CUBOZOA.type(), RendererEntityCubozoa::new);
+        event.registerEntityRenderer(EndEntities.SHADOW_WALKER.type(), RendererEntityShadowWalker::new);
+        event.registerEntityRenderer(EndEntities.SILK_MOTH.type(), SilkMothEntityRenderer::new);
     }
 
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -65,10 +73,6 @@ public class EndEntitiesRenders {
         event.registerLayerDefinition(CRYSTALITE_HELMET, CrystaliteHelmetModel::getTexturedModelData);
         event.registerLayerDefinition(CRYSTALITE_LEGGINGS, CrystaliteLeggingsModel::getTexturedModelData);
         event.registerLayerDefinition(CRYSTALITE_BOOTS, CrystaliteBootsModel::getTexturedModelData);
-    }
-
-    private static void register(EntityRenderersEvent.RegisterRenderers event, EntityType<?> type, Function<Context, MobRenderer> renderer) {
-        event.registerEntityRenderer(type, renderer::apply);
     }
 
     private static ModelLayerLocation registerMain(String id) {

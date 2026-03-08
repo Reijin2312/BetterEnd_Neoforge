@@ -56,7 +56,7 @@ public class EndLotusFlowerBlock extends EndPlantBlock implements BehaviourPlant
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public ItemStack getCloneItemStack(LevelReader levelReader, BlockPos blockPos, BlockState blockState) {
+    public ItemStack getCloneItemStack(LevelReader levelReader, BlockPos blockPos, BlockState blockState, boolean includeData) {
         return new ItemStack(EndBlocks.END_LOTUS_SEED);
     }
 }

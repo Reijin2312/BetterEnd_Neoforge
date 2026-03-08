@@ -11,12 +11,11 @@ import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.models.blockstates.MultiVariantGenerator;
-import net.minecraft.data.models.blockstates.PropertyDispatch;
-import net.minecraft.data.models.blockstates.Variant;
-import net.minecraft.data.models.blockstates.VariantProperties;
-import net.minecraft.data.models.model.TextureMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.PropertyDispatch;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -55,7 +54,7 @@ public class BulbVineLanternBlock extends EndLanternBlock implements RenderLayer
         return BCLRenderLayer.CUTOUT;
     }
 
-    protected String getMetalTexture(ResourceLocation blockId) {
+    protected String getMetalTexture(Identifier blockId) {
         String name = blockId.getPath();
         name = name.substring(0, name.indexOf('_'));
         return name + "_bulb_vine_lantern_metal";
@@ -79,10 +78,10 @@ public class BulbVineLanternBlock extends EndLanternBlock implements RenderLayer
         final var ceilModel = BCLModels.BULB_LANTERN_CEIL.create(this, mapping, generator.modelOutput());
 
         generator.acceptBlockState(MultiVariantGenerator
-                .multiVariant(this)
+                .dispatch(this)
                 .with(PropertyDispatch
-                        .property(IS_FLOOR)
-                        .select(true, Variant.variant().with(VariantProperties.MODEL, floorModel))
-                        .select(false, Variant.variant().with(VariantProperties.MODEL, ceilModel))));
+                        .initial(IS_FLOOR)
+                        .select(true, BlockModelGenerators.plainVariant(floorModel))
+                        .select(false, BlockModelGenerators.plainVariant(ceilModel))));
     }
 }

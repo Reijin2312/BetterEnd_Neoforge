@@ -58,8 +58,11 @@ public class NoiseChunkMixin implements BETargetChecker {
 
         info.cancel();
 
-        NoiseChunkAccessor accessor = (NoiseChunkAccessor) this;
+        NoiseChunkAccessor accessor = (NoiseChunkAccessor) (Object) this;
         NoiseSettings noiseSettings = accessor.bnv_getNoiseSettings();
+        if (noiseSettings == null) {
+            return;
+        }
 
         TerrainGenerator.fillSlice(primarySlice, x, interpolators, accessor, noiseSettings);
     }

@@ -15,7 +15,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class ParticleTenaneaPetal extends TextureSheetParticle {
+public class ParticleTenaneaPetal extends SingleQuadParticle {
     private static BlockColorProvider provider;
 
     private double preVX;
@@ -35,8 +35,8 @@ public class ParticleTenaneaPetal extends TextureSheetParticle {
             double b,
             SpriteSet sprites
     ) {
-        super(world, x, y, z, r, g, b);
-        pickSprite(sprites);
+        super(world, x, y, z, r, g, b, sprites.first());
+        setSprite(sprites.get(random));
 
         if (provider == null) {
             CustomColorProvider block = (CustomColorProvider) EndBlocks.TENANEA_FLOWERS;
@@ -96,8 +96,8 @@ public class ParticleTenaneaPetal extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    protected Layer getLayer() {
+        return Layer.TRANSLUCENT;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -118,7 +118,8 @@ public class ParticleTenaneaPetal extends TextureSheetParticle {
                 double z,
                 double vX,
                 double vY,
-                double vZ
+                double vZ,
+                net.minecraft.util.RandomSource random
         ) {
             return new ParticleTenaneaPetal(world, x, y, z, 1, 1, 1, sprites);
         }

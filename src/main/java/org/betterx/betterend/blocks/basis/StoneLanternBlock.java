@@ -10,12 +10,11 @@ import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.models.blockstates.MultiVariantGenerator;
-import net.minecraft.data.models.blockstates.PropertyDispatch;
-import net.minecraft.data.models.blockstates.Variant;
-import net.minecraft.data.models.blockstates.VariantProperties;
-import net.minecraft.data.models.model.TextureMapping;
-import net.minecraft.data.models.model.TextureSlot;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.PropertyDispatch;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -34,7 +33,7 @@ public class StoneLanternBlock extends EndLanternBlock implements CustomColorPro
     private final Block baseBlock;
 
     public StoneLanternBlock(Block source) {
-        super(BlockBehaviour.Properties.ofFullCopy(source).lightLevel((bs) -> 15));
+        super(BlockBehaviour.Properties.ofLegacyCopy(source).lightLevel((bs) -> 15));
         this.baseBlock = source;
     }
 
@@ -59,7 +58,6 @@ public class StoneLanternBlock extends EndLanternBlock implements CustomColorPro
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         //get id of this block from registry
         final var id = BuiltInRegistries.BLOCK.getKey(this);
-        final boolean isVanilla = id.getNamespace().equals("minecraft");
         final var mapping = new TextureMapping()
                 .put(BCLModels.GLASS, TextureMapping.getBlockTexture(EndBlocks.AURORA_CRYSTAL))
                 .put(TextureSlot.TOP, TextureMapping.getBlockTexture(this, "_top"))
@@ -70,10 +68,10 @@ public class StoneLanternBlock extends EndLanternBlock implements CustomColorPro
         final var ceilModel = BCLModels.STONE_LANTERN_CEIL.create(this, mapping, generator.modelOutput());
 
         generator.acceptBlockState(MultiVariantGenerator
-                .multiVariant(this)
+                .dispatch(this)
                 .with(PropertyDispatch
-                        .property(IS_FLOOR)
-                        .select(true, Variant.variant().with(VariantProperties.MODEL, floorModel))
-                        .select(false, Variant.variant().with(VariantProperties.MODEL, ceilModel))));
+                        .initial(IS_FLOOR)
+                        .select(true, BlockModelGenerators.plainVariant(floorModel))
+                        .select(false, BlockModelGenerators.plainVariant(ceilModel))));
     }
 }

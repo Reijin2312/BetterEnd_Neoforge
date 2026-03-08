@@ -9,7 +9,7 @@ import org.betterx.wover.loot.api.LootLookupProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
@@ -27,13 +27,13 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("deprecation")
 public class MossyDragonBoneBlock extends BaseRotatedPillarBlock implements BehaviourStone, BlockLootProvider {
     public MossyDragonBoneBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.BONE_BLOCK).strength(0.5F).randomTicks());
+        super(BlockBehaviour.Properties.ofLegacyCopy(Blocks.BONE_BLOCK).strength(0.5F).randomTicks());
     }
 
 
     @Override
     public LootTable.Builder registerBlockLoot(
-            @NotNull ResourceLocation location,
+            @NotNull Identifier location,
             @NotNull LootLookupProvider provider,
             @NotNull ResourceKey<LootTable> tableKey
     ) {
@@ -57,13 +57,10 @@ public class MossyDragonBoneBlock extends BaseRotatedPillarBlock implements Beha
             return false;
         } else {
             int i = LightEngine.getLightBlockInto(
-                    worldView,
                     state,
-                    pos,
                     blockState,
-                    blockPos,
                     Direction.UP,
-                    blockState.getLightBlock(worldView, blockPos)
+                    blockState.getLightBlock()
             );
             return i < 5;
         }

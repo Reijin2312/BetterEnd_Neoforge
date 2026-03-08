@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class CharcoalBlock extends BaseBlock implements Fuel, BehaviourStone {
     public CharcoalBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.COAL_BLOCK));
+        super(BlockBehaviour.Properties.ofLegacyCopy(Blocks.COAL_BLOCK));
     }
 
     @Override

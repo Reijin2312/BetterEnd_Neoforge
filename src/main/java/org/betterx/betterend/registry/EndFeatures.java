@@ -88,7 +88,7 @@ public class EndFeatures {
     public static final CavePumpkinFeature CAVE_PUMPKIN_FEATURE = new CavePumpkinFeature();
     private static boolean registered = false;
 
-//    public static void addBiomeFeatures(ResourceLocation id, Holder<Biome> biome) {
+//    public static void addBiomeFeatures(Identifier id, Holder<Biome> biome) {
 //        if (!BetterEnd.MOD_ID.equals(id.getNamespace())) {
 //            BiomeAPI.addBiomeFeature(biome, EndOreFeatures.FLAVOLITE_LAYER);
 //            BiomeAPI.addBiomeFeature(biome, EndOreFeatures.THALLASIUM_ORE);

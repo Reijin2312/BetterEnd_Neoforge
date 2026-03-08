@@ -3,16 +3,13 @@ package org.betterx.betterend.registry;
 import org.betterx.betterend.BetterEnd;
 
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.JukeboxSong;
 
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.minecraft.core.registries.BuiltInRegistries;
 
 public class EndSounds {
     // Music
@@ -96,12 +93,12 @@ public class EndSounds {
     }
 
     private static Holder.Reference<SoundEvent> registerRef(RegisterEvent.RegisterHelper<SoundEvent> helper, ResourceKey<SoundEvent> key) {
-        helper.register(key.location(), SoundEvent.createVariableRangeEvent(key.location()));
-        return (Holder.Reference<SoundEvent>) BuiltInRegistries.SOUND_EVENT.getHolder(key).orElseThrow();
+        helper.register(key.identifier(), SoundEvent.createVariableRangeEvent(key.identifier()));
+        return (Holder.Reference<SoundEvent>) BuiltInRegistries.SOUND_EVENT.get(key).orElseThrow();
     }
 
     private static Holder<SoundEvent> register(RegisterEvent.RegisterHelper<SoundEvent> helper, ResourceKey<SoundEvent> key) {
-        helper.register(key.location(), SoundEvent.createVariableRangeEvent(key.location()));
-        return BuiltInRegistries.SOUND_EVENT.getHolder(key).orElseThrow();
+        helper.register(key.identifier(), SoundEvent.createVariableRangeEvent(key.identifier()));
+        return BuiltInRegistries.SOUND_EVENT.get(key).orElseThrow();
     }
 }

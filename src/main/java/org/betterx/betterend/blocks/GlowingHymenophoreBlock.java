@@ -7,8 +7,7 @@ import org.betterx.wover.block.api.model.BlockModelProvider;
 import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 import org.betterx.wover.block.api.model.WoverBlockModelGeneratorsAccess;
 
-import net.minecraft.data.models.BlockModelGenerators;
-import net.minecraft.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 

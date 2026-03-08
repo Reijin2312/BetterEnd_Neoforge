@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -19,7 +19,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import de.ambertation.wunderlib.network.PacketSender;
 
 public class RitualUpdate extends ClientBoundPacketHandler<RitualUpdate.Payload> {
-    public static final ResourceLocation CHANNEL = BetterEnd.C.mk("ritual_update");
+    public static final Identifier CHANNEL = BetterEnd.C.mk("ritual_update");
     public static final RitualUpdate INSTANCE = new RitualUpdate();
 
     public RitualUpdate() {
