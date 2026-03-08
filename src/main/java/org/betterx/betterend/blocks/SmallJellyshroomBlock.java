@@ -34,7 +34,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import com.google.common.collect.Maps;
 
@@ -111,7 +110,6 @@ public class SmallJellyshroomBlock extends BaseAttachedBlock implements RenderLa
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public String getPottedState() {
         return "facing=up";
     }

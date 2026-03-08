@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class EnchantedItem extends ModelProviderItem {
 
@@ -29,7 +28,6 @@ public class EnchantedItem extends ModelProviderItem {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public BlockModel getItemModel(Identifier resourceLocation) {
         Identifier sourceId = BuiltInRegistries.ITEM.getKey(source);
         return ModelsHelper.createItemModel(sourceId);

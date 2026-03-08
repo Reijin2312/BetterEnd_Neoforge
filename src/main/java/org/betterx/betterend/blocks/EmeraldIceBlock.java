@@ -26,7 +26,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import org.jetbrains.annotations.NotNull;
@@ -85,7 +84,6 @@ public class EmeraldIceBlock extends HalfTransparentBlock implements RenderLayer
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public BlockModel getItemModel(Identifier resourceLocation) {
         return getBlockModel(resourceLocation, defaultBlockState());
     }

@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +50,6 @@ public class EndstoneDustBlock extends FallingBlock implements BlockTagProvider,
         return provider.drop(this);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public int getDustColor(BlockState state, BlockGetter world, BlockPos pos) {
         return COLOR;
     }

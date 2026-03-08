@@ -23,7 +23,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -54,7 +53,6 @@ public class StoneLanternBlock extends EndLanternBlock implements CustomColorPro
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         //get id of this block from registry
         final var id = BuiltInRegistries.BLOCK.getKey(this);

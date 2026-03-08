@@ -8,7 +8,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +23,6 @@ public class LitBaseBlock extends BaseBlock implements RuntimeBlockModelProvider
 
     @Nullable
     @Override
-    @OnlyIn(Dist.CLIENT)
     public BlockModel getBlockModel(Identifier resourceLocation, BlockState blockState) {
         return BlockModel.fromStream(new StringReader(PATTERN.replace("name", resourceLocation.getPath())));
     }

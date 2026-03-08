@@ -12,9 +12,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ParticleGlowingSphere extends SimpleAnimatedParticle {
     private int ticks;
     private double preVX;
@@ -71,7 +69,6 @@ public class ParticleGlowingSphere extends SimpleAnimatedParticle {
         super.tick();
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class FactoryGlowingSphere implements ParticleProvider<SimpleParticleType> {
 
         private final SpriteSet sprites;

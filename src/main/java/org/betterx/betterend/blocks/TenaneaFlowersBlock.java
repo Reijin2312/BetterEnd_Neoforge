@@ -17,7 +17,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class TenaneaFlowersBlock extends BaseVineBlock implements CustomColorProvider {
     public static final Vec3i[] COLORS;
@@ -61,7 +60,6 @@ public class TenaneaFlowersBlock extends BaseVineBlock implements CustomColorPro
         return false;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         super.animateTick(state, world, pos, random);
         if (random.nextInt(32) == 0) {

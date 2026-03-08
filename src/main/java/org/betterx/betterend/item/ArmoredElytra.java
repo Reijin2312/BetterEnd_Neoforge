@@ -17,7 +17,6 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.equipment.ArmorType;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, BetterEndElytra, ItemTagProvider {
     private final Identifier wingTexture;
@@ -88,7 +87,6 @@ public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, Bett
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Identifier getModelTexture() {
         return wingTexture;
     }
@@ -106,7 +104,6 @@ public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, Bett
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void registerModelPredicate() {
         // In 1.21+, item model conditions are data-driven and "broken" is a built-in property.
     }

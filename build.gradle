@@ -456,6 +456,10 @@ tasks.matching { it.name == "runClientData" }.configureEach {
     systemProperty "mixin.env.disableRefMap", "true"
 }
 
+tasks.matching { it.name == "runClient" }.configureEach {
+    dependsOn(tasks.named("fixMixinRefmap"))
+}
+
 tasks.register("runData") {
     group = "neoforge"
     description = "Compatibility alias for runClientData (NeoForge ModDev 2.x)."

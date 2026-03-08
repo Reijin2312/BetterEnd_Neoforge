@@ -17,19 +17,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class UmbrellaMossBlock extends EndPlantBlock implements BehaviourPlant, SurvivesOnJungleMossOrMycelium {
     public UmbrellaMossBlock() {
         super(BehaviourBuilders.createGrass(MapColor.COLOR_ORANGE).ignitedByLava().lightLevel((state) -> 11));
     }
 
-    @OnlyIn(Dist.CLIENT)
     public boolean hasEmissiveLighting(BlockGetter world, BlockPos pos) {
         return true;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public float getAmbientOcclusionLightLevel(BlockGetter world, BlockPos pos) {
         return 1F;
     }

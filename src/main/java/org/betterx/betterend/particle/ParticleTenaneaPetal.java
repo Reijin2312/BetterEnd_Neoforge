@@ -12,9 +12,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ParticleTenaneaPetal extends SingleQuadParticle {
     private static BlockColorProvider provider;
 
@@ -100,7 +98,6 @@ public class ParticleTenaneaPetal extends SingleQuadParticle {
         return Layer.TRANSLUCENT;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class FactoryTenaneaPetal implements ParticleProvider<SimpleParticleType> {
 
         private final SpriteSet sprites;

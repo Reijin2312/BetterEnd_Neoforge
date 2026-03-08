@@ -13,11 +13,9 @@ import net.minecraft.world.item.crafting.display.FurnaceRecipeDisplay;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
 public class EndStoneSmelterRecipeBookScreen extends RecipeBookComponent<EndStoneSmelterMenu> {
     private static final WidgetSprites FILTER_SPRITES = new WidgetSprites(
             Identifier.withDefaultNamespace("recipe_book/furnace_filter_enabled"),

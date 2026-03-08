@@ -20,7 +20,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class BubbleCoralBlock extends EndUnderwaterPlantBlock implements BehaviourWaterPlant, AddMineableShears, SurvivesOnEndStone {
 
@@ -34,7 +33,6 @@ public class BubbleCoralBlock extends EndUnderwaterPlantBlock implements Behavio
         );
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         double x = pos.getX() + random.nextDouble();
         double y = pos.getY() + random.nextDouble() * 0.5F + 0.5F;

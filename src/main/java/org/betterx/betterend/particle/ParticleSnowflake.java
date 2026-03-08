@@ -8,9 +8,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ParticleSnowflake extends SingleQuadParticle {
     private int ticks;
     private double preVX;
@@ -85,7 +83,6 @@ public class ParticleSnowflake extends SingleQuadParticle {
         return Layer.TRANSLUCENT;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class FactorySnowflake implements ParticleProvider<SimpleParticleType> {
 
         private final SpriteSet sprites;

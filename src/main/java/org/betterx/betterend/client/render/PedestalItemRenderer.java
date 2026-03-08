@@ -27,11 +27,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import org.jspecify.annotations.Nullable;
 
-@OnlyIn(Dist.CLIENT)
 public class PedestalItemRenderer<T extends PedestalBlockEntity> implements BlockEntityRenderer<T, PedestalItemRenderer.PedestalRenderState> {
     private static final int MAX_GEM_AGE = 314;
     private final ItemModelResolver itemModelResolver;

@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class GlowingPillarRootsBlock extends UpDownPlantBlock {
     public static final EnumProperty<TripleShape> SHAPE = BlockProperties.TRIPLE_SHAPE;
@@ -30,7 +29,6 @@ public class GlowingPillarRootsBlock extends UpDownPlantBlock {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public ItemStack getCloneItemStack(LevelReader levelReader, BlockPos blockPos, BlockState blockState, boolean includeData) {
         return new ItemStack(EndBlocks.GLOWING_PILLAR_SEED);
     }

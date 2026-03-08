@@ -51,7 +51,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.fml.loading.FMLPaths;
 
@@ -319,21 +318,18 @@ public class FlowerPotBlock extends BaseBlockNotFull implements RenderLayerProvi
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public BlockModel getItemModel(Identifier blockId) {
         Optional<String> pattern = PatternsHelper.createJson(Patterns.BLOCK_FLOWER_POT, blockId);
         return ModelsHelper.fromPattern(pattern);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public BlockModel getBlockModel(Identifier blockId, BlockState blockState) {
         Optional<String> pattern = PatternsHelper.createJson(Patterns.BLOCK_FLOWER_POT, blockId);
         return ModelsHelper.fromPattern(pattern);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public BlockStateModel.UnbakedRoot getModelVariant(
             Identifier stateId,
             BlockState blockState,

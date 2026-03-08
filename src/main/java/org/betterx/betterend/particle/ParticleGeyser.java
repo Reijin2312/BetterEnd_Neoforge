@@ -8,9 +8,7 @@ import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ParticleGeyser extends SingleQuadParticle {
     private final MutableBlockPos mut = new MutableBlockPos();
     private boolean changeDir = false;
@@ -67,7 +65,6 @@ public class ParticleGeyser extends SingleQuadParticle {
         return Layer.TRANSLUCENT;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class FactoryGeyser implements ParticleProvider<SimpleParticleType> {
 
         private final SpriteSet sprites;

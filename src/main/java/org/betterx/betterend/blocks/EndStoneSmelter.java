@@ -33,7 +33,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import com.google.common.collect.Lists;
 
@@ -136,7 +135,6 @@ public class EndStoneSmelter extends BaseBlockWithEntity.Stone implements Alloyi
         builder.add(FACING, LIT);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         if (state.getValue(LIT)) {
             double x = pos.getX() + 0.5D;

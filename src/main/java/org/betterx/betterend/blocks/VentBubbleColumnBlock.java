@@ -31,7 +31,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import java.util.Optional;
@@ -100,7 +99,6 @@ public class VentBubbleColumnBlock extends Block implements BucketPickup, Liquid
         return state;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         if (random.nextInt(4) == 0) {
             double px = pos.getX() + random.nextDouble();
@@ -122,7 +120,6 @@ public class VentBubbleColumnBlock extends Block implements BucketPickup, Liquid
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SuppressWarnings("deprecation")
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity, InsideBlockEffectApplier applier, boolean checkInside) {
         BlockState blockState = world.getBlockState(pos.above());

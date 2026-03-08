@@ -18,7 +18,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -33,7 +32,6 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import java.util.Map;
 
-@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = BetterEnd.MOD_ID, value = Dist.CLIENT)
 public class BetterEndClient {
     private static final Identifier END_SKYBOX_ID = BetterEnd.C.mk("end_skybox");

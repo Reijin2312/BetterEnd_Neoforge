@@ -11,7 +11,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +39,6 @@ public class InfusionParticleType extends ParticleType<InfusionParticleType> imp
         this(EndParticles.INFUSION, stack);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public float[] getPalette() {
         int color = ColorUtil.extractColor(itemStack.getItem());
         return ColorUtil.toFloatArray(color);

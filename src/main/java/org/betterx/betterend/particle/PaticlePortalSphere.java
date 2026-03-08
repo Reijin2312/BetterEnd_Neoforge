@@ -12,7 +12,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class PaticlePortalSphere extends SimpleAnimatedParticle {
     private int ticks;
@@ -62,7 +61,6 @@ public class PaticlePortalSphere extends SimpleAnimatedParticle {
         super.tick();
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class FactoryPortalSphere implements ParticleProvider<SimpleParticleType> {
 
         private final SpriteSet sprites;

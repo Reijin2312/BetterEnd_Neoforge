@@ -29,7 +29,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class EndLotusLeafBlock extends BaseBlockNotFull implements RenderLayerProvider, BehaviourPlant {
     public static final EnumProperty<Direction> HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -76,7 +75,6 @@ public class EndLotusLeafBlock extends BaseBlockNotFull implements RenderLayerPr
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public ItemStack getCloneItemStack(LevelReader levelReader, BlockPos blockPos, BlockState blockState, boolean includeData) {
         return new ItemStack(EndBlocks.END_LOTUS_SEED);
     }

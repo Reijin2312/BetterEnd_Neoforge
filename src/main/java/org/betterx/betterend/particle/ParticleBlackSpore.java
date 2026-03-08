@@ -9,9 +9,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ParticleBlackSpore extends SimpleAnimatedParticle {
     private double preVX;
     private double preVY;
@@ -82,7 +80,6 @@ public class ParticleBlackSpore extends SimpleAnimatedParticle {
         return ParticleRenderType.SINGLE_QUADS;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class FactoryBlackSpore implements ParticleProvider<SimpleParticleType> {
 
         private final SpriteSet sprites;

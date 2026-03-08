@@ -12,7 +12,6 @@ import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.world.level.block.Block;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public abstract class EndPedestal extends PedestalBlock {
 
@@ -22,7 +21,6 @@ public abstract class EndPedestal extends PedestalBlock {
 
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     protected TextureMapping createTextureMapping() {
         final var parentTexture = BetterEnd.C.convertNamespace(TextureMapping.getBlockTexture(parent));
         final var polishedTexture = BetterEnd.C.convertNamespace(TextureMapping.getBlockTexture(parent, "_polished"));

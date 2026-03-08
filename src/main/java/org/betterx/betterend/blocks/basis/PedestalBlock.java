@@ -53,7 +53,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.util.RandomSource;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import com.google.common.collect.Lists;
 
@@ -388,12 +387,10 @@ public class PedestalBlock extends BaseBlockNotFull implements EntityBlock, Bloc
     );
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         provideBlockModel(generator, createTextureMapping(), this);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void provideBlockModel(
             WoverBlockModelGenerators generator,
             TextureMapping mapping,
@@ -402,7 +399,6 @@ public class PedestalBlock extends BaseBlockNotFull implements EntityBlock, Bloc
         provideBlockModel(generator, mapping, pedestalBlock, PEDESTAL_MODELS);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void provideBlockModel(
             WoverBlockModelGenerators generator,
             TextureMapping mapping,
@@ -424,7 +420,6 @@ public class PedestalBlock extends BaseBlockNotFull implements EntityBlock, Bloc
         generator.delegateItemModel(pedestalBlock, id.withSuffix("_default"));
     }
 
-    @OnlyIn(Dist.CLIENT)
     protected TextureMapping createTextureMapping() {
         final var parentTexture = TextureMapping.getBlockTexture(parent);
         return new TextureMapping()

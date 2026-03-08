@@ -20,9 +20,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.entity.player.PlayerSkin;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ArmoredElytraLayer<S extends HumanoidRenderState, M extends EntityModel<S>> extends RenderLayer<S, M> {
     private static final Identifier VANILLA_WINGS = Identifier.withDefaultNamespace("textures/entity/elytra.png");
     private final ArmoredElytraModel elytraModel;

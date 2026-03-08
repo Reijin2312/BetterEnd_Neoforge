@@ -15,7 +15,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import de.ambertation.wunderlib.network.PacketSender;
 
 public class RitualUpdate extends ClientBoundPacketHandler<RitualUpdate.Payload> {
@@ -73,7 +72,6 @@ public class RitualUpdate extends ClientBoundPacketHandler<RitualUpdate.Payload>
         }
 
         @Override
-        @OnlyIn(Dist.CLIENT)
         protected void processOnGameThread(Minecraft client) {
             EternalRitual.updateActiveStateOnPedestals(
                     center,

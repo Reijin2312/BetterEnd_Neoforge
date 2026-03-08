@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import com.google.common.collect.Lists;
@@ -74,7 +73,6 @@ public class UmbrellaTreeMembraneBlock extends SlimeBlock implements RenderLayer
         return state.getValue(COLOR) > 0;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public boolean skipRendering(BlockState state, BlockState stateFrom, Direction direction) {
         if (state.getValue(COLOR) > 0) {
             return super.skipRendering(state, stateFrom, direction);
@@ -84,7 +82,6 @@ public class UmbrellaTreeMembraneBlock extends SlimeBlock implements RenderLayer
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public BlockModel getItemModel(Identifier resourceLocation) {
         return getBlockModel(resourceLocation, defaultBlockState());
     }

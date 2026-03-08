@@ -18,7 +18,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import com.google.common.collect.Lists;
 
@@ -55,7 +54,6 @@ public class EndLotusFlowerBlock extends EndPlantBlock implements BehaviourPlant
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public ItemStack getCloneItemStack(LevelReader levelReader, BlockPos blockPos, BlockState blockState, boolean includeData) {
         return new ItemStack(EndBlocks.END_LOTUS_SEED);
     }

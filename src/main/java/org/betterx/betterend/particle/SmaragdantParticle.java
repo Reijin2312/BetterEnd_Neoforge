@@ -9,9 +9,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class SmaragdantParticle extends SimpleAnimatedParticle {
     private double preVX;
     private double preVY;
@@ -82,7 +80,6 @@ public class SmaragdantParticle extends SimpleAnimatedParticle {
         return ParticleRenderType.SINGLE_QUADS;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class SmaragdantParticleFactory implements ParticleProvider<SimpleParticleType> {
 
         private final SpriteSet sprites;

@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class GlowingHymenophoreBlock extends BaseBlock.Wood implements AddMineableAxe, BlockModelProvider {
     public GlowingHymenophoreBlock() {
@@ -23,7 +22,6 @@ public class GlowingHymenophoreBlock extends BaseBlock.Wood implements AddMineab
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         provideUnshadedCubeModel(generator, this);
     }

@@ -25,7 +25,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 @SuppressWarnings("deprecation")
@@ -51,7 +50,6 @@ public class MengerSpongeWetBlock extends BaseBlockNotFull implements RenderLaye
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         Direction direction = Direction.getRandom(random);
         if (direction != Direction.UP) {

@@ -12,13 +12,11 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import com.google.common.collect.Lists;
 
 import java.util.Collections;
 
-@OnlyIn(Dist.CLIENT)
 public class CrystaliteHelmetModel extends HumanoidModel<HumanoidRenderState> {
     final ModelPart myHat;
 

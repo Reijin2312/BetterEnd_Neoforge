@@ -28,7 +28,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -140,6 +139,5 @@ public abstract class EndLanternBlock extends BaseBlockNotFull implements Simple
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public abstract void provideBlockModels(WoverBlockModelGenerators generator);
 }

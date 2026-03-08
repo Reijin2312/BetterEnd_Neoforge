@@ -5,7 +5,6 @@ import org.betterx.bclib.blocks.BaseRotatedPillarBlock;
 import net.minecraft.resources.Identifier;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Optional;
 
@@ -16,7 +15,6 @@ public class LitPillarBlock extends BaseRotatedPillarBlock {
         super(settings);
     }
 
-    @OnlyIn(Dist.CLIENT)
     protected Optional<String> createBlockPattern(Identifier blockId) {
         String name = blockId.getPath();
         return Optional.of(PATTERN.replace("name", name));

@@ -16,7 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class TwistedUmbrellaMossTallBlock extends BaseDoublePlantBlock implements BehaviourPlant, SurvivesOnJungleMossOrMycelium, BlockModelProvider {
     public TwistedUmbrellaMossTallBlock() {
@@ -41,7 +40,6 @@ public class TwistedUmbrellaMossTallBlock extends BaseDoublePlantBlock implement
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         generator.createCubeModel(this);
         generator.createFlatItem(this, BetterEnd.C.mk("item/twisted_umbrella_moss_large"));

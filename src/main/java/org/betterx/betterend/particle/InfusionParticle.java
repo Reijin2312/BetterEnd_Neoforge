@@ -4,7 +4,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class InfusionParticle extends SingleQuadParticle {
 
@@ -54,7 +53,6 @@ public class InfusionParticle extends SingleQuadParticle {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class InfusionFactory implements ParticleProvider<InfusionParticleType> {
         private final SpriteSet spriteProvider;
 

@@ -11,9 +11,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.RandomSource;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ParticleJungleSpore extends SimpleAnimatedParticle {
 
     protected ParticleJungleSpore(
@@ -63,7 +61,6 @@ public class ParticleJungleSpore extends SimpleAnimatedParticle {
         this.zd *= 0.99F;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class FactoryJungleSpore implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
 

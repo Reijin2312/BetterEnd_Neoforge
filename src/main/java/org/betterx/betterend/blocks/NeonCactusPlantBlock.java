@@ -35,7 +35,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import com.google.common.collect.Lists;
@@ -438,7 +437,6 @@ public class NeonCactusPlantBlock extends BaseBlockNotFull implements SimpleWate
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public String getPottedState() {
         return "bottom=moss,shape=top,facing=up";
     }

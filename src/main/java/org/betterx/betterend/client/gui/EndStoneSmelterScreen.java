@@ -15,11 +15,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeBookCategories;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
 public class EndStoneSmelterScreen extends AbstractRecipeBookScreen<EndStoneSmelterMenu> {
     private static final Identifier BACKGROUND_TEXTURE = BetterEnd.C.mk("textures/gui/smelter_gui.png");
     private static final Component FILTER_NAME = Component.translatable("gui.recipebook.toggleRecipes.blastable");

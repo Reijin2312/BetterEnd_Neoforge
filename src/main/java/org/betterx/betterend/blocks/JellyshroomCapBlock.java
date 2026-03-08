@@ -27,7 +27,6 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import com.google.common.collect.Lists;
@@ -75,13 +74,11 @@ public class JellyshroomCapBlock extends SlimeBlock implements RenderLayerProvid
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public BlockModel getItemModel(Identifier resourceLocation) {
         return getBlockModel(resourceLocation, defaultBlockState());
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public @Nullable BlockModel getBlockModel(Identifier resourceLocation, BlockState blockState) {
         Optional<String> pattern = Patterns.createJson(Patterns.BLOCK_COLORED, "jellyshroom_cap");
         return ModelsHelper.fromPattern(pattern);

@@ -23,7 +23,6 @@ import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -217,14 +216,12 @@ public class EndStoneSmelterMenu extends RecipeBookMenu {
         return itemStack;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public int getSmeltProgress() {
         int time = propertyDelegate.get(2);
         int timeTotal = propertyDelegate.get(3);
         return timeTotal != 0 && time != 0 ? time * 24 / timeTotal : 0;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public int getFuelProgress() {
         int fuelTime = propertyDelegate.get(1);
         if (fuelTime == 0) {
@@ -233,7 +230,6 @@ public class EndStoneSmelterMenu extends RecipeBookMenu {
         return propertyDelegate.get(0) * 13 / fuelTime;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public boolean isBurning() {
         return propertyDelegate.get(0) > 0;
     }

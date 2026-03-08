@@ -21,10 +21,8 @@ import org.betterx.betterend.item.model.CrystaliteLeggingsModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
-@OnlyIn(Dist.CLIENT)
 public class EndEntitiesRenders {
     public static final ModelLayerLocation DRAGONFLY_MODEL = registerMain("dragonfly");
     public static final ModelLayerLocation END_SLIME_SHELL_MODEL = registerMain("endslime_shell");
