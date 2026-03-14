@@ -64,29 +64,40 @@ public class ArmoredElytraLayer<T extends LivingEntity, M extends EntityModel<T>
         if (elytraModel == null) {
             return;
         }
-        ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
-        if (itemStack.is(Items.ELYTRA)) {
-            ResourceLocation resourceLocation;
-            if (livingEntity instanceof AbstractClientPlayer abstractClientPlayer) {
-                final PlayerSkin playerSkin = abstractClientPlayer.getSkin();
-                if (playerSkin.elytraTexture() != null) {
-                    resourceLocation = playerSkin.elytraTexture();
-                } else if (playerSkin.capeTexture() != null && abstractClientPlayer.isModelPartShown(PlayerModelPart.CAPE)) {
-                    resourceLocation = playerSkin.capeTexture();
-                } else {
-                    resourceLocation = wingTextureOverride(livingEntity);
-                }
-            } else {
-                resourceLocation = wingTextureOverride(livingEntity);
-            }
 
-            poseStack.pushPose();
-            poseStack.translate(0.0F, 0.0F, 0.125F);
-            this.getParentModel().copyPropertiesTo(this.elytraModel);
-            this.elytraModel.setupAnim(livingEntity, f, g, j, k, l);
-            VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(multiBufferSource, RenderType.armorCutoutNoCull(resourceLocation), itemStack.hasFoil());
-            this.elytraModel.renderToBuffer(poseStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY);
-            poseStack.popPose();
+        ItemStack itemStack = (BCLElytraUtils.slotProvider == null)
+                ? livingEntity.getItemBySlot(EquipmentSlot.CHEST)
+                : BCLElytraUtils.slotProvider.getElytra(livingEntity, livingEntity::getItemBySlot);
+        if (itemStack == null || itemStack.isEmpty()) {
+            return;
         }
+
+        boolean isVanillaElytra = itemStack.is(Items.ELYTRA);
+        boolean isCustomElytra = itemStack.getItem() instanceof BCLElytraItem;
+        if (!isVanillaElytra && !isCustomElytra) {
+            return;
+        }
+
+        ResourceLocation resourceLocation = wingTextureOverride(livingEntity);
+        if (isVanillaElytra && livingEntity instanceof AbstractClientPlayer abstractClientPlayer) {
+            final PlayerSkin playerSkin = abstractClientPlayer.getSkin();
+            if (playerSkin.elytraTexture() != null) {
+                resourceLocation = playerSkin.elytraTexture();
+            } else if (playerSkin.capeTexture() != null && abstractClientPlayer.isModelPartShown(PlayerModelPart.CAPE)) {
+                resourceLocation = playerSkin.capeTexture();
+            }
+        }
+
+        poseStack.pushPose();
+        poseStack.translate(0.0F, 0.0F, 0.125F);
+        this.getParentModel().copyPropertiesTo(this.elytraModel);
+        this.elytraModel.setupAnim(livingEntity, f, g, j, k, l);
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(
+                multiBufferSource,
+                RenderType.armorCutoutNoCull(resourceLocation),
+                itemStack.hasFoil()
+        );
+        this.elytraModel.renderToBuffer(poseStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY);
+        poseStack.popPose();
     }
 }

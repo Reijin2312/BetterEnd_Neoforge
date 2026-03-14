@@ -43,6 +43,8 @@ def local_bclib = findProject(':BCLib') != null
 def local_wunderlib = findProject(':wunderlib') != null
 def local_wover = findProject(':WorldWeaver') != null
 def simpleBuildRequested = gradle.startParameter.taskNames.contains("simpleBuild")
+def enableJeiRuntime = (project.findProperty("enable_jei_runtime")?.toString()?.toBoolean()) ?: false
+def enableJadeRuntime = (project.findProperty("enable_jade_runtime")?.toString()?.toBoolean()) ?: false
 
 java {
     toolchain {
@@ -84,6 +86,7 @@ repositories {
     maven { url "https://maven.dblsaiko.net/" }
     maven { url "https://maven.shedaniel.me/" }
     maven { url 'https://maven.blamejared.com' }
+    maven { url 'https://api.modrinth.com/maven' }
     maven { url 'https://jitpack.io' }
     maven { url "https://maven.bai.lol" }
     maven { url 'https://maven.terraformersmc.com/releases' }
@@ -107,6 +110,20 @@ dependencies {
 
     compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
     runtimeOnly "dev.emi:emi-neoforge:${emi_version}"
+
+    compileOnly "mezz.jei:jei-1.21.1-neoforge-api:${project.jei_version}"
+    if (enableJeiRuntime) {
+        runtimeOnly "mezz.jei:jei-1.21.1-neoforge:${project.jei_version}"
+    } else {
+        println "JEI runtime disabled (set -Penable_jei_runtime=true to re-enable)"
+    }
+
+    compileOnly "maven.modrinth:jade:${project.jade_version}"
+    if (enableJadeRuntime) {
+        runtimeOnly "maven.modrinth:jade:${project.jade_version}"
+    } else {
+        println "Jade runtime disabled (set -Penable_jade_runtime=true to re-enable)"
+    }
 
     println "Using local BCLib: ${local_bclib}"
     if (local_bclib) {

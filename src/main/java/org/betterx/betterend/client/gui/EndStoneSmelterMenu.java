@@ -15,6 +15,8 @@ import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
 import net.neoforged.api.distmarker.Dist;
@@ -131,13 +133,19 @@ public class EndStoneSmelterMenu extends RecipeBookMenu<AlloyingRecipeInput, All
     }
 
     protected boolean isSmeltable(ItemStack itemStack) {
-        return world.getRecipeManager()
-                    .getRecipeFor(AlloyingRecipe.TYPE, new AlloyingRecipeInput(itemStack), world)
-                    .isPresent();
+        if (world.getRecipeManager()
+                 .getRecipeFor(AlloyingRecipe.TYPE, new AlloyingRecipeInput(itemStack), world)
+                 .isPresent()) {
+            return true;
+        }
+
+        SingleRecipeInput input = new SingleRecipeInput(itemStack);
+        return world.getRecipeManager().getRecipeFor(RecipeType.BLASTING, input, world).isPresent()
+                || world.getRecipeManager().getRecipeFor(RecipeType.SMELTING, input, world).isPresent();
     }
 
     public boolean isFuel(ItemStack itemStack) {
-        return EndStoneSmelterBlockEntity.canUseAsFuel(itemStack);
+        return EndStoneSmelterBlockEntity.canUseAsFuel(itemStack, this.world);
     }
 
     @Override

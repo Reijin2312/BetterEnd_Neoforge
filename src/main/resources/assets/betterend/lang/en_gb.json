@@ -17,5 +17,13 @@
 	"block.betterend.sulphur_crystal": "Sulphur Crystal",
 	"item.betterend.crystalline_sulphur": "Sulphur",
 	"biome.betterend.sulphur_springs": "Sulphur Springs",
-	"block.betterend.sulphuric_rock_furnace": "Sulphuric Rock Furnace"
+	"block.betterend.sulphuric_rock_furnace": "Sulphuric Rock Furnace",
+	"betterend.jei.container.alloying": "Alloying and Blasting",
+	"betterend.jei.recipe_level.anvil": "Lvl: %s",
+	"betterend.jei.damage.amount&dmg": "Tool damage: %s",
+	"config.jade.plugin_betterend.plant_growth": "BetterEnd Plants",
+	"betterend.jei.infusion.time&val": "%s ticks",
+	"betterend.jei.container.infusion": "Infusion Recipes",
+	"betterend.jei.container.anvil": "Anvil Recipes",
+	"betterend.jei.alloying.experience_time": "%s XP | %s s"
 }

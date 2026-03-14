@@ -913,5 +913,13 @@
   "block.betterend.pallidium_heavy": "Pallidio (Cobertura pesada)",
   "block.betterend.pallidium_thin": "Pallidio (Cobertuna fina)",
   "block.betterend.pallidium_tiny": "Pallidio (Cobertura dispersada)",
-  "block.betterend.flammalix": "Flammalixe"
+  "block.betterend.flammalix": "Flammalixe",
+  "betterend.jei.container.alloying": "Liga e Fundição",
+  "betterend.jei.recipe_level.anvil": "Nível: %s",
+  "betterend.jei.damage.amount&dmg": "Dano da ferramenta: %s",
+  "config.jade.plugin_betterend.plant_growth": "Plantas do BetterEnd",
+  "betterend.jei.infusion.time&val": "%s ticks",
+  "betterend.jei.container.infusion": "Receitas de Infusão",
+  "betterend.jei.container.anvil": "Receitas de Bigorna",
+  "betterend.jei.alloying.experience_time": "%s XP | %s s"
 }

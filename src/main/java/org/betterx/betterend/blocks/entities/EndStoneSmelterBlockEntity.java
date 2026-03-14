@@ -25,6 +25,7 @@ import net.minecraft.world.inventory.StackedContentsCompatible;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -45,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, RecipeCraftingHolder, StackedContentsCompatible {
     private static final int[] TOP_SLOTS = new int[]{
@@ -171,26 +173,20 @@ public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity impleme
                 this.inventory.get(EndStoneSmelterMenu.INGREDIENT_SLOT_A),
                 this.inventory.get(EndStoneSmelterMenu.INGREDIENT_SLOT_B)
         );
-        int smeltTime = level.getRecipeManager()
-                             .getRecipeFor(
-                                     AlloyingRecipe.TYPE,
-                                     input,
-                                     level
-                             )
-                             .map(r -> r.value().getSmeltTime())
-                             .orElse(0);
-        if (smeltTime == 0) {
-            smeltTime = level.getRecipeManager()
-                             .getRecipeFor(
-                                     RecipeType.BLASTING,
-                                     new SingleRecipeInput(input.any()),
-                                     level
-                             )
-                             .map(r -> r.value().getCookingTime())
-                             .orElse(200);
-            smeltTime = (int) (smeltTime / 1.5f);
+        RecipeHolder<?> recipe = findRecipe(level, input);
+        if (recipe == null) {
+            return 200;
         }
-        return smeltTime;
+        if (recipe.value() instanceof AlloyingRecipe alloyingRecipe) {
+            return alloyingRecipe.getSmeltTime();
+        }
+        if (recipe.value() instanceof BlastingRecipe blastingRecipe) {
+            return (int) (blastingRecipe.getCookingTime() / 1.5f);
+        }
+        if (recipe.value() instanceof AbstractCookingRecipe cookingRecipe) {
+            return cookingRecipe.getCookingTime();
+        }
+        return 200;
     }
 
     public void dropExperience(Player player) {
@@ -201,9 +197,8 @@ public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity impleme
                 list.add(recipe);
                 if (recipe.value() instanceof AlloyingRecipe alloying) {
                     dropExperience(player.level(), player.position(), entry.getIntValue(), alloying.getExperience());
-                } else {
-                    BlastingRecipe blasting = (BlastingRecipe) recipe.value();
-                    dropExperience(player.level(), player.position(), entry.getIntValue(), blasting.getExperience());
+                } else if (recipe.value() instanceof AbstractCookingRecipe cookingRecipe) {
+                    dropExperience(player.level(), player.position(), entry.getIntValue(), cookingRecipe.getExperience());
                 }
             });
         }
@@ -296,17 +291,10 @@ public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity impleme
                     blockEntity.smeltTime = Mth.clamp(blockEntity.smeltTime - 2, 0, blockEntity.smeltTimeTotal);
                 }
             } else {
-                RecipeHolder<?> recipe = tickLevel.getRecipeManager()
-                                                  .getRecipeFor(AlloyingRecipe.TYPE, input, tickLevel)
-                                                  .orElse(null);
-                if (recipe == null) {
-                    recipe = tickLevel.getRecipeManager()
-                                      .getRecipeFor(RecipeType.BLASTING, new SingleRecipeInput(input.any()), tickLevel)
-                                      .orElse(null);
-                }
+                RecipeHolder<?> recipe = findRecipe(tickLevel, input);
                 boolean accepted = blockEntity.canAcceptRecipeOutput(recipe, tickLevel.registryAccess());
                 if (!burning && accepted) {
-                    blockEntity.burnTime = EndStoneSmelterBlockEntity.getFuelTime(fuel);
+                    blockEntity.burnTime = EndStoneSmelterBlockEntity.getFuelTime(fuel, tickLevel);
                     blockEntity.fuelTime = blockEntity.burnTime;
                     burning = blockEntity.isBurning();
                     if (burning) {
@@ -343,6 +331,34 @@ public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity impleme
                 blockEntity.setChanged();
             }
         }
+    }
+
+    @Nullable
+    private static RecipeHolder<?> findRecipe(Level level, AlloyingRecipeInput input) {
+        RecipeHolder<?> recipe = level.getRecipeManager()
+                                      .getRecipeFor(AlloyingRecipe.TYPE, input, level)
+                                      .orElse(null);
+        if (recipe != null) {
+            return recipe;
+        }
+
+        boolean hasFirst = !input.first().isEmpty();
+        boolean hasSecond = !input.second().isEmpty();
+        if (hasFirst == hasSecond) {
+            return null;
+        }
+
+        SingleRecipeInput singleInput = new SingleRecipeInput(hasFirst ? input.first() : input.second());
+        recipe = level.getRecipeManager()
+                      .getRecipeFor(RecipeType.BLASTING, singleInput, level)
+                      .orElse(null);
+        if (recipe != null) {
+            return recipe;
+        }
+
+        return level.getRecipeManager()
+                    .getRecipeFor(RecipeType.SMELTING, singleInput, level)
+                    .orElse(null);
     }
 
     protected boolean canAcceptRecipeOutput(RecipeHolder<?> recipe, RegistryAccess acc) {
@@ -448,11 +464,15 @@ public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity impleme
     }
 
     public static int getFuelTime(ItemStack fuel) {
+        return getFuelTime(fuel, null);
+    }
+
+    public static int getFuelTime(ItemStack fuel, @Nullable Level level) {
         if (fuel.isEmpty()) {
             return 0;
         }
         Item item = fuel.getItem();
-        return AVAILABLE_FUELS.getOrDefault(item, getFabricFuel(fuel));
+        return AVAILABLE_FUELS.getOrDefault(item, getVanillaFuelTime(fuel, level));
     }
 
     @Override
@@ -491,11 +511,11 @@ public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity impleme
             return true;
         }
         ItemStack itemStack = this.inventory.get(EndStoneSmelterMenu.FUEL_SLOT);
-        return canUseAsFuel(stack) || stack.getItem() == Items.BUCKET && itemStack.getItem() != Items.BUCKET;
+        return canUseAsFuel(stack, this.level) || stack.getItem() == Items.BUCKET && itemStack.getItem() != Items.BUCKET;
     }
 
     public static boolean canUseAsFuel(ItemStack stack) {
-        return AVAILABLE_FUELS.containsKey(stack.getItem()) || getFabricFuel(stack) > 2000;
+        return canUseAsFuel(stack, null);
     }
 
     public static void registerFuel(ItemLike fuel, int time) {
@@ -506,8 +526,12 @@ public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity impleme
         return AVAILABLE_FUELS;
     }
 
-    private static int getFabricFuel(ItemStack stack) {
-        return stack.getBurnTime(RecipeType.SMELTING);
+    public static boolean canUseAsFuel(ItemStack stack, @Nullable Level level) {
+        return AVAILABLE_FUELS.containsKey(stack.getItem()) || getVanillaFuelTime(stack, level) > 2000;
+    }
+
+    private static int getVanillaFuelTime(ItemStack stack, @Nullable Level level) {
+        return stack.getBurnTime(RecipeType.BLASTING);
     }
 
     static {
