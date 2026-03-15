@@ -4,7 +4,6 @@ import org.betterx.bclib.blocks.BaseRotatedPillarBlock;
 
 import net.minecraft.resources.Identifier;
 
-import net.neoforged.api.distmarker.Dist;
 
 import java.util.Optional;
 
@@ -20,7 +19,6 @@ public class LitPillarBlock extends BaseRotatedPillarBlock {
         return Optional.of(PATTERN.replace("name", name));
     }
 
-//    @OnlyIn(Dist.CLIENT)
 //    @Override
 //    public void provideBlockModels(WoverBlockModelGenerators generator) {
 //        var res = TextureMapping.getBlockTexture(this);

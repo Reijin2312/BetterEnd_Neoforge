@@ -1228,4 +1228,12 @@
 	"upgrade.betterend.terminite_upgrade": "Терминитовое улучшение",
 	"upgrade.betterend.thallasium_upgrade": "Талласиевая рукоять меча",
 
-	"upgrade.betterend.tool_assembly": "Сборка меча"}
+	"upgrade.betterend.tool_assembly": "Сборка меча",
+	"betterend.jei.container.anvil": "Рецепты наковальни",
+	"betterend.jei.damage.amount&dmg": "Повреждение инструмента: %s",
+	"betterend.jei.recipe_level.anvil": "Уровень: %s",
+	"betterend.jei.infusion.time&val": "%s тиков",
+	"betterend.jei.container.infusion": "Рецепты наполнения",
+	"betterend.jei.alloying.experience_time": "%s XP | %s с",
+	"betterend.jei.container.alloying": "Плавка и сплавы"
+}

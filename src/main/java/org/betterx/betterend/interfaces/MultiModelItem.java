@@ -2,7 +2,6 @@ package org.betterx.betterend.interfaces;
 
 import org.betterx.betterend.registry.EndItems;
 
-import net.neoforged.api.distmarker.Dist;
 
 public interface MultiModelItem {
     void registerModelPredicate();

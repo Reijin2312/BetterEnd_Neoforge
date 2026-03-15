@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "betterend:item/pythadendron_bar_stool"
+    "model": "betterend:block/pythadendron_bar_stool"
   }
 }

@@ -12,7 +12,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
@@ -29,6 +28,8 @@ import java.util.OptionalInt;
 
 public class BetterEndSkyRenderer {
     private static final int VERTEX_BUFFER_USAGE = 32;
+    // 1.21 effective end-fog tint in sky pass was ~0.6 of final fog RGB (0.15 * legacy *4 path).
+    private static final float LEGACY_END_FOG_COLOR_SCALE = 0.6F;
 
     private static final class MeshBuffer implements AutoCloseable {
         final GpuBuffer buffer;
@@ -110,7 +111,7 @@ public class BetterEndSkyRenderer {
             matrices.pushPose();
             matrices.mulPose(new Quaternionf().rotationXYZ(0, time, 0));
             renderBuffer(
-                matrices,
+                    matrices,
                     horizon,
                     HORIZON,
                     true,
@@ -122,74 +123,81 @@ public class BetterEndSkyRenderer {
             );
             matrices.popPose();
 
-            matrices.pushPose();
-            matrices.mulPose(new Quaternionf().rotationXYZ(0, -time, 0));
-            renderBuffer(
-                    matrices,
-                    nebula1,
-                    NEBULA_1,
-                    true,
-                    0.77f,
-                    0.31f,
-                    0.73f,
-                    blind02,
-                    setupFog
-            );
-            matrices.popPose();
+            // TEMP: disable nebula pass 1 to isolate overexposure source.
+            // matrices.pushPose();
+            // matrices.mulPose(new Quaternionf().rotationXYZ(0, -time, 0));
+            // renderBuffer(
+            //         matrices,
+            //         nebula1,
+            //         NEBULA_1,
+            //         true,
+            //         0.77f,
+            //         0.31f,
+            //         0.73f,
+            //         blind02,
+            //         setupFog
+            // );
+            // matrices.popPose();
 
-            matrices.pushPose();
-            matrices.mulPose(new Quaternionf().rotationXYZ(0, time2, 0));
-            renderBuffer(
-                    matrices,
-                    nebula2,
-                    NEBULA_2,
-                    true,
-                    0.77f,
-                    0.31f,
-                    0.73f,
-                    blind02,
-                    setupFog
-            );
-            matrices.popPose();
+            // TEMP: disable nebula pass 2 to isolate overexposure source.
+            // matrices.pushPose();
+            // matrices.mulPose(new Quaternionf().rotationXYZ(0, time2, 0));
+            // renderBuffer(
+            //         matrices,
+            //         nebula2,
+            //         NEBULA_2,
+            //         true,
+            //         0.77f,
+            //         0.31f,
+            //         0.73f,
+            //         blind02,
+            //         setupFog
+            // );
+            // matrices.popPose();
 
-            matrices.pushPose();
-            matrices.mulPose(new Quaternionf().setAngleAxis(time, axis3.x, axis3.y, axis3.z));
-            renderBuffer(
-                    matrices,
-                    stars3,
-                    STARS,
-                    true,
-                    0.77f,
-                    0.31f,
-                    0.73f,
-                    blind06,
-                    setupFog
-            );
-            matrices.popPose();
+            // TEMP: disable textured star layers to isolate sky tint source.
+            // matrices.pushPose();
+            // matrices.mulPose(new Quaternionf().setAngleAxis(time, axis3.x, axis3.y, axis3.z));
+            // renderBuffer(
+            //         matrices,
+            //         stars3,
+            //         STARS,
+            //         true,
+            //         0.77f,
+            //         0.31f,
+            //         0.73f,
+            //         blind06,
+            //         setupFog
+            // );
+            // matrices.popPose();
 
-            matrices.pushPose();
-            matrices.mulPose(new Quaternionf().setAngleAxis(time2, axis4.x, axis4.y, axis4.z));
-            renderBuffer(matrices, stars4, STARS, true, 1F, 1F, 1F, blind06, setupFog);
-            matrices.popPose();
+            // matrices.pushPose();
+            // matrices.mulPose(new Quaternionf().setAngleAxis(time2, axis4.x, axis4.y, axis4.z));
+            // renderBuffer(matrices, stars4, STARS, true, 1F, 1F, 1F, blind06, setupFog);
+            // matrices.popPose();
         }
 
-        float a = (BackgroundInfo.fogDensity - 1F);
-        if (a > 0) {
-            if (a > 1F) {
-                a = 1F;
-            }
-            renderBuffer(
-                    matrices,
-                    fog,
-                    FOG,
-                    true,
-                    BackgroundInfo.fogColorRed,
-                    BackgroundInfo.fogColorGreen,
-                    BackgroundInfo.fogColorBlue,
-                    a,
-                    setupFog
-            );
-        }
+        // TEMP: sky fog texture pass is disabled for debugging.
+        // float a = BackgroundInfo.fogDensity - 1F;
+        // if (a > 0) {
+        //     if (a > 1F) {
+        //         a = 1F;
+        //     }
+        //     float fogRed = Mth.clamp(BackgroundInfo.fogColorRed * LEGACY_END_FOG_COLOR_SCALE, 0.0F, 1.0F);
+        //     float fogGreen = Mth.clamp(BackgroundInfo.fogColorGreen * LEGACY_END_FOG_COLOR_SCALE, 0.0F, 1.0F);
+        //     float fogBlue = Mth.clamp(BackgroundInfo.fogColorBlue * LEGACY_END_FOG_COLOR_SCALE, 0.0F, 1.0F);
+        //     renderBuffer(
+        //             matrices,
+        //             fog,
+        //             FOG,
+        //             true,
+        //             fogRed,
+        //             fogGreen,
+        //             fogBlue,
+        //             a,
+        //             setupFog
+        //     );
+        // }
 
         if (blindA > 0) {
             matrices.pushPose();
@@ -258,10 +266,12 @@ public class BetterEndSkyRenderer {
             return;
         }
 
-        setupFog.run();
+        // TEMP: disable sky fog uniform setup to isolate fog-color bleeding into sky layers.
+        // setupFog.run();
 
         Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
         matrix4fStack.pushMatrix();
+        matrix4fStack.identity();
         matrix4fStack.mul(matrices.last().pose());
         GpuBufferSlice transforms = RenderSystem.getDynamicUniforms()
                                                 .writeTransform(
@@ -275,7 +285,7 @@ public class BetterEndSkyRenderer {
         Minecraft minecraft = Minecraft.getInstance();
         GpuTextureView colorTexture = minecraft.getMainRenderTarget().getColorTextureView();
         GpuTextureView depthTexture = minecraft.getMainRenderTarget().getDepthTextureView();
-        RenderPipeline pipeline = textured ? RenderPipelines.CELESTIAL : RenderPipelines.STARS;
+        RenderPipeline pipeline = textured ? BetterEndRenderPipelines.SKY_TEXTURED : BetterEndRenderPipelines.SKY_STARS;
         AbstractTexture abstractTexture = null;
 
         // Texture upload cannot happen while a render pass is open.

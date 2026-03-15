@@ -7,7 +7,6 @@ import net.minecraft.client.particle.*;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 
-import net.neoforged.api.distmarker.Dist;
 
 public class ParticleGeyser extends SingleQuadParticle {
     private final MutableBlockPos mut = new MutableBlockPos();

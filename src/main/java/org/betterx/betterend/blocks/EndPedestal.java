@@ -11,7 +11,6 @@ import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.world.level.block.Block;
 
-import net.neoforged.api.distmarker.Dist;
 
 public abstract class EndPedestal extends PedestalBlock {
 

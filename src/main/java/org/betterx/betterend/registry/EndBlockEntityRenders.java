@@ -2,7 +2,6 @@ package org.betterx.betterend.registry;
 
 import org.betterx.betterend.client.render.PedestalItemRenderer;
 
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 public class EndBlockEntityRenders {

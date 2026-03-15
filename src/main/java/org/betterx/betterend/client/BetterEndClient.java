@@ -1,8 +1,7 @@
 package org.betterx.betterend.client;
 
 import org.betterx.betterend.BetterEnd;
-import org.betterx.betterend.client.render.BetterEndSkyEffect;
-import org.betterx.betterend.config.Configs;
+import org.betterx.betterend.client.render.BetterEndRenderPipelines;
 import org.betterx.betterend.config.screen.ConfigScreen;
 import org.betterx.betterend.events.ItemTooltipCallback;
 import org.betterx.betterend.interfaces.MultiModelItem;
@@ -26,6 +25,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -80,10 +80,16 @@ public class BetterEndClient {
 
     @SubscribeEvent
     public static void registerEnvironmentEffects(RegisterCustomEnvironmentEffectRendererEvent event) {
-        if (!Configs.CLIENT_CONFIG.customSky.get()) {
-            return;
-        }
-        event.registerSkyboxRenderer(END_SKYBOX_ID, new BetterEndSkyEffect());
+        // TEMP: custom End sky is fully disabled for debugging.
+        // if (!Configs.CLIENT_CONFIG.customSky.get()) {
+        //     return;
+        // }
+        // event.registerSkyboxRenderer(END_SKYBOX_ID, new BetterEndSkyEffect());
+    }
+
+    @SubscribeEvent
+    public static void registerRenderPipelines(RegisterRenderPipelinesEvent event) {
+        BetterEndRenderPipelines.register(event);
     }
 
     @SubscribeEvent

@@ -85,8 +85,10 @@ public class InfusionRitual implements Container {
     }
 
     public boolean checkRecipe() {
+        if (world == null || world.isClientSide()) return false;
         if (!isValid()) return false;
-        RecipeHolder<InfusionRecipe> recipe = ((RecipeManager) world.recipeAccess())
+        if (!(world.recipeAccess() instanceof RecipeManager recipeManager)) return false;
+        RecipeHolder<InfusionRecipe> recipe = recipeManager
                 .getRecipeFor(InfusionRecipe.TYPE, new InfusionInput(), world)
                 .orElse(null);
         if (hasRecipe()) {
@@ -125,6 +127,7 @@ public class InfusionRitual implements Container {
     }
 
     public void tick() {
+        if (world == null || world.isClientSide()) return;
         if (isDirty) {
             configure();
             isDirty = false;

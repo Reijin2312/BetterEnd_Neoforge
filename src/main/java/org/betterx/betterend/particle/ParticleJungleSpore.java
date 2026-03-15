@@ -10,7 +10,6 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.RandomSource;
 
-import net.neoforged.api.distmarker.Dist;
 
 public class ParticleJungleSpore extends SimpleAnimatedParticle {
 

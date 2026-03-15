@@ -3,7 +3,6 @@ package org.betterx.betterend.particle;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 
-import net.neoforged.api.distmarker.Dist;
 
 public class InfusionParticle extends SingleQuadParticle {
 

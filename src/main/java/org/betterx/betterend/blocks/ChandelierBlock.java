@@ -5,12 +5,11 @@ import org.betterx.bclib.client.render.BCLRenderLayer;
 import org.betterx.bclib.interfaces.RenderLayerProvider;
 import org.betterx.betterend.client.models.EndModels;
 import org.betterx.wover.block.api.model.BlockModelProvider;
+import org.betterx.wover.block.api.model.DatagenModelDispatch;
 import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 
 import com.mojang.math.Quadrant;
 import net.minecraft.client.data.models.BlockModelGenerators;
-import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
-import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.renderer.block.model.VariantMutator;
 import net.minecraft.core.BlockPos;
@@ -27,6 +26,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import com.google.common.collect.Maps;
 
 import java.util.EnumMap;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class ChandelierBlock extends BaseAttachedBlock.Metal implements RenderLayerProvider, BlockModelProvider {
     private static final EnumMap<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(Direction.class);
@@ -51,7 +52,9 @@ public class ChandelierBlock extends BaseAttachedBlock.Metal implements RenderLa
     }
 
     @Override
-    public void provideBlockModels(WoverBlockModelGenerators generator) {
+    @OnlyIn(Dist.CLIENT)
+    public void provideBlockModels(Object modelGenerator) {
+        WoverBlockModelGenerators generator = (WoverBlockModelGenerators) modelGenerator;
         final var baseTexture = TextureMapping.getBlockTexture(this);
         final var mapping = new TextureMapping()
                 .put(EndModels.WALL, baseTexture.withSuffix("_wall"))
@@ -62,22 +65,21 @@ public class ChandelierBlock extends BaseAttachedBlock.Metal implements RenderLa
         final var modelWall = EndModels.CHANDELIER_WALL.createWithSuffix(this, "_wall", mapping, generator.modelOutput());
         final var modelFloor = EndModels.CHANDELIER_FLOOR.createWithSuffix(this, "_floor", mapping, generator.modelOutput());
 
-        final var prop = PropertyDispatch
-                .initial(FACING)
-                .select(Direction.DOWN, BlockModelGenerators.plainVariant(modelCeil))
-                .select(Direction.UP, BlockModelGenerators.plainVariant(modelFloor))
-                .select(Direction.EAST, BlockModelGenerators
+        final Object prop = DatagenModelDispatch.propertyDispatchInitial(FACING);
+        DatagenModelDispatch.propertyDispatchSelect(prop, Direction.DOWN, BlockModelGenerators.plainVariant(modelCeil));
+        DatagenModelDispatch.propertyDispatchSelect(prop, Direction.UP, BlockModelGenerators.plainVariant(modelFloor));
+        DatagenModelDispatch.propertyDispatchSelect(prop, Direction.EAST, BlockModelGenerators
                         .plainVariant(modelWall)
-                        .with(VariantMutator.Y_ROT.withValue(Quadrant.R270)))
-                .select(Direction.SOUTH, BlockModelGenerators.plainVariant(modelWall))
-                .select(Direction.WEST, BlockModelGenerators
+                        .with(VariantMutator.Y_ROT.withValue(Quadrant.R270)));
+        DatagenModelDispatch.propertyDispatchSelect(prop, Direction.SOUTH, BlockModelGenerators.plainVariant(modelWall));
+        DatagenModelDispatch.propertyDispatchSelect(prop, Direction.WEST, BlockModelGenerators
                         .plainVariant(modelWall)
-                        .with(VariantMutator.Y_ROT.withValue(Quadrant.R90)))
-                .select(Direction.NORTH, BlockModelGenerators
+                        .with(VariantMutator.Y_ROT.withValue(Quadrant.R90)));
+        DatagenModelDispatch.propertyDispatchSelect(prop, Direction.NORTH, BlockModelGenerators
                         .plainVariant(modelWall)
                         .with(VariantMutator.Y_ROT.withValue(Quadrant.R180)));
 
-        generator.acceptBlockState(MultiVariantGenerator.dispatch(this).with(prop));
+        generator.acceptBlockState(DatagenModelDispatch.dispatchWith(this, prop));
         generator.delegateItemModel(this, modelCeil);
     }
 

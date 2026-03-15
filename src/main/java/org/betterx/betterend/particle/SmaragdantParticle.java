@@ -8,7 +8,6 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
-import net.neoforged.api.distmarker.Dist;
 
 public class SmaragdantParticle extends SimpleAnimatedParticle {
     private double preVX;

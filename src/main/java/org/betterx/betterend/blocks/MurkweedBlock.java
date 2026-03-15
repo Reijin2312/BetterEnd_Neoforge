@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 
-import net.neoforged.api.distmarker.Dist;
 
 public class MurkweedBlock extends EndPlantBlock implements SurvivesOnShadowGrass {
     public MurkweedBlock() {

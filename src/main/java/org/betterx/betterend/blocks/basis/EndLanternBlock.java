@@ -3,7 +3,6 @@ package org.betterx.betterend.blocks.basis;
 import org.betterx.bclib.blocks.BaseBlockNotFull;
 import org.betterx.wover.block.api.BlockProperties;
 import org.betterx.wover.block.api.model.BlockModelProvider;
-import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,9 +26,10 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 
-import net.neoforged.api.distmarker.Dist;
 
 import org.jetbrains.annotations.Nullable;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public abstract class EndLanternBlock extends BaseBlockNotFull implements SimpleWaterloggedBlock, LiquidBlockContainer, BlockModelProvider {
     public static final BooleanProperty IS_FLOOR = BlockProperties.IS_FLOOR;
@@ -139,5 +139,6 @@ public abstract class EndLanternBlock extends BaseBlockNotFull implements Simple
     }
 
     @Override
-    public abstract void provideBlockModels(WoverBlockModelGenerators generator);
+    @OnlyIn(Dist.CLIENT)
+    public abstract void provideBlockModels(Object generator);
 }

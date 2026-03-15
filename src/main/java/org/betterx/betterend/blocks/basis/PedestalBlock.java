@@ -12,12 +12,11 @@ import org.betterx.betterend.rituals.InfusionRitual;
 import org.betterx.wover.block.api.BlockProperties;
 import org.betterx.wover.block.api.BlockTagProvider;
 import org.betterx.wover.block.api.model.BlockModelProvider;
+import org.betterx.wover.block.api.model.DatagenModelDispatch;
 import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 import org.betterx.wover.tag.api.event.context.TagBootstrapContext;
 
 import net.minecraft.client.data.models.BlockModelGenerators;
-import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
-import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.Direction;
@@ -52,7 +51,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.util.RandomSource;
 
-import net.neoforged.api.distmarker.Dist;
 
 import com.google.common.collect.Lists;
 
@@ -62,6 +60,8 @@ import java.util.Map;
 import java.util.function.ToIntFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class PedestalBlock extends BaseBlockNotFull implements EntityBlock, BlockTagProvider, BlockModelProvider {
     public final static EnumProperty<PedestalState> STATE = EndBlockProperties.PEDESTAL_STATE;
@@ -377,17 +377,22 @@ public class PedestalBlock extends BaseBlockNotFull implements EntityBlock, Bloc
         return state.getValue(HAS_ITEM) ? 15 : 0;
     }
 
-    private static final Map<PedestalState, ModelTemplate> PEDESTAL_MODELS = Map.of(
-            PedestalState.DEFAULT, EndModels.PEDESTAL_DEFAULT,
-            PedestalState.PEDESTAL_TOP, EndModels.PEDESTAL_TOP,
-            PedestalState.COLUMN_TOP, EndModels.PEDESTAL_COLUMN_TOP,
-            PedestalState.COLUMN, EndModels.PEDESTAL_COLUMN,
-            PedestalState.BOTTOM, EndModels.PEDESTAL_BOTTOM,
-            PedestalState.PILLAR, EndModels.PEDESTAL_PILLAR
-    );
+    @OnlyIn(Dist.CLIENT)
+    private static Map<PedestalState, ModelTemplate> pedestalModels() {
+        return Map.of(
+                PedestalState.DEFAULT, EndModels.PEDESTAL_DEFAULT,
+                PedestalState.PEDESTAL_TOP, EndModels.PEDESTAL_TOP,
+                PedestalState.COLUMN_TOP, EndModels.PEDESTAL_COLUMN_TOP,
+                PedestalState.COLUMN, EndModels.PEDESTAL_COLUMN,
+                PedestalState.BOTTOM, EndModels.PEDESTAL_BOTTOM,
+                PedestalState.PILLAR, EndModels.PEDESTAL_PILLAR
+        );
+    }
 
     @Override
-    public void provideBlockModels(WoverBlockModelGenerators generator) {
+    @OnlyIn(Dist.CLIENT)
+    public void provideBlockModels(Object modelGenerator) {
+        WoverBlockModelGenerators generator = (WoverBlockModelGenerators) modelGenerator;
         provideBlockModel(generator, createTextureMapping(), this);
     }
 
@@ -396,7 +401,7 @@ public class PedestalBlock extends BaseBlockNotFull implements EntityBlock, Bloc
             TextureMapping mapping,
             Block pedestalBlock
     ) {
-        provideBlockModel(generator, mapping, pedestalBlock, PEDESTAL_MODELS);
+        provideBlockModel(generator, mapping, pedestalBlock, pedestalModels());
     }
 
     public static void provideBlockModel(
@@ -406,17 +411,17 @@ public class PedestalBlock extends BaseBlockNotFull implements EntityBlock, Bloc
             Map<PedestalState, ModelTemplate> pdestalModels
     ) {
         final Identifier id = TextureMapping.getBlockTexture(pedestalBlock);
-        final var properties = PropertyDispatch.initial(STATE);
+        final Object properties = DatagenModelDispatch.propertyDispatchInitial(STATE);
 
         for (var entry : pdestalModels.entrySet()) {
             final String suffix = "_" + entry.getKey();
             Identifier model = entry
                     .getValue()
                     .createWithSuffix(pedestalBlock, suffix, mapping, generator.modelOutput());
-            properties.select(entry.getKey(), BlockModelGenerators.plainVariant(model));
+            DatagenModelDispatch.propertyDispatchSelect(properties, entry.getKey(), BlockModelGenerators.plainVariant(model));
         }
 
-        generator.acceptBlockState(MultiVariantGenerator.dispatch(pedestalBlock).with(properties));
+        generator.acceptBlockState(DatagenModelDispatch.dispatchWith(pedestalBlock, properties));
         generator.delegateItemModel(pedestalBlock, id.withSuffix("_default"));
     }
 

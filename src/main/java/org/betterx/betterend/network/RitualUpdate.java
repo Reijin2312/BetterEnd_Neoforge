@@ -13,8 +13,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 
-import net.neoforged.api.distmarker.Dist;
 import de.ambertation.wunderlib.network.PacketSender;
 
 public class RitualUpdate extends ClientBoundPacketHandler<RitualUpdate.Payload> {
@@ -73,14 +73,30 @@ public class RitualUpdate extends ClientBoundPacketHandler<RitualUpdate.Payload>
 
         @Override
         protected void processOnGameThread(Minecraft client) {
+            Level level = getClientLevel(client);
+            if (level == null) {
+                return;
+            }
+
             EternalRitual.updateActiveStateOnPedestals(
                     center,
                     axis,
                     (flags & ACTIVE_FLAG) != 0,
                     (flags & WILL_ACTIVATE_FLAG) != 0,
-                    client.level,
+                    level,
                     null
             );
+        }
+
+        private static Level getClientLevel(Minecraft client) {
+            try {
+                Object value = Minecraft.class.getField("level").get(client);
+                if (value instanceof Level level) {
+                    return level;
+                }
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            }
+            return null;
         }
     }
 

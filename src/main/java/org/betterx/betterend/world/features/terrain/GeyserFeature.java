@@ -34,6 +34,7 @@ import java.util.function.Function;
 
 public class GeyserFeature extends DefaultFeature {
     private static final Direction[] HORIZONTAL = BlocksHelper.makeHorizontal();
+    private static final int MIN_FOUNDATION_DEPTH = 25;
 
     @Override
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> featureConfig) {
@@ -54,7 +55,7 @@ public class GeyserFeature extends DefaultFeature {
             state = world.getBlockState(bpos);
         }
 
-        if (pos.getY() - bpos.getY() < 25) {
+        if (pos.getY() - bpos.getY() < MIN_FOUNDATION_DEPTH) {
             return false;
         }
 

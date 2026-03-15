@@ -6,13 +6,12 @@ import org.betterx.bclib.interfaces.BlockColorProvider;
 import org.betterx.bclib.interfaces.CustomColorProvider;
 import org.betterx.bclib.interfaces.ItemColorProvider;
 import org.betterx.betterend.registry.EndBlocks;
+import org.betterx.wover.block.api.model.DatagenModelDispatch;
 import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.data.models.BlockModelGenerators;
-import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
-import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.world.level.BlockGetter;
@@ -22,9 +21,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.api.distmarker.Dist;
 
 import org.jetbrains.annotations.NotNull;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class StoneLanternBlock extends EndLanternBlock implements CustomColorProvider, BehaviourStone {
     private static final VoxelShape SHAPE_CEIL = box(3, 1, 3, 13, 16, 13);
@@ -53,7 +53,9 @@ public class StoneLanternBlock extends EndLanternBlock implements CustomColorPro
     }
 
     @Override
-    public void provideBlockModels(WoverBlockModelGenerators generator) {
+    @OnlyIn(Dist.CLIENT)
+    public void provideBlockModels(Object modelGenerator) {
+        WoverBlockModelGenerators generator = (WoverBlockModelGenerators) modelGenerator;
         //get id of this block from registry
         final var id = BuiltInRegistries.BLOCK.getKey(this);
         final var mapping = new TextureMapping()
@@ -65,11 +67,9 @@ public class StoneLanternBlock extends EndLanternBlock implements CustomColorPro
         final var floorModel = BCLModels.STONE_LANTERN_FLOOR.createWithSuffix(this, "_floor", mapping, generator.modelOutput());
         final var ceilModel = BCLModels.STONE_LANTERN_CEIL.create(this, mapping, generator.modelOutput());
 
-        generator.acceptBlockState(MultiVariantGenerator
-                .dispatch(this)
-                .with(PropertyDispatch
-                        .initial(IS_FLOOR)
-                        .select(true, BlockModelGenerators.plainVariant(floorModel))
-                        .select(false, BlockModelGenerators.plainVariant(ceilModel))));
+        final Object properties = DatagenModelDispatch.propertyDispatchInitial(IS_FLOOR);
+        DatagenModelDispatch.propertyDispatchSelect(properties, true, BlockModelGenerators.plainVariant(floorModel));
+        DatagenModelDispatch.propertyDispatchSelect(properties, false, BlockModelGenerators.plainVariant(ceilModel));
+        generator.acceptBlockState(DatagenModelDispatch.dispatchWith(this, properties));
     }
 }

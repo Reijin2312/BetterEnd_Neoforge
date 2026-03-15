@@ -7,10 +7,8 @@ import org.betterx.datagen.betterend.advancement.EndAdvancementDataProvider;
 import org.betterx.datagen.betterend.recipes.*;
 import org.betterx.datagen.betterend.tags.BiomeTagProvider;
 import org.betterx.datagen.betterend.tags.BlockTagProvider;
-import org.betterx.datagen.betterend.tags.BYGBlockTagsProvider;
 import org.betterx.datagen.betterend.tags.ItemTagProvider;
 import org.betterx.datagen.betterend.tags.NourishItemTagProvider;
-import org.betterx.datagen.betterend.worldgen.BYGBiomeProvider;
 import org.betterx.datagen.betterend.worldgen.EndBiomeModificationProvider;
 import org.betterx.datagen.betterend.worldgen.EndBiomesProvider;
 import org.betterx.datagen.betterend.worldgen.StructureDataProvider;
@@ -54,10 +52,13 @@ public class BetterEndDatagen extends WoverDataGenEntryPoint {
         globalPack.addProvider(modCore -> (output, registries) ->
                 new EndAdvancementDataProvider(output, registries));
 
-        // Keep BYG datagen on the global pack to avoid duplicate "Registries" provider names in NeoForge 1.21.11.
-        globalPack.addMultiProvider(BYGFeatureProvider::new);
-        globalPack.addProvider(BYGBlockTagsProvider::new);
-        globalPack.addMultiProvider(BYGBiomeProvider::new);
+        // Keep default behavior aligned with 1.21: BYG worldgen content is not part of the
+        // main BetterEnd pack by default. Otherwise BYG biomes can spawn as empty biomes when
+        // BYG itself is not installed.
+//        addDatapack(BetterEnd.BYG_ADDITIONS_PACK)
+//                .addMultiProvider(BYGFeatureProvider::new)
+//                .addProvider(BYGBlockTagsProvider::new)
+//                .addMultiProvider(BYGBiomeProvider::new);
 
         //Add providers for the nourish integration
         addDatapack(BetterEnd.NOURISH_ADDITIONS_PACK)

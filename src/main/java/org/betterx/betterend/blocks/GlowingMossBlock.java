@@ -10,7 +10,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
-import net.neoforged.api.distmarker.Dist;
 
 public class GlowingMossBlock extends EndPlantBlock implements SurvivesOnMossOrMycelium, BehaviourPlant {
     public GlowingMossBlock(int light) {

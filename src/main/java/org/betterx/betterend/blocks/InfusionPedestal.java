@@ -25,11 +25,12 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.api.distmarker.Dist;
 
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @SuppressWarnings("deprecation")
 public class InfusionPedestal extends PedestalBlock implements BehaviourStone, BlockModelProvider {
@@ -97,14 +98,17 @@ public class InfusionPedestal extends PedestalBlock implements BehaviourStone, B
         return InfusionPedestalEntity::tickEntity;
     }
 
-    private static final Map<EndBlockProperties.PedestalState, ModelTemplate> PEDESTAL_MODELS = Map.of(
-            EndBlockProperties.PedestalState.DEFAULT, EndModels.INFUSION_PEDESTAL_DEFAULT,
-            EndBlockProperties.PedestalState.PEDESTAL_TOP, EndModels.INFUSION_PEDESTAL_TOP,
-            EndBlockProperties.PedestalState.COLUMN_TOP, EndModels.PEDESTAL_COLUMN_TOP,
-            EndBlockProperties.PedestalState.COLUMN, EndModels.PEDESTAL_COLUMN,
-            EndBlockProperties.PedestalState.BOTTOM, EndModels.PEDESTAL_BOTTOM,
-            EndBlockProperties.PedestalState.PILLAR, EndModels.PEDESTAL_PILLAR
-    );
+    @OnlyIn(Dist.CLIENT)
+    private static Map<EndBlockProperties.PedestalState, ModelTemplate> pedestalModels() {
+        return Map.of(
+                EndBlockProperties.PedestalState.DEFAULT, EndModels.INFUSION_PEDESTAL_DEFAULT,
+                EndBlockProperties.PedestalState.PEDESTAL_TOP, EndModels.INFUSION_PEDESTAL_TOP,
+                EndBlockProperties.PedestalState.COLUMN_TOP, EndModels.PEDESTAL_COLUMN_TOP,
+                EndBlockProperties.PedestalState.COLUMN, EndModels.PEDESTAL_COLUMN,
+                EndBlockProperties.PedestalState.BOTTOM, EndModels.PEDESTAL_BOTTOM,
+                EndBlockProperties.PedestalState.PILLAR, EndModels.PEDESTAL_PILLAR
+        );
+    }
 
     protected TextureMapping createTextureMapping() {
         final var parentTexture = TextureMapping.getBlockTexture(this);
@@ -116,8 +120,10 @@ public class InfusionPedestal extends PedestalBlock implements BehaviourStone, B
     }
 
     @Override
-    public void provideBlockModels(WoverBlockModelGenerators generator) {
-        provideBlockModel(generator, createTextureMapping(), this, PEDESTAL_MODELS);
+    @OnlyIn(Dist.CLIENT)
+    public void provideBlockModels(Object modelGenerator) {
+        WoverBlockModelGenerators generator = (WoverBlockModelGenerators) modelGenerator;
+        provideBlockModel(generator, createTextureMapping(), this, pedestalModels());
     }
 
     static {

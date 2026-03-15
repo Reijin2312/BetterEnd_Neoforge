@@ -1054,5 +1054,12 @@
   "upgrade.betterend.plate_upgrade": "Ätherbeschichtung",
   "upgrade.betterend.terminite_upgrade": "Terminiteverbesserung",
   "upgrade.betterend.thallasium_upgrade": "Thallasium Schwertgriff",
-  "upgrade.betterend.tool_assembly": "Schwerter Zusammensetzen"
+  "upgrade.betterend.tool_assembly": "Schwerter Zusammensetzen",
+  "betterend.jei.container.anvil": "Amboss-Rezepte",
+  "betterend.jei.damage.amount&dmg": "Werkzeugschaden: %s",
+  "betterend.jei.recipe_level.anvil": "Stufe: %s",
+  "betterend.jei.infusion.time&val": "%s Ticks",
+  "betterend.jei.container.infusion": "Infusionsrezepte",
+  "betterend.jei.alloying.experience_time": "%s EP | %s s",
+  "betterend.jei.container.alloying": "Legieren und Schmelzen"
 }

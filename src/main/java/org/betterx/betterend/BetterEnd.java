@@ -1,6 +1,7 @@
 package org.betterx.betterend;
 
 import de.ambertation.wunderlib.network.ClientBoundPacketHandler;
+import org.betterx.bclib.BCLib;
 import org.betterx.betterend.advancements.BECriteria;
 import org.betterx.betterend.api.BetterEndPlugin;
 import org.betterx.betterend.commands.CommandRegistry;
@@ -109,7 +110,9 @@ public class BetterEnd {
             BiomeDecider.registerHighPriorityDecider(C.mk("end_land"), new EndLandBiomeDecider());
         }
 
-        ClientBoundPacketHandler.register(RitualUpdate.CHANNEL, RitualUpdate.Payload::new);
+        if (BCLib.isClient()) {
+            ClientBoundPacketHandler.register(RitualUpdate.CHANNEL, RitualUpdate.Payload::new);
+        }
     }
 
     private static boolean bonemealInitialized = false;

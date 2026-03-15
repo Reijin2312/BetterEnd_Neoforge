@@ -909,5 +909,12 @@
 	"block.betterend.pallidium_heavy": "팔리디움 (중형 커버)",
 	"block.betterend.pallidium_thin": "팔리디움 (경형 커버)",
 	"block.betterend.pallidium_tiny": "팔리디움 (초경형 커버)",
-	"block.betterend.flammalix": "플래멀릭스"
+	"block.betterend.flammalix": "플래멀릭스",
+	"betterend.jei.container.anvil": "모루 레시피",
+	"betterend.jei.damage.amount&dmg": "도구 손상: %s",
+	"betterend.jei.recipe_level.anvil": "레벨: %s",
+	"betterend.jei.infusion.time&val": "%s틱",
+	"betterend.jei.container.infusion": "주입 레시피",
+	"betterend.jei.alloying.experience_time": "%s XP | %s초",
+	"betterend.jei.container.alloying": "합금 및 제련"
 }

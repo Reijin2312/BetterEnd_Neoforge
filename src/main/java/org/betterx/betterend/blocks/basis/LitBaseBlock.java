@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 
-import net.neoforged.api.distmarker.Dist;
 
 import org.jetbrains.annotations.Nullable;
 

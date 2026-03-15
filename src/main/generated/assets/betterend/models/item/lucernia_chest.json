@@ -1,6 +1,7 @@
 {
   "parent": "bclib:block/chest_item",
   "textures": {
+    "particle": "betterend:block/chest/lucernia_chest",
     "texture": "betterend:block/chest/lucernia_chest"
   }
 }

@@ -14,8 +14,9 @@ import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
 
 public class HydraluxPetalColoredBlock extends HydraluxPetalBlock implements CustomColorProvider, BlockModelProvider {
     public HydraluxPetalColoredBlock(BlockBehaviour.Properties settings) {
@@ -33,7 +34,6 @@ public class HydraluxPetalColoredBlock extends HydraluxPetalBlock implements Cus
     }
 
 //    @Override
-//    @OnlyIn(Dist.CLIENT)
 //    public @Nullable BlockModel getBlockModel(Identifier resourceLocation, BlockState blockState) {
 //        String path = "betterend:block/block_petal_colored";
 //        Optional<String> pattern = Patterns.createJson(Patterns.BLOCK_PETAL_COLORED, path, path);
@@ -43,7 +43,9 @@ public class HydraluxPetalColoredBlock extends HydraluxPetalBlock implements Cus
     private static Identifier PETAL_MODEL;
 
     @Override
-    public void provideBlockModels(WoverBlockModelGenerators generator) {
+    @OnlyIn(Dist.CLIENT)
+    public void provideBlockModels(Object modelGenerator) {
+    WoverBlockModelGenerators generator = (WoverBlockModelGenerators) modelGenerator;
         final var modelLocation = BetterEnd.C.mk("block/hydralux_petal_block_colored");
         final var mapping = new TextureMapping().put(TextureSlot.TEXTURE, BetterEnd.C.mk("block/hydralux_petal_block_colored"));
         if (PETAL_MODEL == null)

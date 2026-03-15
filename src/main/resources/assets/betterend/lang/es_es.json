@@ -873,5 +873,12 @@
 
   	"tooltip.armor.crystalite_set": "Dar bonus: Regeneración I",
   	"tooltip.armor.crystalite_chest": "Efecto: Velocidad de Rapidez I",
-  	"tooltip.armor.crystalite_boots": "Efecto: Velocidad I"
+  	"tooltip.armor.crystalite_boots": "Efecto: Velocidad I",
+  	"betterend.jei.container.anvil": "Recetas de yunque",
+  	"betterend.jei.damage.amount&dmg": "Daño de herramienta: %s",
+  	"betterend.jei.recipe_level.anvil": "Nivel: %s",
+  	"betterend.jei.infusion.time&val": "%s ticks",
+  	"betterend.jei.container.infusion": "Recetas de infusión",
+  	"betterend.jei.alloying.experience_time": "%s EXP | %s s",
+  	"betterend.jei.container.alloying": "Aleación y fundición"
 }

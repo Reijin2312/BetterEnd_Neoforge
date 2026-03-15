@@ -20,7 +20,6 @@ import org.betterx.betterend.item.model.CrystaliteLeggingsModel;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
 
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 public class EndEntitiesRenders {

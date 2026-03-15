@@ -11,7 +11,6 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 
-import net.neoforged.api.distmarker.Dist;
 
 import com.google.common.collect.Lists;
 

@@ -11,7 +11,6 @@ import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
-import net.neoforged.api.distmarker.Dist;
 
 public class PedestalVanilla extends PedestalBlock implements BehaviourStone {
 

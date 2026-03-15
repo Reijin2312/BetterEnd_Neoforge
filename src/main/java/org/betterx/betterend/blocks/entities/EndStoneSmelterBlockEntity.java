@@ -173,7 +173,7 @@ public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity impleme
 
     protected int getSmeltTime() {
         if (level == null) return 200;
-        RecipeManager recipeManager = (RecipeManager) level.recipeAccess();
+        if (!(level.recipeAccess() instanceof RecipeManager recipeManager)) return 200;
         final AlloyingRecipeInput input = new AlloyingRecipeInput(
                 this.inventory.get(EndStoneSmelterMenu.INGREDIENT_SLOT_A),
                 this.inventory.get(EndStoneSmelterMenu.INGREDIENT_SLOT_B)
@@ -202,7 +202,7 @@ public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity impleme
 
     public void dropExperience(Player player) {
         if (level == null) return;
-        RecipeManager recipeManager = (RecipeManager) level.recipeAccess();
+        if (!(level.recipeAccess() instanceof RecipeManager recipeManager)) return;
         List<RecipeHolder<?>> list = Lists.newArrayList();
         for (Entry<ResourceKey<Recipe<?>>> entry : recipesUsed.object2IntEntrySet()) {
             recipeManager.byKey(entry.getKey()).ifPresent((recipe) -> {
@@ -285,7 +285,7 @@ public class EndStoneSmelterBlockEntity extends BaseContainerBlockEntity impleme
 
         boolean burning = initialBurning;
         if (!tickLevel.isClientSide()) {
-            RecipeManager recipeManager = (RecipeManager) tickLevel.recipeAccess();
+            if (!(tickLevel.recipeAccess() instanceof RecipeManager recipeManager)) return;
             ItemStack fuel = blockEntity.inventory.get(EndStoneSmelterMenu.FUEL_SLOT);
             AlloyingRecipeInput input = new AlloyingRecipeInput(
                     blockEntity.inventory.get(EndStoneSmelterMenu.INGREDIENT_SLOT_A),

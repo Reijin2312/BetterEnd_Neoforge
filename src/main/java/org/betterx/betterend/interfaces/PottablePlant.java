@@ -2,7 +2,6 @@ package org.betterx.betterend.interfaces;
 
 import net.minecraft.world.level.block.Block;
 
-import net.neoforged.api.distmarker.Dist;
 
 public interface PottablePlant {
     boolean canPlantOn(Block block);

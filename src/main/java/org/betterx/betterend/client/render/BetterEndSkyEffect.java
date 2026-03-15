@@ -17,6 +17,7 @@ public class BetterEndSkyEffect implements CustomSkyboxRenderer {
             Runnable setupFog
     ) {
         PoseStack poseStack = new PoseStack();
+        poseStack.last().pose().set(modelViewMatrix);
         float time = (float) ((levelRenderState.gameTime % 360000L) * 0.000017453292F);
         renderer.renderSkyboxWithStars(poseStack, time, setupFog);
         return true;

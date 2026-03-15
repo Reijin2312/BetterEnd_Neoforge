@@ -22,7 +22,6 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.api.distmarker.Dist;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -163,9 +162,8 @@ public class EndStoneSmelterMenu extends RecipeBookMenu {
     }
 
     protected boolean isSmeltable(ItemStack itemStack) {
-        return ((RecipeManager) world.recipeAccess())
-                .getRecipeFor(AlloyingRecipe.TYPE, new AlloyingRecipeInput(itemStack), world)
-                .isPresent();
+        if (!(world.recipeAccess() instanceof RecipeManager recipeManager)) return false;
+        return recipeManager.getRecipeFor(AlloyingRecipe.TYPE, new AlloyingRecipeInput(itemStack), world).isPresent();
     }
 
     public boolean isFuel(ItemStack itemStack) {

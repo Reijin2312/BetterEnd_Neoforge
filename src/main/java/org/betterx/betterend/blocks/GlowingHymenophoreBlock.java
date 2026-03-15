@@ -10,8 +10,9 @@ import org.betterx.wover.block.api.model.WoverBlockModelGeneratorsAccess;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
-
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
 
 public class GlowingHymenophoreBlock extends BaseBlock.Wood implements AddMineableAxe, BlockModelProvider {
     public GlowingHymenophoreBlock() {
@@ -22,7 +23,9 @@ public class GlowingHymenophoreBlock extends BaseBlock.Wood implements AddMineab
     }
 
     @Override
-    public void provideBlockModels(WoverBlockModelGenerators generator) {
+    @OnlyIn(Dist.CLIENT)
+    public void provideBlockModels(Object modelGenerator) {
+    WoverBlockModelGenerators generator = (WoverBlockModelGenerators) modelGenerator;
         provideUnshadedCubeModel(generator, this);
     }
 

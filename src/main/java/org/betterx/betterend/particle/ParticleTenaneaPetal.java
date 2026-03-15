@@ -11,7 +11,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 
-import net.neoforged.api.distmarker.Dist;
 
 public class ParticleTenaneaPetal extends SingleQuadParticle {
     private static BlockColorProvider provider;

@@ -2,27 +2,16 @@ package org.betterx.betterend.blocks;
 
 import org.betterx.bclib.behaviours.interfaces.BehaviourStone;
 import org.betterx.bclib.blocks.BaseBlockNotFull;
-import org.betterx.bclib.client.models.BasePatterns;
-import org.betterx.bclib.client.models.ModelsHelper;
-import org.betterx.bclib.client.models.ModelsHelper.MultiPartBuilder;
-import org.betterx.bclib.client.models.PatternsHelper;
 import org.betterx.bclib.client.render.BCLRenderLayer;
 import org.betterx.bclib.interfaces.PostInitable;
 import org.betterx.bclib.interfaces.RenderLayerProvider;
-import org.betterx.bclib.interfaces.RuntimeBlockModelProvider;
 import org.betterx.bclib.util.BlocksHelper;
 import org.betterx.bclib.util.JsonFactory;
 import org.betterx.betterend.BetterEnd;
-import org.betterx.betterend.blocks.basis.PottableLeavesBlock;
-import org.betterx.betterend.client.models.Patterns;
 import org.betterx.betterend.interfaces.PottablePlant;
 import org.betterx.betterend.interfaces.PottableTerrain;
 import org.betterx.betterend.registry.EndBlocks;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -39,7 +28,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -50,7 +38,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.api.distmarker.Dist;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.fml.loading.FMLPaths;
 
@@ -62,9 +49,8 @@ import com.google.gson.JsonObject;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-public class FlowerPotBlock extends BaseBlockNotFull implements RenderLayerProvider, PostInitable, RuntimeBlockModelProvider {
+public class FlowerPotBlock extends BaseBlockNotFull implements RenderLayerProvider, PostInitable {
     private static final IntegerProperty PLANT_ID = EndBlockProperties.PLANT_ID;
     private static final IntegerProperty SOIL_ID = EndBlockProperties.SOIL_ID;
     private static final IntegerProperty POT_LIGHT = EndBlockProperties.POT_LIGHT;
@@ -315,157 +301,6 @@ public class FlowerPotBlock extends BaseBlockNotFull implements RenderLayerProvi
             }
         }
         return InteractionResult.TRY_WITH_EMPTY_HAND;
-    }
-
-    @Override
-    public BlockModel getItemModel(Identifier blockId) {
-        Optional<String> pattern = PatternsHelper.createJson(Patterns.BLOCK_FLOWER_POT, blockId);
-        return ModelsHelper.fromPattern(pattern);
-    }
-
-    @Override
-    public BlockModel getBlockModel(Identifier blockId, BlockState blockState) {
-        Optional<String> pattern = PatternsHelper.createJson(Patterns.BLOCK_FLOWER_POT, blockId);
-        return ModelsHelper.fromPattern(pattern);
-    }
-
-    @Override
-    public BlockStateModel.UnbakedRoot getModelVariant(
-            Identifier stateId,
-            BlockState blockState,
-            Map<Identifier, UnbakedModel> modelCache
-    ) {
-        ensureInit();
-        MultiPartBuilder model = MultiPartBuilder.create(stateDefinition);
-        Identifier baseId = RuntimeBlockModelProvider.remapModelIdentifier(stateId, blockState);
-        registerBlockModel(stateId, baseId, blockState, modelCache);
-        model.part(baseId).add();
-
-        for (int i = 0; i < plants.length; i++) {
-            if (plants[i] == null) {
-                continue;
-            }
-
-            final int compareID = i + 1;
-            Identifier modelPath = BuiltInRegistries.BLOCK.getKey(plants[i]);
-            Identifier objSource = Identifier.fromNamespaceAndPath(
-                    modelPath.getNamespace(),
-                    "models/block/" + modelPath.getPath() + "_potted.json"
-            );
-
-            if (Minecraft.getInstance().getResourceManager().getResource(objSource).isPresent()) {
-                objSource = Identifier.fromNamespaceAndPath(modelPath.getNamespace(), "block/" + modelPath.getPath() + "_potted");
-                model.part(objSource).setCondition(state -> state.getValue(PLANT_ID) == compareID).add();
-                continue;
-            } else if (plants[i] instanceof SaplingBlock) {
-                Identifier loc = BuiltInRegistries.BLOCK.getKey(plants[i]);
-                modelPath = Identifier.fromNamespaceAndPath(loc.getNamespace(), "block/" + loc.getPath() + "_potted");
-                Map<String, String> textures = Maps.newHashMap();
-                textures.put("%modid%", loc.getNamespace());
-                textures.put("%texture%", loc.getPath());
-                Optional<String> pattern = Patterns.createJson(BasePatterns.BLOCK_CROSS, textures);
-                UnbakedModel unbakedModel = ModelsHelper.fromPattern(pattern);
-                if (unbakedModel != null) {
-                    modelCache.put(modelPath, unbakedModel);
-                    model.part(modelPath).setCondition(state -> state.getValue(PLANT_ID) == compareID).add();
-                } else {
-                    BetterEnd.LOGGER.warn("Missing pattern for pot plant {}", modelPath);
-                }
-                continue;
-            } else if (plants[i] instanceof PottableLeavesBlock) {
-                Identifier loc = BuiltInRegistries.BLOCK.getKey(plants[i]);
-                modelPath = Identifier.fromNamespaceAndPath(loc.getNamespace(), "block/" + loc.getPath() + "_potted");
-                Map<String, String> textures = Maps.newHashMap();
-                textures.put("%leaves%", loc.getPath().contains("lucernia") ? loc.getPath() + "_1" : loc.getPath());
-                textures.put("%stem%", loc.getPath().replace("_leaves", "_log_side"));
-                Optional<String> pattern = Patterns.createJson(Patterns.BLOCK_POTTED_LEAVES, textures);
-                UnbakedModel unbakedModel = ModelsHelper.fromPattern(pattern);
-                if (unbakedModel != null) {
-                    modelCache.put(modelPath, unbakedModel);
-                    model.part(modelPath).setCondition(state -> state.getValue(PLANT_ID) == compareID).add();
-                } else {
-                    BetterEnd.LOGGER.warn("Missing pattern for pot plant {}", modelPath);
-                }
-                continue;
-            }
-
-            objSource = Identifier.fromNamespaceAndPath(modelPath.getNamespace(), "blockstates/" + modelPath.getPath() + ".json");
-            JsonObject obj = JsonFactory.getJsonObject(objSource);
-            if (obj != null) {
-                JsonElement variants = obj.get("variants");
-                JsonElement list = null;
-                String path = null;
-
-                if (variants == null) {
-                    continue;
-                }
-
-                if (variants.isJsonArray()) {
-                    list = variants.getAsJsonArray().get(0);
-                } else if (variants.isJsonObject()) {
-                    list = variants.getAsJsonObject().get(((PottablePlant) plants[i]).getPottedState());
-                }
-
-                if (list == null) {
-                    BetterEnd.LOGGER.warn("Incorrect json for pot plant {}, no matching variants", objSource);
-                    continue;
-                }
-
-                if (list.isJsonArray()) {
-                    path = list.getAsJsonArray().get(0).getAsJsonObject().get("model").getAsString();
-                } else {
-                    path = list.getAsJsonObject().get("model").getAsString();
-                }
-
-                if (path == null) {
-                    BetterEnd.LOGGER.warn("Incorrect json for pot plant {}, no matching variants", objSource);
-                    continue;
-                }
-
-                model.part(Identifier.parse(path)).setCondition(state -> state.getValue(PLANT_ID) == compareID).add();
-            } else {
-                Identifier loc = BuiltInRegistries.BLOCK.getKey(plants[i]);
-                modelPath = Identifier.fromNamespaceAndPath(loc.getNamespace(), "block/" + loc.getPath() + "_potted");
-                Map<String, String> textures = Maps.newHashMap();
-                textures.put("%modid%", loc.getNamespace());
-                textures.put("%texture%", loc.getPath());
-                Optional<String> pattern = Patterns.createJson(BasePatterns.BLOCK_CROSS, textures);
-                UnbakedModel unbakedModel = ModelsHelper.fromPattern(pattern);
-                if (unbakedModel != null) {
-                    modelCache.put(modelPath, unbakedModel);
-                    model.part(modelPath).setCondition(state -> state.getValue(PLANT_ID) == compareID).add();
-                } else {
-                    BetterEnd.LOGGER.warn("Missing pattern for pot plant {}", modelPath);
-                }
-            }
-        }
-
-        for (int i = 0; i < soils.length; i++) {
-            if (soils[i] == null) {
-                continue;
-            }
-
-            Identifier soilLoc = BetterEnd.C.mk("flower_pot_soil_" + i);
-            if (!modelCache.containsKey(soilLoc)) {
-                String texture = BuiltInRegistries.BLOCK.getKey(soils[i]).getPath() + "_top";
-                if (texture.contains("rutiscus")) {
-                    texture += "_1";
-                }
-                Optional<String> pattern = Patterns.createJson(Patterns.BLOCK_FLOWER_POT_SOIL, texture);
-                UnbakedModel soil = ModelsHelper.fromPattern(pattern);
-                if (soil != null) {
-                    modelCache.put(soilLoc, soil);
-                } else {
-                    BetterEnd.LOGGER.warn("Missing pattern for flower pot soil {}", soilLoc);
-                }
-            }
-            final int compareID = i + 1;
-            if (modelCache.containsKey(soilLoc)) {
-                model.part(soilLoc).setCondition(state -> state.getValue(SOIL_ID) == compareID).add();
-            }
-        }
-
-        return model.build();
     }
 
     @Override

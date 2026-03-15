@@ -19,8 +19,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.MapColor;
-
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
 
 public class GlowingPillarLuminophorBlock extends BaseBlock implements AddMineableShears, BlockModelProvider {
     public static final BooleanProperty NATURAL = EndBlockProperties.NATURAL;
@@ -65,7 +66,9 @@ public class GlowingPillarLuminophorBlock extends BaseBlock implements AddMineab
     }
 
     @Override
-    public void provideBlockModels(WoverBlockModelGenerators generator) {
+    @OnlyIn(Dist.CLIENT)
+    public void provideBlockModels(Object modelGenerator) {
+    WoverBlockModelGenerators generator = (WoverBlockModelGenerators) modelGenerator;
         GlowingHymenophoreBlock.provideUnshadedCubeModel(generator, this);
     }
 }

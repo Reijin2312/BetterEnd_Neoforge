@@ -13,12 +13,11 @@ import org.betterx.betterend.registry.EndBlocks;
 import org.betterx.betterend.registry.EndPortals;
 import org.betterx.betterend.rituals.EternalRitual;
 import org.betterx.wover.block.api.model.BlockModelProvider;
+import org.betterx.wover.block.api.model.DatagenModelDispatch;
 import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.MultiVariant;
-import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
-import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
@@ -50,13 +49,14 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
-import net.neoforged.api.distmarker.Dist;
 
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class EternalPedestal extends PedestalBlock implements BehaviourStone, BlockModelProvider {
     public static final BooleanProperty ACTIVATED = EndBlockProperties.ACTIVE;
@@ -292,7 +292,9 @@ public class EternalPedestal extends PedestalBlock implements BehaviourStone, Bl
     }
 
     @Override
-    public void provideBlockModels(WoverBlockModelGenerators generator) {
+    @OnlyIn(Dist.CLIENT)
+    public void provideBlockModels(Object modelGenerator) {
+        WoverBlockModelGenerators generator = (WoverBlockModelGenerators) modelGenerator;
         final Identifier id = TextureMapping.getBlockTexture(this);
         final Identifier baseTexture = BetterEnd.C.mk("block/flavolite_polished");
         final Identifier pillarTexture = BetterEnd.C.mk("block/flavolite_pillar_side");
@@ -306,50 +308,49 @@ public class EternalPedestal extends PedestalBlock implements BehaviourStone, Bl
         final Identifier bottom = EndModels.PEDESTAL_BOTTOM.create(id.withSuffix("_bottom"), mapping, generator.modelOutput());
         final Identifier pillar = EndModels.PEDESTAL_PILLAR.create(id.withSuffix("_pillar"), mapping, generator.modelOutput());
 
-        final var properties = PropertyDispatch
-                .initial(STATE, ACTIVATED)
-                .select(EndBlockProperties.PedestalState.DEFAULT, false, createVariants(
-                        generator,
-                        mapping,
-                        id.withSuffix("_default"),
-                        EndModels.PEDESTAL_DEFAULT,
-                        BetterEnd.C.mk("block/flavolite_runed"),
-                        7
-                ))
-                .select(EndBlockProperties.PedestalState.DEFAULT, true, createVariants(
-                        generator,
-                        mapping,
-                        id.withSuffix("_default_active"),
-                        EndModels.PEDESTAL_DEFAULT,
-                        BetterEnd.C.mk("block/flavolite_runed_active"),
-                        7
-                ))
-                .select(EndBlockProperties.PedestalState.PEDESTAL_TOP, false, createVariants(
-                        generator,
-                        mapping,
-                        id.withSuffix("_top"),
-                        EndModels.PEDESTAL_TOP,
-                        BetterEnd.C.mk("block/flavolite_runed"),
-                        7
-                ))
-                .select(EndBlockProperties.PedestalState.PEDESTAL_TOP, true, createVariants(
-                        generator,
-                        mapping,
-                        id.withSuffix("_top_active"),
-                        EndModels.PEDESTAL_TOP,
-                        BetterEnd.C.mk("block/flavolite_runed_active"),
-                        7
-                ))
-                .select(EndBlockProperties.PedestalState.COLUMN, true, BlockModelGenerators.plainVariant(column))
-                .select(EndBlockProperties.PedestalState.COLUMN, false, BlockModelGenerators.plainVariant(column))
-                .select(EndBlockProperties.PedestalState.COLUMN_TOP, true, BlockModelGenerators.plainVariant(top))
-                .select(EndBlockProperties.PedestalState.COLUMN_TOP, false, BlockModelGenerators.plainVariant(top))
-                .select(EndBlockProperties.PedestalState.BOTTOM, true, BlockModelGenerators.plainVariant(bottom))
-                .select(EndBlockProperties.PedestalState.BOTTOM, false, BlockModelGenerators.plainVariant(bottom))
-                .select(EndBlockProperties.PedestalState.PILLAR, true, BlockModelGenerators.plainVariant(pillar))
-                .select(EndBlockProperties.PedestalState.PILLAR, false, BlockModelGenerators.plainVariant(pillar));
+        final Object properties = DatagenModelDispatch.propertyDispatchInitial(STATE, ACTIVATED);
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.DEFAULT, false, createVariants(
+                generator,
+                mapping,
+                id.withSuffix("_default"),
+                EndModels.PEDESTAL_DEFAULT,
+                BetterEnd.C.mk("block/flavolite_runed"),
+                7
+        ));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.DEFAULT, true, createVariants(
+                generator,
+                mapping,
+                id.withSuffix("_default_active"),
+                EndModels.PEDESTAL_DEFAULT,
+                BetterEnd.C.mk("block/flavolite_runed_active"),
+                7
+        ));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.PEDESTAL_TOP, false, createVariants(
+                generator,
+                mapping,
+                id.withSuffix("_top"),
+                EndModels.PEDESTAL_TOP,
+                BetterEnd.C.mk("block/flavolite_runed"),
+                7
+        ));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.PEDESTAL_TOP, true, createVariants(
+                generator,
+                mapping,
+                id.withSuffix("_top_active"),
+                EndModels.PEDESTAL_TOP,
+                BetterEnd.C.mk("block/flavolite_runed_active"),
+                7
+        ));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.COLUMN, true, BlockModelGenerators.plainVariant(column));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.COLUMN, false, BlockModelGenerators.plainVariant(column));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.COLUMN_TOP, true, BlockModelGenerators.plainVariant(top));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.COLUMN_TOP, false, BlockModelGenerators.plainVariant(top));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.BOTTOM, true, BlockModelGenerators.plainVariant(bottom));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.BOTTOM, false, BlockModelGenerators.plainVariant(bottom));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.PILLAR, true, BlockModelGenerators.plainVariant(pillar));
+        DatagenModelDispatch.propertyDispatchSelect(properties, EndBlockProperties.PedestalState.PILLAR, false, BlockModelGenerators.plainVariant(pillar));
 
-        generator.acceptBlockState(MultiVariantGenerator.dispatch(this).with(properties));
+        generator.acceptBlockState(DatagenModelDispatch.dispatchWith(this, properties));
         generator.delegateItemModel(this, id.withSuffix("_default_1"));
     }
 }
