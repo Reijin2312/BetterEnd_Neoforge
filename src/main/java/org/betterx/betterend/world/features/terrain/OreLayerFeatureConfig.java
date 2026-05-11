@@ -21,7 +21,7 @@ public class OreLayerFeatureConfig implements FeatureConfiguration {
     public final float radius;
     public final int minY;
     public final int maxY;
-    private OpenSimplexNoise noise;
+    private volatile OpenSimplexNoise noise;
 
     public OreLayerFeatureConfig(BlockState state, float radius, int minY, int maxY) {
         this.state = state;
@@ -31,9 +31,16 @@ public class OreLayerFeatureConfig implements FeatureConfiguration {
     }
 
     public OpenSimplexNoise getNoise(long seed) {
-        if (noise == null) {
-            noise = new OpenSimplexNoise(seed);
+        OpenSimplexNoise localNoise = noise;
+        if (localNoise == null) {
+            synchronized (this) {
+                localNoise = noise;
+                if (localNoise == null) {
+                    localNoise = new OpenSimplexNoise(seed);
+                    noise = localNoise;
+                }
+            }
         }
-        return noise;
+        return localNoise;
     }
 }

@@ -14,11 +14,6 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
 public class OreLayerFeature extends Feature<OreLayerFeatureConfig> {
-    private static final SDFSphere SPHERE;
-    private static final SDFCoordModify NOISE;
-    private static final SDF FUNCTION;
-
-
     public OreLayerFeature() {
         super(OreLayerFeatureConfig.CODEC);
     }
@@ -36,28 +31,19 @@ public class OreLayerFeature extends Feature<OreLayerFeatureConfig> {
         int posY = MHelper.randRange(cfg.minY, cfg.maxY, random);
 
 
-        SPHERE.setRadius(radius).setBlock(cfg.state);
-        NOISE.setFunction((vec) -> {
+        SDFSphere sphere = new SDFSphere().setRadius(radius).setBlock(cfg.state);
+        SDFCoordModify noise = new SDFCoordModify().setFunction((vec) -> {
             double x = (vec.x() + pos.getX()) * 0.1;
             double z = (vec.z() + pos.getZ()) * 0.1;
             double offset = cfg.getNoise(world.getSeed()).eval(x, z);
             vec.set(vec.x(), vec.y() + (float) offset * 8, vec.z());
         });
-        FUNCTION.fillRecursive(world, new BlockPos(posX, posY, posZ));
-        return true;
-    }
-
-    static {
-        SPHERE = new SDFSphere();
-        NOISE = new SDFCoordModify();
-
-        SDF body = SPHERE;
-        body = new SDFScale3D().setScale(1, 0.2F, 1).setSource(body);
-        body = NOISE.setSource(body);
-        body.setReplaceFunction((state) -> {
+        SDF function = new SDFScale3D().setScale(1, 0.2F, 1).setSource(sphere);
+        function = noise.setSource(function);
+        function.setReplaceFunction((state) -> {
             return state.is(Blocks.END_STONE);
         });
-
-        FUNCTION = body;
+        function.fillRecursive(world, new BlockPos(posX, posY, posZ));
+        return true;
     }
 }

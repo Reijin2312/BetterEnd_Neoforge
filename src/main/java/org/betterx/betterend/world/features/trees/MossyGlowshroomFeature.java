@@ -29,15 +29,6 @@ import java.util.function.Function;
 
 public class MossyGlowshroomFeature extends DefaultFeature {
     private static final Function<BlockState, Boolean> REPLACE;
-    private static final Vector3f CENTER = new Vector3f();
-    private static final SDFBinary FUNCTION;
-    private static final SDFTranslate HEAD_POS;
-    private static final SDFFlatWave ROOTS_ROT;
-
-    private static final SDFPrimitive CONE1;
-    private static final SDFPrimitive CONE2;
-    private static final SDFPrimitive CONE_GLOW;
-    private static final SDFPrimitive ROOTS;
 
     @Override
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> featureConfig) {
@@ -48,11 +39,6 @@ public class MossyGlowshroomFeature extends DefaultFeature {
         if (!state.getFluidState().isEmpty()) return false;
         BlockState down = world.getBlockState(blockPos.below());
         if (!down.is(EndBlocks.END_MYCELIUM) && !down.is(EndBlocks.END_MOSS)) return false;
-
-        CONE1.setBlock(EndBlocks.MOSSY_GLOWSHROOM_CAP);
-        CONE2.setBlock(EndBlocks.MOSSY_GLOWSHROOM_CAP);
-        CONE_GLOW.setBlock(EndBlocks.MOSSY_GLOWSHROOM_HYMENOPHORE);
-        ROOTS.setBlock(EndBlocks.MOSSY_GLOWSHROOM.getBark());
 
         float height = MHelper.randRange(10F, 25F, random);
         int count = MHelper.floor(height / 4);
@@ -69,12 +55,8 @@ public class MossyGlowshroomFeature extends DefaultFeature {
         }
         BlocksHelper.setWithoutUpdate(world, blockPos, AIR);
 
-        CENTER.set(blockPos.getX(), 0, blockPos.getZ());
-        HEAD_POS.setTranslate(pos.x(), pos.y(), pos.z());
-        ROOTS_ROT.setAngle(random.nextFloat() * MHelper.PI2);
-        FUNCTION.setSourceA(sdf);
-
-        new SDFScale().setScale(scale).setSource(FUNCTION).setReplaceFunction(REPLACE).addPostProcess((info) -> {
+        SDF function = createFunction(blockPos, pos, sdf, random.nextFloat() * MHelper.PI2);
+        new SDFScale().setScale(scale).setSource(function).setReplaceFunction(REPLACE).addPostProcess((info) -> {
             if (EndBlocks.MOSSY_GLOWSHROOM.isTreeLog(info.getState())) {
                 if (random.nextBoolean() && info.getStateUp().getBlock() == EndBlocks.MOSSY_GLOWSHROOM_CAP) {
                     info.setState(EndBlocks.MOSSY_GLOWSHROOM_CAP.defaultBlockState()
@@ -117,9 +99,12 @@ public class MossyGlowshroomFeature extends DefaultFeature {
         return true;
     }
 
-    static {
+    private SDF createFunction(BlockPos center, Vector3f headPosition, SDF trunk, float rootsAngle) {
         SDFCappedCone cone1 = new SDFCappedCone().setHeight(2.5F).setRadius1(1.5F).setRadius2(2.5F);
         SDFCappedCone cone2 = new SDFCappedCone().setHeight(3F).setRadius1(2.5F).setRadius2(13F);
+        cone1.setBlock(EndBlocks.MOSSY_GLOWSHROOM_CAP);
+        cone2.setBlock(EndBlocks.MOSSY_GLOWSHROOM_CAP);
+
         SDF posedCone2 = new SDFTranslate().setTranslate(0, 5, 0).setSource(cone2);
         SDF posedCone3 = new SDFTranslate().setTranslate(0, 12F, 0)
                                            .setSource(new SDFScale().setScale(2).setSource(cone2));
@@ -127,15 +112,12 @@ public class MossyGlowshroomFeature extends DefaultFeature {
         SDF wave = new SDFFlatWave().setRaysCount(12).setIntensity(1.3F).setSource(upCone);
         SDF cones = new SDFSmoothUnion().setRadius(3).setSourceA(cone1).setSourceB(wave);
 
-        CONE1 = cone1;
-        CONE2 = cone2;
-
         SDF innerCone = new SDFTranslate().setTranslate(0, 1.25F, 0).setSource(upCone);
         innerCone = new SDFScale3D().setScale(1.2F, 1F, 1.2F).setSource(innerCone);
         cones = new SDFUnion().setSourceA(cones).setSourceB(innerCone);
 
         SDF glowCone = new SDFCappedCone().setHeight(3F).setRadius1(2F).setRadius2(12.5F);
-        CONE_GLOW = (SDFPrimitive) glowCone;
+        ((SDFPrimitive) glowCone).setBlock(EndBlocks.MOSSY_GLOWSHROOM_HYMENOPHORE);
         glowCone = new SDFTranslate().setTranslate(0, 4.25F, 0).setSource(glowCone);
         glowCone = new SDFSubtraction().setSourceA(glowCone).setSourceB(posedCone3);
 
@@ -145,23 +127,26 @@ public class MossyGlowshroomFeature extends DefaultFeature {
         cones = new SDFCoordModify().setFunction((pos) -> {
             float dist = MHelper.length(pos.x(), pos.z());
             float y = pos.y() + (float) noise.eval(
-                    pos.x() * 0.1 + CENTER.x(),
-                    pos.z() * 0.1 + CENTER.z()
+                    pos.x() * 0.1 + center.getX(),
+                    pos.z() * 0.1 + center.getZ()
             ) * dist * 0.3F - dist * 0.15F;
             pos.set(pos.x(), y, pos.z());
         }).setSource(cones);
 
-        HEAD_POS = (SDFTranslate) new SDFTranslate().setSource(new SDFTranslate().setTranslate(0, 2.5F, 0)
-                                                                                 .setSource(cones));
+        SDF headPos = new SDFTranslate().setTranslate(headPosition.x(), headPosition.y(), headPosition.z())
+                                        .setSource(new SDFTranslate().setTranslate(0, 2.5F, 0).setSource(cones));
 
         SDF roots = new SDFSphere().setRadius(4F);
-        ROOTS = (SDFPrimitive) roots;
+        ((SDFPrimitive) roots).setBlock(EndBlocks.MOSSY_GLOWSHROOM.getBark());
         roots = new SDFScale3D().setScale(1, 0.7F, 1).setSource(roots);
-        ROOTS_ROT = (SDFFlatWave) new SDFFlatWave().setRaysCount(5).setIntensity(1.5F).setSource(roots);
+        SDF rootsRot = new SDFFlatWave().setRaysCount(5).setIntensity(1.5F).setAngle(rootsAngle).setSource(roots);
 
-        FUNCTION = new SDFSmoothUnion().setRadius(4)
-                                       .setSourceB(new SDFUnion().setSourceA(HEAD_POS).setSourceB(ROOTS_ROT));
+        return new SDFSmoothUnion().setRadius(4)
+                                   .setSourceA(trunk)
+                                   .setSourceB(new SDFUnion().setSourceA(headPos).setSourceB(rootsRot));
+    }
 
+    static {
         REPLACE = BlocksHelper::replaceableOrPlant;
     }
 }

@@ -40,7 +40,8 @@ import java.util.Map;
 public class LakePiece extends BasePiece {
     private static final BlockState ENDSTONE = Blocks.END_STONE.defaultBlockState();
     private static final BlockState WATER = Blocks.WATER.defaultBlockState();
-    private final Map<Integer, Byte> heightmap = Maps.newConcurrentMap();
+    private final Map<Long, Byte> heightmap = Maps.newConcurrentMap();
+    private volatile boolean heightmapPreloaded;
     private OpenSimplexNoise noise;
     private BlockPos center;
     private float radius;
@@ -97,6 +98,7 @@ public class LakePiece extends BasePiece {
             ChunkPos chunkPos,
             BlockPos blockPos
     ) {
+        preloadHeightmap(world, 8);
         int minY = this.boundingBox.minY();
         int maxY = this.boundingBox.maxY();
         int sx = SectionPos.sectionToBlockCoord(chunkPos.x);
@@ -239,27 +241,55 @@ public class LakePiece extends BasePiece {
     }
 
     private int getHeight(WorldGenLevel world, BlockPos pos) {
-        int p = ((pos.getX() & 2047) << 11) | (pos.getZ() & 2047);
-        int h = heightmap.getOrDefault(p, Byte.MIN_VALUE);
-        if (h > Byte.MIN_VALUE) {
-            return h;
+        long p = getCacheKey(pos);
+        Byte cached = heightmap.get(p);
+        if (cached != null) {
+            return cached;
         }
 
+        byte h;
         if (!world.getBiome(pos).is(biomeID)) {
-            heightmap.put(p, (byte) 0);
-            return 0;
+            h = 0;
+            Byte previous = heightmap.putIfAbsent(p, h);
+            return previous == null ? h : previous;
         }
 
-        h = world.getHeight(Types.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
-        h = Mth.abs(h - center.getY());
-        h = h < 8 ? 1 : 0;
+        int height = world.getHeight(Types.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
+        height = Mth.abs(height - center.getY());
+        h = (byte) (height < 8 ? 1 : 0);
 
-        heightmap.put(p, (byte) h);
-        return h;
+        Byte previous = heightmap.putIfAbsent(p, h);
+        return previous == null ? h : previous;
+    }
+
+    private void preloadHeightmap(WorldGenLevel world, int clampRadius) {
+        if (heightmapPreloaded) {
+            return;
+        }
+        synchronized (heightmap) {
+            if (heightmapPreloaded) {
+                return;
+            }
+            MutableBlockPos mut = new MutableBlockPos();
+            int minX = boundingBox.minX() - clampRadius;
+            int maxX = boundingBox.maxX() + clampRadius;
+            int minZ = boundingBox.minZ() - clampRadius;
+            int maxZ = boundingBox.maxZ() + clampRadius;
+            mut.setY(center.getY());
+            for (int x = minX; x <= maxX; x++) {
+                mut.setX(x);
+                for (int z = minZ; z <= maxZ; z++) {
+                    mut.setZ(z);
+                    getHeight(world, mut);
+                }
+            }
+            heightmapPreloaded = true;
+        }
     }
 
     private float getHeightClamp(WorldGenLevel world, int radius, int posX, int posZ) {
         MutableBlockPos mut = new MutableBlockPos();
+        mut.setY(center.getY());
         int r2 = radius * radius;
         float height = 0;
         float max = 0;
@@ -280,6 +310,10 @@ public class LakePiece extends BasePiece {
         return Mth.clamp(height, 0, 1);
     }
 
+    private long getCacheKey(BlockPos pos) {
+        return (((long) pos.getX()) << 32) ^ (pos.getZ() & 0xFFFFFFFFL);
+    }
+
     private void makeBoundingBox() {
         int minX = MHelper.floor(center.getX() - radius - 8);
         int minY = MHelper.floor(center.getY() - depth - 8);
@@ -288,5 +322,9 @@ public class LakePiece extends BasePiece {
         int maxY = MHelper.floor(center.getY() + depth);
         int maxZ = MHelper.floor(center.getZ() + radius + 8);
         this.boundingBox = new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    private long getCacheKey(BlockPos pos) {
+        return (((long) pos.getX()) << 32) ^ (pos.getZ() & 0xFFFFFFFFL);
     }
 }

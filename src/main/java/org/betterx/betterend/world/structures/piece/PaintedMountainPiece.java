@@ -76,6 +76,7 @@ public class PaintedMountainPiece extends MountainPiece {
             ChunkPos chunkPos,
             BlockPos blockPos
     ) {
+        preloadHeightmap(world, 10);
         int sx = chunkPos.getMinBlockX();
         int sz = chunkPos.getMinBlockZ();
         final MutableBlockPos pos = GlobalState.stateForThread().POS;

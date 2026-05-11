@@ -24,7 +24,8 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 
 public abstract class MountainPiece extends BasePiece {
-    protected Map<Integer, Integer> heightmap = Maps.newConcurrentMap();
+    protected Map<Long, Integer> heightmap = Maps.newConcurrentMap();
+    private volatile boolean heightmapPreloaded;
     protected OpenSimplexNoise noise1;
     protected OpenSimplexNoise noise2;
     protected BlockPos center;
@@ -85,22 +86,24 @@ public abstract class MountainPiece extends BasePiece {
     }
 
     private int getHeight(WorldGenLevel world, BlockPos pos) {
-        int p = ((pos.getX() & 2047) << 11) | (pos.getZ() & 2047);
-        int h = heightmap.getOrDefault(p, Integer.MIN_VALUE);
-        if (h > Integer.MIN_VALUE) {
-            return h;
+        long p = getCacheKey(pos);
+        Integer cached = heightmap.get(p);
+        if (cached != null) {
+            return cached;
         }
 
+        int h;
         if (!world.getBiome(pos).is(biomeID)) {
-            heightmap.put(p, -10);
-            return -10;
+            h = -10;
+            Integer previous = heightmap.putIfAbsent(p, h);
+            return previous == null ? h : previous;
         }
         h = world.getHeight(Types.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
         h = Mth.abs(h - center.getY());
         if (h > 4) {
             h = 4 - h;
-            heightmap.put(p, h);
-            return h;
+            Integer previous = heightmap.putIfAbsent(p, h);
+            return previous == null ? h : previous;
         }
 
         h = MHelper.floor(noise2.eval(pos.getX() * 0.01, pos.getZ() * 0.01) * noise2.eval(
@@ -109,17 +112,43 @@ public abstract class MountainPiece extends BasePiece {
         ) * 8 + 8);
 
         if (h < 0) {
-            heightmap.put(p, 0);
-            return 0;
+            h = 0;
+            Integer previous = heightmap.putIfAbsent(p, h);
+            return previous == null ? h : previous;
         }
 
-        heightmap.put(p, h);
+        Integer previous = heightmap.putIfAbsent(p, h);
+        return previous == null ? h : previous;
+    }
 
-        return h;
+    protected void preloadHeightmap(WorldGenLevel world, int clampRadius) {
+        if (heightmapPreloaded) {
+            return;
+        }
+        synchronized (heightmap) {
+            if (heightmapPreloaded) {
+                return;
+            }
+            MutableBlockPos mut = new MutableBlockPos();
+            int minX = boundingBox.minX() - clampRadius;
+            int maxX = boundingBox.maxX() + clampRadius;
+            int minZ = boundingBox.minZ() - clampRadius;
+            int maxZ = boundingBox.maxZ() + clampRadius;
+            mut.setY(center.getY());
+            for (int x = minX; x <= maxX; x++) {
+                mut.setX(x);
+                for (int z = minZ; z <= maxZ; z++) {
+                    mut.setZ(z);
+                    getHeight(world, mut);
+                }
+            }
+            heightmapPreloaded = true;
+        }
     }
 
     protected float getHeightClamp(WorldGenLevel world, int radius, int posX, int posZ) {
         MutableBlockPos mut = new MutableBlockPos();
+        mut.setY(center.getY());
         float height = 0;
         float max = 0;
         for (int x = -radius; x <= radius; x++) {
@@ -137,6 +166,10 @@ public abstract class MountainPiece extends BasePiece {
         }
         height /= max;
         return Mth.clamp(height / radius, 0, 1);
+    }
+
+    private long getCacheKey(BlockPos pos) {
+        return (((long) pos.getX()) << 32) ^ (pos.getZ() & 0xFFFFFFFFL);
     }
 
     private void makeBoundingBox() {

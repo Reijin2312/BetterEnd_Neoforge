@@ -55,6 +55,7 @@ public class CrystalMountainPiece extends MountainPiece {
             ChunkPos chunkPos,
             BlockPos blockPos
     ) {
+        preloadHeightmap(world, 12);
         final MutableBlockPos pos = GlobalState.stateForThread().POS;
         ChunkAccess chunk = world.getChunk(chunkPos.x, chunkPos.z);
         Heightmap map = chunk.getOrCreateHeightmapUnprimed(Types.WORLD_SURFACE);
