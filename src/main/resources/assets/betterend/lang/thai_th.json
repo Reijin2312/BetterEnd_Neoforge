@@ -824,5 +824,9 @@
   "betterend.jei.infusion.time&val": "%s ทิก",
   "betterend.jei.container.infusion": "สูตรผสานพลัง",
   "betterend.jei.alloying.experience_time": "%s XP | %s วินาที",
-  "betterend.jei.container.alloying": "การผสมโลหะและถลุง"
+  "betterend.jei.container.alloying": "การผสมโลหะและถลุง",
+  "jukebox_song.betterend.strange_and_alien": "§5Firel§r - §fStrange And Alien§r",
+  "jukebox_song.betterend.grasping_at_stars": "§5Firel§r - §fGrasping At Stars§r",
+  "jukebox_song.betterend.endseeker": "§5Firel§r - §fEndseeker§r",
+  "jukebox_song.betterend.eo_dracona": "§5Firel§r - §fEo Dracona§r"
 }

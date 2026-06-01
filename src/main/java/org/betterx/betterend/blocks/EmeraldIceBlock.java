@@ -8,7 +8,6 @@ import org.betterx.wover.enchantment.api.EnchantmentUtils;
 import org.betterx.wover.loot.api.BlockLootProvider;
 import org.betterx.wover.loot.api.LootLookupProvider;
 
-import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -67,7 +66,7 @@ public class EmeraldIceBlock extends HalfTransparentBlock implements RenderLayer
     @Override
     @SuppressWarnings("deprecation")
     public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
-        if (world.getBrightness(LightLayer.BLOCK, pos) > 11 - state.getLightBlock()) {
+        if (world.getBrightness(LightLayer.BLOCK, pos) > 11 - state.getLightDampening()) {
             this.melt(state, world, pos);
         }
 

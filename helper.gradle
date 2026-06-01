@@ -40,6 +40,9 @@ def parseDependencyList = { String propName ->
     return s.split(',').collect { it.trim() }.findAll { it }
 }
 
+def supportedGameVersions = parseDependencyList('supported_minecraft_versions')
+if (supportedGameVersions.isEmpty()) supportedGameVersions = [gameVersion]
+
 def requiredDependencies = parseDependencyList('required_dependencies')
 def optionalDependencies = parseDependencyList('optional_dependencies')
 
@@ -47,6 +50,7 @@ println("-------------------------------------")
 println("Mod ID: ${modId}")
 println("Loader: ${modLoader}")
 println("Game Version: ${gameVersion}")
+println("Supported Game Versions: ${supportedGameVersions}")
 println("Release Mode: ${isReleaseMode}")
 println("-------------------------------------")
 
@@ -89,7 +93,7 @@ modrinth {
         changelog = getConfig('changelog', "")
     }
 
-    gameVersions = [gameVersion]
+    gameVersions = supportedGameVersions
     loaders = [modLoader]
 
     dependencies {
@@ -119,7 +123,7 @@ if (curseforgeProjectId) {
         changelogType = 'markdown'
         changelog = getConfig('changelog', "")
         releaseType = isReleaseMode ? "release" : "beta"
-        addGameVersion gameVersion
+        supportedGameVersions.each { addGameVersion it }
         addGameVersion modLoader.capitalize()
 
         mainArtifact(jar) {

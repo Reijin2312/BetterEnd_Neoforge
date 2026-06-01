@@ -30,7 +30,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = LivingEntity.class, priority = 200)
 public abstract class LivingEntityMixin extends Entity {
-
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
     }

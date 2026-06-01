@@ -916,5 +916,9 @@
 	"betterend.jei.infusion.time&val": "%s틱",
 	"betterend.jei.container.infusion": "주입 레시피",
 	"betterend.jei.alloying.experience_time": "%s XP | %s초",
-	"betterend.jei.container.alloying": "합금 및 제련"
+	"betterend.jei.container.alloying": "합금 및 제련",
+	"jukebox_song.betterend.strange_and_alien": "§5Firel§r - §fStrange And Alien§r",
+	"jukebox_song.betterend.grasping_at_stars": "§5Firel§r - §fGrasping At Stars§r",
+	"jukebox_song.betterend.endseeker": "§5Firel§r - §fEndseeker§r",
+	"jukebox_song.betterend.eo_dracona": "§5Firel§r - §fEo Dracona§r"
 }

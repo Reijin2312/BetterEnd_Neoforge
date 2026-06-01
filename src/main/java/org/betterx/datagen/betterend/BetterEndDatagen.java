@@ -49,6 +49,7 @@ public class BetterEndDatagen extends WoverDataGenEntryPoint {
         globalPack.addProvider(EndChestLootTableProvider::new);
         globalPack.addProvider(EndBlockLootTableProvider::new);
         globalPack.addProvider(EndModelProvider::new);
+        globalPack.addProvider(EndEquipmentAssetProvider::new);
         globalPack.addProvider(modCore -> (output, registries) ->
                 new EndAdvancementDataProvider(output, registries));
 

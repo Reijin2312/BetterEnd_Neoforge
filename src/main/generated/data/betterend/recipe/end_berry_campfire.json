@@ -5,7 +5,6 @@
   "experience": 0.0,
   "ingredient": "betterend:shadow_berry_raw",
   "result": {
-    "count": 1,
     "id": "betterend:shadow_berry_cooked"
   }
 }

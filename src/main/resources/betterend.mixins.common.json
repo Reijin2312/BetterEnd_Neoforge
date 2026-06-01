@@ -20,7 +20,6 @@
     "LevelMixin",
     "LivingEntityMixin",
     "NoiseBasedChunkGeneratorAccessor",
-    "NoiseChunkAccessor",
     "NoiseChunkMixin",
     "NoiseGeneratorSettingsMixin",
     "NoiseInterpolatorAccessor",
@@ -32,6 +31,7 @@
     "ServerLevelMixin",
     "SlimeMixin",
     "SpikeFeatureMixin",
+    "StructureMixin",
     "WorldGenRegionMixin",
     "portal.EntityMixin"
   ],

@@ -20,7 +20,14 @@ spotless {
     }
 }
 
-archivesBaseName = project.archives_base_name
+tasks.matching { it.name == "spotlessJavaCheck" || it.name == "spotlessCheck" }.configureEach {
+    dependsOn(tasks.named("spotlessApply"))
+}
+
+ext.archivesBaseName = project.archives_base_name
+base {
+    archivesName = project.archives_base_name
+}
 version = project.mod_version
 group = project.maven_group
 
@@ -62,7 +69,7 @@ def enableJadeRuntime = (project.findProperty("enable_jade_runtime")?.toString()
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
     withSourcesJar()
 }
@@ -134,9 +141,9 @@ dependencies {
         println "EMI runtime disabled (set -Penable_emi_runtime=true to re-enable)"
     }
 
-    compileOnly "mezz.jei:jei-1.21.11-neoforge-api:${project.jei_version}"
+    compileOnly "mezz.jei:jei-26.1-neoforge-api:${project.jei_version}"
     if (enableJeiRuntime) {
-        runtimeOnly "mezz.jei:jei-1.21.11-neoforge:${project.jei_version}"
+        runtimeOnly "mezz.jei:jei-26.1-neoforge:${project.jei_version}"
     } else {
         println "JEI runtime disabled (set -Penable_jei_runtime=true to re-enable)"
     }
@@ -228,6 +235,13 @@ subprojects { subproject ->
 processResources {
     println "Version: ${project.mod_version}"
     inputs.property "version", project.mod_version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "neoforge_version", project.neoforge_version
+    inputs.property "minecraft_version_range", project.minecraft_version_range
+    inputs.property "neoforge_version_range", project.neoforge_version_range
+    inputs.property "bclib_version", project.bclib_version
+    inputs.property "wover_version", project.wover_version
+    inputs.property "wunderlib_version", project.wunderlib_version
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     filesMatching("META-INF/neoforge.mods.toml") {
@@ -236,6 +250,8 @@ processResources {
                 "version": project.mod_version,
                 "minecraft_version": project.minecraft_version,
                 "neoforge_version": project.neoforge_version,
+                "minecraft_version_range": project.minecraft_version_range,
+                "neoforge_version_range": project.neoforge_version_range,
                 "bclib_version": project.bclib_version,
                 "wover_version": project.wover_version,
                 "wunderlib_version": project.wunderlib_version
@@ -257,7 +273,7 @@ tasks.named("sourcesJar") {
 tasks.withType(JavaCompile).configureEach {
     def refmapOutput = layout.buildDirectory.file("resources/main/${refmapName}").get().asFile
     options.encoding = "UTF-8"
-    options.release = 21
+    options.release = 25
     options.compilerArgs += [
             "-AoutRefMapFile=${refmapOutput}",
             "-AoutTsrgFile=${mixinOutMappingsFile.get().asFile}",
@@ -290,7 +306,16 @@ tasks.register("generateMixinMappings") {
         def outputFile = mixinMappingsFile.get().asFile
         outputFile.parentFile.mkdirs()
 
-        def lines = inputFile.readLines("UTF-8")
+        def legacyRenames26 = [
+                "net/minecraft/world/level/BlockAndTintGetter"                         : "net/minecraft/client/renderer/block/BlockAndTintGetter",
+                "net/minecraft/world/level/dimension/end/EndDragonFight"              : "net/minecraft/world/level/dimension/end/EnderDragonFight",
+                "net/minecraft/world/level/dimension/end/DragonRespawnAnimation"      : "net/minecraft/world/level/dimension/end/DragonRespawnStage",
+                "net/minecraft/world/level/levelgen/feature/SpikeFeature"             : "net/minecraft/world/level/levelgen/feature/EndSpikeFeature",
+                "net/minecraft/world/level/levelgen/feature/configurations/SpikeConfiguration": "net/minecraft/world/level/levelgen/feature/configurations/EndSpikeConfiguration"
+        ]
+        def lines = inputFile.readLines("UTF-8").collect { line ->
+            legacyRenames26.inject(line) { current, entry -> current.replace(entry.key, entry.value) }
+        }
         def looksNamed = { String name ->
             name != null && (name.contains("/") || name.contains("."))
         }
@@ -495,7 +520,14 @@ jar {
 
 // Collect built jars for BetterEnd and its local BetterX libraries into one folder
 def distDir = new File(rootProject.projectDir.parentFile, "betterx-dist")
-def modrinthModsDir = new File("C:/Users/Redmi/AppData/Roaming/ModrinthApp/profiles/1.21.11/mods")
+def modrinthModsDir = new File("C:/Users/Redmi/AppData/Roaming/ModrinthApp/profiles/26.1/mods")
+def test2ModsDir = file((project.findProperty("test2_mods_dir") ?: "C:/Users/Redmi/Desktop/test2/mods").toString())
+def betterEndModrinthJarPatterns = [
+        "BetterEnd-*.jar",
+        "bclib-*.jar",
+        "worldweaver-*.jar",
+        "wunderlib-*.jar"
+]
 tasks.register("copyDistJars", Copy) {
     dependsOn(
             tasks.named("jar"),
@@ -517,6 +549,12 @@ tasks.register("copyModrinthJars", Copy) {
             project(":WorldWeaver").tasks.named("jar"),
             project(":wunderlib").tasks.named("jar")
     )
+    doFirst {
+        modrinthModsDir.mkdirs()
+        delete fileTree(modrinthModsDir) {
+            include betterEndModrinthJarPatterns
+        }
+    }
     from(tasks.named("jar"))
     from(project(":BCLib").tasks.named("jar"))
     from(project(":WorldWeaver").tasks.named("jar"))
@@ -524,8 +562,22 @@ tasks.register("copyModrinthJars", Copy) {
     into(modrinthModsDir)
 }
 
+tasks.register("copyTest2Jars", Copy) {
+    dependsOn(
+            tasks.named("jar"),
+            project(":BCLib").tasks.named("jar"),
+            project(":WorldWeaver").tasks.named("jar"),
+            project(":wunderlib").tasks.named("jar")
+    )
+    from(tasks.named("jar"))
+    from(project(":BCLib").tasks.named("jar"))
+    from(project(":WorldWeaver").tasks.named("jar"))
+    from(project(":wunderlib").tasks.named("jar"))
+    into(test2ModsDir)
+}
+
 tasks.named("build") {
-    finalizedBy("copyModrinthJars")
+    finalizedBy("copyModrinthJars", "copyTest2Jars")
     if (!simpleBuildRequested) {
         finalizedBy("copyDistJars")
     }

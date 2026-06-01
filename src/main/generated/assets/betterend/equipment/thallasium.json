@@ -1,0 +1,19 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "betterend:thallasium"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "betterend:thallasium"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "betterend:thallasium"
+      }
+    ]
+  }
+}

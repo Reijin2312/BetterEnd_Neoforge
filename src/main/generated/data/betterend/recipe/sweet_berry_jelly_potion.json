@@ -5,11 +5,18 @@
   "ingredients": [
     "minecraft:sweet_berries",
     "minecraft:sugar",
-    "minecraft:potion",
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:water"
+        }
+      },
+      "items": "minecraft:potion"
+    },
     "betterend:gelatine"
   ],
   "result": {
-    "count": 1,
     "id": "betterend:sweet_berry_jelly"
   }
 }

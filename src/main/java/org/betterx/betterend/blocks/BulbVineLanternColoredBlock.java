@@ -23,7 +23,7 @@ public class BulbVineLanternColoredBlock extends BulbVineLanternBlock implements
         return (stack, tintIndex) -> getColor();
     }
 
-    private int getColor() {
+    public int getColor() {
         int color = BlocksHelper.getBlockColor(this);
         int b = (color & 255);
         int g = ((color >> 8) & 255);

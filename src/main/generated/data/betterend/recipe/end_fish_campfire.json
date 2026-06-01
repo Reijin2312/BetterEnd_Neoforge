@@ -5,7 +5,6 @@
   "experience": 0.0,
   "ingredient": "betterend:end_fish_raw",
   "result": {
-    "count": 1,
     "id": "betterend:end_fish_cooked"
   }
 }

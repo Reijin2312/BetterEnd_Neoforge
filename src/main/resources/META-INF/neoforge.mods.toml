@@ -15,14 +15,14 @@ logoFile="assets/betterend/icon.png"
 [[dependencies.${mod_id}]]
 modId="neoforge"
 mandatory=true
-versionRange="[${neoforge_version},)"
+versionRange="${neoforge_version_range}"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.${mod_id}]]
 modId="minecraft"
 mandatory=true
-versionRange="[${minecraft_version}]"
+versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
 

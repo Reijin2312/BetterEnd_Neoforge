@@ -1,0 +1,19 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "betterend:terminite"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "betterend:terminite"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "betterend:terminite"
+      }
+    ]
+  }
+}

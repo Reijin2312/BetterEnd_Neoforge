@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "betterend:item/terminite_bulb_lantern_black"
+    "model": "betterend:block/terminite_bulb_lantern_black",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -15132391
+      }
+    ]
   }
 }

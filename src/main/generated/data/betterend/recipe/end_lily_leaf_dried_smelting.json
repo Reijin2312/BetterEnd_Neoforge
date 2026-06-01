@@ -5,7 +5,6 @@
   "experience": 0.0,
   "ingredient": "betterend:end_lily_leaf",
   "result": {
-    "count": 1,
     "id": "betterend:end_lily_leaf_dried"
   }
 }
