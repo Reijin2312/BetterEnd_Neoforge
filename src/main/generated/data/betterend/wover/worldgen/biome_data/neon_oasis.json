@@ -12,7 +12,7 @@
     "alt": {
       "Name": "betterend:end_moss"
     },
-    "floor_rule": true,
+    "floor_rule": false,
     "top": {
       "Name": "betterend:endstone_dust"
     },
