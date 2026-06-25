@@ -72,6 +72,12 @@ public class CrystaliteBootsModel extends HumanoidModel<HumanoidRenderState> imp
         copyPart(rightLeg, this.rightBoot);
     }
 
+    @Override
+    public void setupAnim(HumanoidRenderState renderState) {
+        super.setupAnim(renderState);
+        copyPropertiesFrom(this);
+    }
+
     protected Iterable<ModelPart> headParts() {
         return Collections::emptyIterator;
     }

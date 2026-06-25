@@ -20,6 +20,10 @@ spotless {
     }
 }
 
+tasks.matching { it.name == "spotlessJavaCheck" || it.name == "spotlessCheck" }.configureEach {
+    dependsOn(tasks.named("spotlessApply"))
+}
+
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
@@ -496,6 +500,7 @@ jar {
 // Collect built jars for BetterEnd and its local BetterX libraries into one folder
 def distDir = new File(rootProject.projectDir.parentFile, "betterx-dist")
 def modrinthModsDir = new File("C:/Users/Redmi/AppData/Roaming/ModrinthApp/profiles/1.21.11/mods")
+def test2ModsDir = file((project.findProperty("test2_mods_dir") ?: "C:/Users/Redmi/Desktop/test2/mods").toString())
 tasks.register("copyDistJars", Copy) {
     dependsOn(
             tasks.named("jar"),
@@ -524,8 +529,22 @@ tasks.register("copyModrinthJars", Copy) {
     into(modrinthModsDir)
 }
 
+tasks.register("copyTest2Jars", Copy) {
+    dependsOn(
+            tasks.named("jar"),
+            project(":BCLib").tasks.named("jar"),
+            project(":WorldWeaver").tasks.named("jar"),
+            project(":wunderlib").tasks.named("jar")
+    )
+    from(tasks.named("jar"))
+    from(project(":BCLib").tasks.named("jar"))
+    from(project(":WorldWeaver").tasks.named("jar"))
+    from(project(":wunderlib").tasks.named("jar"))
+    into(test2ModsDir)
+}
+
 tasks.named("build") {
-    finalizedBy("copyModrinthJars")
+    finalizedBy("copyModrinthJars", "copyTest2Jars")
     if (!simpleBuildRequested) {
         finalizedBy("copyDistJars")
     }

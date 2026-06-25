@@ -19,9 +19,28 @@ public abstract class BlockStateModelLoaderMixin {
                     value = "INVOKE",
                     target = "Lnet/minecraft/resources/FileToIdConverter;fileToId(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/resources/Identifier;"
             ),
+            require = 0,
             remap = false
     )
-    private static Identifier be_switchModelOnLoad(Identifier loc) {
+    private static Identifier be_switchModelOnLoadLegacy(Identifier loc) {
+        return be_replaceChorusModelId(loc);
+    }
+
+    @ModifyArg(
+            method = "lambda$loadBlockStates$1(Ljava/util/Map$Entry;Ljava/util/function/Function;)Lnet/minecraft/client/resources/model/BlockStateModelLoader$LoadedModels;",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/resources/FileToIdConverter;fileToId(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/resources/Identifier;"
+            ),
+            require = 0,
+            remap = false
+    )
+    private static Identifier be_switchModelOnLoad21111(Identifier loc) {
+        return be_replaceChorusModelId(loc);
+    }
+
+    @Unique
+    private static Identifier be_replaceChorusModelId(Identifier loc) {
         // This is always a block state id because it comes from BLOCKSTATE_LISTER.
         if (GeneratorOptions.changeChorusPlant() && be_changeModel(loc)) {
             String path = loc.getPath().replace("chorus", "custom_chorus");

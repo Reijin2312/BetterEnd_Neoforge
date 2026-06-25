@@ -68,13 +68,18 @@ public class FurBlock extends BaseAttachedBlock implements RenderLayerProvider, 
             @NotNull LootLookupProvider provider,
             @NotNull ResourceKey<LootTable> tableKey
     ) {
+        final float dropRate = dropChance < 1 ? 1.0F : 1.0F / dropChance;
         final float[] LEAVES_SAPLING_CHANCES = new float[]{
-                0.8f * dropChance,
-                dropChance,
-                1.333f * dropChance,
-                1.666f * dropChance
+                dropRate,
+                cappedChance(1.25F * dropRate),
+                cappedChance(1.6666667F * dropRate),
+                cappedChance(2.0F * dropRate)
         };
         return provider.dropLeaves(this, drop, LEAVES_SAPLING_CHANCES);
+    }
+
+    private static float cappedChance(float chance) {
+        return Math.min(1.0F, chance);
     }
 
     @Override

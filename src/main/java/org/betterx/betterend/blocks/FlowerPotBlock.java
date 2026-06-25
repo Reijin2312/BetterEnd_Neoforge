@@ -47,6 +47,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +59,68 @@ public class FlowerPotBlock extends BaseBlockNotFull implements RenderLayerProvi
     private static final VoxelShape SHAPE_FULL;
     private static Block[] plants;
     private static Block[] soils;
+    private static final String[] DEFAULT_PLANT_IDS = new String[]{
+            "twisted_umbrella_moss",
+            "dragon_tree_sapling",
+            "bolux_mushroom",
+            "small_amaranita_mushroom",
+            "crystal_grass",
+            "creeping_moss",
+            "pythadendron_sapling",
+            "salteago",
+            "murkweed",
+            "chorus_grass",
+            "tenanea_sapling",
+            "lucernia_leaves",
+            "neon_cactus",
+            "amber_grass",
+            "umbrella_moss",
+            "flammalix",
+            "lucernia_sapling",
+            "lutebus",
+            "small_jellyshroom",
+            "blossom_berry_seed",
+            "jungle_grass",
+            "tenanea_leaves",
+            "shadow_plant",
+            "cave_grass",
+            "aeridium",
+            "dragon_tree_leaves",
+            "blooming_cooksonia",
+            "helix_tree_sapling",
+            "mossy_glowshroom_sapling",
+            "shadow_berry",
+            "fracturn",
+            "inflexia",
+            "lacugrove_sapling",
+            "vaiolush_fern",
+            "orango",
+            "end_lotus_flower",
+            "chorus_mushroom_seed",
+            "needlegrass",
+            "amber_root_seed",
+            "clawfern",
+            "globulagus",
+            "pythadendron_leaves",
+            "bushy_grass",
+            "lamellarium",
+            "umbrella_tree_sapling",
+            "lacugrove_leaves"
+    };
+    private static final String[] DEFAULT_SOIL_IDS = new String[]{
+            "end_mycelium",
+            "chorus_nylium",
+            "shadow_grass",
+            "sangnum",
+            "pink_moss",
+            "amber_moss",
+            "jungle_moss",
+            "rutiscus",
+            "pallidium_full",
+            "crystal_moss",
+            "cave_moss",
+            "end_moss"
+    };
 
     public FlowerPotBlock(Block source) {
         super(BlockBehaviour.Properties.ofLegacyCopy(source).lightLevel(state -> state.getValue(POT_LIGHT) * 5));
@@ -135,8 +198,8 @@ public class FlowerPotBlock extends BaseBlockNotFull implements RenderLayerProvi
         Block[] plants = new Block[128];
         Block[] soils = new Block[16];
 
-        Map<String, Integer> reservedPlantsIDs = Maps.newHashMap();
-        Map<String, Integer> reservedSoilIDs = Maps.newHashMap();
+        Map<String, Integer> reservedPlantsIDs = defaultPottableIds(DEFAULT_PLANT_IDS);
+        Map<String, Integer> reservedSoilIDs = defaultPottableIds(DEFAULT_SOIL_IDS);
 
         JsonObject obj = JsonFactory.getJsonObject(new File(
                 FMLPaths.CONFIGDIR.get().toFile(),
@@ -159,13 +222,16 @@ public class FlowerPotBlock extends BaseBlockNotFull implements RenderLayerProvi
             }
         }
 
-        EndBlocks.getModBlocks().forEach(block -> {
-            if (block instanceof PottablePlant && ((PottablePlant) block).canBePotted()) {
-                processBlock(plants, block, "flower_pots.plants", reservedPlantsIDs);
-            } else if (block instanceof PottableTerrain && ((PottableTerrain) block).canBePotted()) {
-                processBlock(soils, block, "flower_pots.soils", reservedSoilIDs);
-            }
-        });
+        EndBlocks.getModBlocks()
+                 .stream()
+                 .sorted(Comparator.comparing(FlowerPotBlock::blockId))
+                 .forEach(block -> {
+                     if (block instanceof PottablePlant && ((PottablePlant) block).canBePotted()) {
+                         processBlock(plants, block, "flower_pots.plants", reservedPlantsIDs);
+                     } else if (block instanceof PottableTerrain && ((PottableTerrain) block).canBePotted()) {
+                         processBlock(soils, block, "flower_pots.soils", reservedSoilIDs);
+                     }
+                 });
 
         FlowerPotBlock.plants = new Block[maxNotNull(plants) + 1];
         System.arraycopy(plants, 0, FlowerPotBlock.plants, 0, FlowerPotBlock.plants.length);
@@ -197,6 +263,19 @@ public class FlowerPotBlock extends BaseBlockNotFull implements RenderLayerProvi
             }
         }
         return max;
+    }
+
+    private static String blockId(Block block) {
+        Identifier location = BuiltInRegistries.BLOCK.getKey(block);
+        return location == null ? "" : location.toString();
+    }
+
+    private static Map<String, Integer> defaultPottableIds(String[] blockIds) {
+        Map<String, Integer> ids = Maps.newHashMap();
+        for (int i = 0; i < blockIds.length; i++) {
+            ids.put(blockIds[i], i);
+        }
+        return ids;
     }
 
     private static void processBlock(Block[] target, Block block, String path, Map<String, Integer> idMap) {

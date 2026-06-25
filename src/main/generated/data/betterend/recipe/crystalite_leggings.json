@@ -17,22 +17,22 @@
       "minecraft:attribute_modifiers": [
         {
           "type": "minecraft:armor",
-          "amount": 6.0,
-          "id": "minecraft:armor.leggings",
+          "amount": 4.800000190734863,
+          "id": "betterend:armor_boost_leggings",
           "operation": "add_value",
           "slot": "legs"
         },
         {
           "type": "minecraft:armor_toughness",
-          "amount": 1.2000000476837158,
-          "id": "minecraft:armor.leggings",
+          "amount": 0.9600000381469727,
+          "id": "betterend:toughness_boost_leggings",
           "operation": "add_value",
           "slot": "legs"
         },
         {
-          "type": "minecraft:knockback_resistance",
-          "amount": 0.10000000149011612,
-          "id": "minecraft:armor.leggings",
+          "type": "minecraft:max_health",
+          "amount": 4.0,
+          "id": "betterend:max_health_boost",
           "operation": "add_value",
           "slot": "legs"
         }

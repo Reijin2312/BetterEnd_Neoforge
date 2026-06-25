@@ -8,7 +8,6 @@ import org.betterx.bclib.util.MHelper;
 import org.betterx.betterend.noise.OpenSimplexNoise;
 import org.betterx.betterend.registry.EndBlocks;
 
-import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;

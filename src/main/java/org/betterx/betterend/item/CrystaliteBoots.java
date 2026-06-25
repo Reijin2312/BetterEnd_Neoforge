@@ -11,24 +11,34 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.equipment.ArmorType;
 
 import java.util.function.Consumer;
 
 public class CrystaliteBoots extends CrystaliteArmor implements MobEffectApplier {
-    private static Properties defaultSettings() {
-        return EndArmorItem.createDefaultEndArmorSettings(
-                ArmorSlot.BOOTS_SLOT, EndArmorTier.CRYSTALITE,
-                EndArmorItem.startAttributeBuilder(
-                        ArmorSlot.BOOTS_SLOT,
-                        EndArmorTier.CRYSTALITE
-                ).build()
-        );
+    private static ItemAttributeModifiers defaultAttributes() {
+        return EndArmorItem.startAttributeBuilder(
+                ArmorSlot.BOOTS_SLOT,
+                EndArmorTier.CRYSTALITE
+        ).build();
     }
 
     public CrystaliteBoots() {
-        super(ArmorType.BOOTS, defaultSettings());
+        this(defaultAttributes());
+    }
+
+    private CrystaliteBoots(ItemAttributeModifiers attributes) {
+        super(
+                ArmorType.BOOTS,
+                EndArmorItem.createDefaultEndArmorSettings(
+                        ArmorSlot.BOOTS_SLOT,
+                        EndArmorTier.CRYSTALITE,
+                        attributes
+                ),
+                attributes
+        );
     }
 
     @Override

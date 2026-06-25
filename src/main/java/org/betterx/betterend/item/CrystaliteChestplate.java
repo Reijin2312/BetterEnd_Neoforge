@@ -12,23 +12,33 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.equipment.ArmorType;
 
 import java.util.function.Consumer;
 
 public class CrystaliteChestplate extends CrystaliteArmor implements MobEffectApplier {
-    private static Properties defaultSettings() {
-        return EndArmorItem.createDefaultEndArmorSettings(
-                ArmorSlot.CHESTPLATE_SLOT, EndArmorTier.CRYSTALITE,
-                EndArmorItem.startAttributeBuilder(
-                        ArmorSlot.CHESTPLATE_SLOT,
-                        EndArmorTier.CRYSTALITE
-                ).build()
-        );
+    private static ItemAttributeModifiers defaultAttributes() {
+        return EndArmorItem.startAttributeBuilder(
+                ArmorSlot.CHESTPLATE_SLOT,
+                EndArmorTier.CRYSTALITE
+        ).build();
     }
 
     public CrystaliteChestplate() {
-        super(ArmorType.CHESTPLATE, defaultSettings());
+        this(defaultAttributes());
+    }
+
+    private CrystaliteChestplate(ItemAttributeModifiers attributes) {
+        super(
+                ArmorType.CHESTPLATE,
+                EndArmorItem.createDefaultEndArmorSettings(
+                        ArmorSlot.CHESTPLATE_SLOT,
+                        EndArmorTier.CRYSTALITE,
+                        attributes
+                ),
+                attributes
+        );
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.betterx.betterend.world.biome;
 
 import org.betterx.bclib.interfaces.SurfaceMaterialProvider;
+import org.betterx.betterend.config.Configs;
 import org.betterx.betterend.registry.EndBlocks;
 import org.betterx.wover.biome.api.BiomeKey;
 import org.betterx.wover.biome.api.data.BiomeData;
@@ -65,6 +66,16 @@ public class EndBiome extends WoverBiomeData implements SurfaceMaterialProvider 
         return KEY_CODEC;
     }
 
+    @Override
+    public boolean isEnabled() {
+        return Configs.BIOMES_TOGGLE.isEnabled(biomeKey);
+    }
+
+    @Override
+    public boolean isPickable() {
+        return isEnabled() && super.isPickable();
+    }
+
     private boolean hasCaves = true;
 
     void setHasCaves(boolean v) {
@@ -103,7 +114,7 @@ public class EndBiome extends WoverBiomeData implements SurfaceMaterialProvider 
             SurfaceRuleBuilder builder = SurfaceRuleBuilder.start();
 
             if (generateFloorRule() && getTopMaterial() != getUnderMaterial()) {
-                if (getTopMaterial() != getAltTopMaterial()) {
+                if (getTopMaterial() == getAltTopMaterial()) {
                     builder.floor(getTopMaterial());
                 } else {
                     builder.chancedFloor(getTopMaterial(), getAltTopMaterial());

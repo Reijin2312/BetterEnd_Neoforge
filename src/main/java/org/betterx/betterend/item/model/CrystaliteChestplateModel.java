@@ -130,6 +130,12 @@ public class CrystaliteChestplateModel extends HumanoidModel<HumanoidRenderState
         copyPart(rightArm, this.rightShoulder);
     }
 
+    @Override
+    public void setupAnim(HumanoidRenderState renderState) {
+        super.setupAnim(renderState);
+        copyPropertiesFrom(this);
+    }
+
     protected Iterable<ModelPart> headParts() {
         return Collections::emptyIterator;
     }

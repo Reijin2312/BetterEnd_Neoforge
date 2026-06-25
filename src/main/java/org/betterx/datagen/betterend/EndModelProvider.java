@@ -1,5 +1,6 @@
 package org.betterx.datagen.betterend;
 
+import org.betterx.bclib.complexmaterials.set.wood.WoodSlots;
 import org.betterx.bclib.blocks.BaseVineBlock;
 import org.betterx.betterend.BetterEnd;
 import org.betterx.betterend.blocks.EndBlockProperties;
@@ -17,7 +18,9 @@ import org.betterx.wover.core.api.ModCore;
 import org.betterx.wover.datagen.api.provider.WoverModelProvider;
 
 import com.mojang.math.Quadrant;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
@@ -33,12 +36,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SaplingBlock;
 
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -51,6 +57,9 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 public class EndModelProvider extends WoverModelProvider {
+    private static final Identifier POTTED_CROSS_PARENT = BetterEnd.C.mk("block/potted_cross");
+    private static final Identifier POTTED_TINTED_CROSS_PARENT = BetterEnd.C.mk("block/potted_tinted_cross");
+    private static final double POTTED_PLANT_MIN_Y = 7.5D;
     private final Set<Identifier> generatedModels = new HashSet<>();
     private final Map<Identifier, String> resourceCache = new HashMap<>();
 
@@ -259,8 +268,46 @@ public class EndModelProvider extends WoverModelProvider {
                              .override(EndBlocks.MENGER_SPONGE, generator::delegateItemModel)
                              .override(EndBlocks.MENGER_SPONGE_WET, generator::delegateItemModel)
                              .override(EndBlocks.VIOLECITE.brickWall, b -> generator.delegateItemModel(b, BetterEnd.C.mk("block/violecite_bricks_wall_post")))
-                             .override(EndBlocks.DRAGON_TREE.getBark(), generator::delegateItemModel)
-                             .override(EndBlocks.DRAGON_TREE.getLog(), generator::delegateItemModel)
+                             .override(EndBlocks.MOSSY_GLOWSHROOM.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.MOSSY_GLOWSHROOM.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.MOSSY_GLOWSHROOM.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.MOSSY_GLOWSHROOM.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.PYTHADENDRON.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.PYTHADENDRON.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.PYTHADENDRON.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.PYTHADENDRON.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.END_LOTUS.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.END_LOTUS.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.END_LOTUS.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.END_LOTUS.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.LACUGROVE.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.LACUGROVE.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.LACUGROVE.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.LACUGROVE.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.DRAGON_TREE.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.DRAGON_TREE.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.DRAGON_TREE.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.DRAGON_TREE.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.TENANEA.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.TENANEA.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.TENANEA.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.TENANEA.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.HELIX_TREE.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.HELIX_TREE.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.HELIX_TREE.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.HELIX_TREE.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.UMBRELLA_TREE.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.UMBRELLA_TREE.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.UMBRELLA_TREE.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.UMBRELLA_TREE.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.JELLYSHROOM.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.JELLYSHROOM.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.JELLYSHROOM.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.JELLYSHROOM.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.LUCERNIA.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.LUCERNIA.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.LUCERNIA.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.LUCERNIA.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
                              .override(EndBlocks.NEON_CACTUS, b -> generator.delegateItemModel(b, BetterEnd.C.mk("block/neon_cactus_small")))
                              .ignore(EndBlocks.AMARANITA_STEM)
                              .override(EndBlocks.MOSSY_DRAGON_BONE, b -> generator.delegateItemModel(
@@ -325,6 +372,88 @@ public class EndModelProvider extends WoverModelProvider {
 
         generator.acceptBlockState(MultiVariantGenerator.dispatch(block, BlockModelGenerators.variants(variants.toArray(new Variant[0]))));
         generator.delegateItemModel(block, models.get(0));
+    }
+
+    private ModelOverides.@NotNull BlockModelProvider createRandomPillarModel(WoverBlockModelGenerators generator) {
+        return block -> {
+            final var model = ModelLocationUtils.getModelLocation(block);
+            final var models = new ArrayList<Identifier>();
+            if (modelExists(model)) {
+                models.add(model);
+            }
+            for (int i = 2; i <= 5; i++) {
+                Identifier variant = model.withSuffix("_" + i);
+                if (modelExists(variant)) {
+                    models.add(variant);
+                }
+            }
+            if (models.size() < 2) {
+                createDefaultPillarModel(generator, block);
+                return;
+            }
+
+            generator.acceptBlockState(MultiVariantGenerator
+                    .dispatch(block)
+                    .with(PropertyDispatch
+                                  .initial(RotatedPillarBlock.AXIS)
+                                  .select(Direction.Axis.X, createPillarVariants(
+                                          models,
+                                          Quadrant.R90,
+                                          Quadrant.R90
+                                  ))
+                                  .select(Direction.Axis.Y, createPillarVariants(
+                                          models,
+                                          Quadrant.R0,
+                                          Quadrant.R0
+                                  ))
+                                  .select(Direction.Axis.Z, createPillarVariants(
+                                          models,
+                                          Quadrant.R90,
+                                          Quadrant.R0
+                                  ))
+                    )
+            );
+
+            generator.delegateItemModel(block, model);
+        };
+    }
+
+    private static void createDefaultPillarModel(WoverBlockModelGenerators generator, Block block) {
+        final var texture = TextureMapping.getBlockTexture(block);
+        Identifier side = texture.withSuffix("_side");
+        Identifier end = texture.withSuffix("_top");
+
+        String path = texture.getPath();
+        if (path.endsWith("_bark")) {
+            Identifier log = Identifier.fromNamespaceAndPath(
+                    texture.getNamespace(),
+                    path.substring(0, path.length() - "_bark".length()) + "_log"
+            );
+            side = log.withSuffix("_side");
+            end = side;
+        }
+
+        generator.createRotatedPillar(block, new TextureMapping()
+                .put(TextureSlot.SIDE, side)
+                .put(TextureSlot.END, end));
+    }
+
+    private static MultiVariant createPillarVariants(
+            List<Identifier> models,
+            Quadrant xRotation,
+            Quadrant yRotation
+    ) {
+        final var variants = models.stream().map(model -> {
+            var variant = new Variant(model);
+            if (xRotation != Quadrant.R0) {
+                variant = variant.withXRot(xRotation);
+            }
+            if (yRotation != Quadrant.R0) {
+                variant = variant.withYRot(yRotation);
+            }
+            return variant;
+        }).toArray(Variant[]::new);
+        return BlockModelGenerators.variants(variants);
     }
 
     private static ModelOverides.@NotNull BlockModelProvider createTwistedVineModel(WoverBlockModelGenerators generator) {
@@ -483,6 +612,10 @@ public class EndModelProvider extends WoverModelProvider {
             if (crossModel != null) {
                 return crossModel;
             }
+            Identifier shiftedModel = createPottedModelFromModel(generator, pottedModelId, stateModel);
+            if (shiftedModel != null) {
+                return shiftedModel;
+            }
             return stateModel;
         }
 
@@ -592,11 +725,92 @@ public class EndModelProvider extends WoverModelProvider {
         if (modelExists(modelId)) {
             return modelId;
         }
-        TextureMapping mapping = new TextureMapping().put(TextureSlot.PLANT, texture);
-        Identifier created = (tinted ? ModelTemplates.TINTED_FLOWER_POT_CROSS : ModelTemplates.FLOWER_POT_CROSS)
-                .create(modelId, mapping, generator.modelOutput());
-        markGenerated(created);
-        return created;
+        JsonObject modelJson = new JsonObject();
+        modelJson.addProperty("parent", (tinted ? POTTED_TINTED_CROSS_PARENT : POTTED_CROSS_PARENT).toString());
+        JsonObject textures = new JsonObject();
+        textures.addProperty("plant", texture.toString());
+        modelJson.add("textures", textures);
+        generator.acceptModelOutput(modelId, () -> modelJson);
+        markGenerated(modelId);
+        return modelId;
+    }
+
+    private Identifier createPottedModelFromModel(
+            WoverBlockModelGenerators generator,
+            Identifier pottedModelId,
+            Identifier sourceModelId
+    ) {
+        if (modelExists(pottedModelId)) {
+            return pottedModelId;
+        }
+        JsonObject modelJson = readModelJson(sourceModelId);
+        if (modelJson == null || !modelJson.has("elements") || !modelJson.get("elements").isJsonArray()) {
+            return null;
+        }
+        JsonArray elements = modelJson.getAsJsonArray("elements");
+        if (elements.isEmpty()) {
+            return null;
+        }
+
+        double minY = findMinElementY(elements);
+        if (!Double.isFinite(minY)) {
+            return null;
+        }
+
+        JsonObject pottedJson = modelJson.deepCopy();
+        shiftElementsY(pottedJson.getAsJsonArray("elements"), POTTED_PLANT_MIN_Y - minY);
+        generator.acceptModelOutput(pottedModelId, () -> pottedJson);
+        markGenerated(pottedModelId);
+        return pottedModelId;
+    }
+
+    private double findMinElementY(JsonArray elements) {
+        double minY = Double.POSITIVE_INFINITY;
+        for (JsonElement element : elements) {
+            if (!element.isJsonObject()) {
+                continue;
+            }
+            JsonObject obj = element.getAsJsonObject();
+            minY = minCoordinateY(minY, obj.get("from"));
+            minY = minCoordinateY(minY, obj.get("to"));
+        }
+        return minY;
+    }
+
+    private double minCoordinateY(double minY, JsonElement coordinates) {
+        if (coordinates == null || !coordinates.isJsonArray()) {
+            return minY;
+        }
+        JsonArray array = coordinates.getAsJsonArray();
+        if (array.size() < 2) {
+            return minY;
+        }
+        return Math.min(minY, array.get(1).getAsDouble());
+    }
+
+    private void shiftElementsY(JsonArray elements, double offset) {
+        for (JsonElement element : elements) {
+            if (!element.isJsonObject()) {
+                continue;
+            }
+            JsonObject obj = element.getAsJsonObject();
+            shiftCoordinateY(obj, "from", offset);
+            shiftCoordinateY(obj, "to", offset);
+            if (obj.has("rotation") && obj.get("rotation").isJsonObject()) {
+                shiftCoordinateY(obj.getAsJsonObject("rotation"), "origin", offset);
+            }
+        }
+    }
+
+    private void shiftCoordinateY(JsonObject obj, String key, double offset) {
+        if (!obj.has(key) || !obj.get(key).isJsonArray()) {
+            return;
+        }
+        JsonArray coordinates = obj.getAsJsonArray(key);
+        if (coordinates.size() < 2) {
+            return;
+        }
+        coordinates.set(1, new JsonPrimitive(coordinates.get(1).getAsDouble() + offset));
     }
 
     private Identifier getModelTexture(JsonObject modelJson, String key) {

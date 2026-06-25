@@ -1016,5 +1016,9 @@
   "betterend.jei.infusion.time&val": "%s 刻",
   "betterend.jei.container.infusion": "灌注配方",
   "betterend.jei.alloying.experience_time": "%s 经验 | %s 秒",
-  "betterend.jei.container.alloying": "合金与高炉熔炼"
+  "betterend.jei.container.alloying": "合金与高炉熔炼",
+  "jukebox_song.betterend.strange_and_alien": "§5Firel§r - §fStrange And Alien§r",
+  "jukebox_song.betterend.grasping_at_stars": "§5Firel§r - §fGrasping At Stars§r",
+  "jukebox_song.betterend.endseeker": "§5Firel§r - §fEndseeker§r",
+  "jukebox_song.betterend.eo_dracona": "§5Firel§r - §fEo Dracona§r"
 }

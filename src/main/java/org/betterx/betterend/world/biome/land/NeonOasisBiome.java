@@ -66,6 +66,11 @@ public class NeonOasisBiome extends EndBiome.Config {
             }
 
             @Override
+            public boolean generateFloorRule() {
+                return false;
+            }
+
+            @Override
             public SurfaceRuleBuilder surface() {
                 RuleSource surfaceBlockRule = new SwitchRuleSource(
                         new SplitNoiseCondition(),
@@ -77,11 +82,11 @@ public class NeonOasisBiome extends EndBiome.Config {
                 return super
                         .surface()
                         .ceil(Blocks.END_STONE.defaultBlockState())
-                        .rule(SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, surfaceBlockRule), 1)
+                        .rule(SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, surfaceBlockRule), SurfaceRuleBuilder.FLOOR_PRIORITY)
                         .rule(SurfaceRules.ifTrue(
                                 SurfaceRules.stoneDepthCheck(5, false, CaveSurface.FLOOR),
                                 SurfaceRules.state(EndBlocks.ENDSTONE_DUST.defaultBlockState())
-                        ), 4);
+                        ), SurfaceRuleBuilder.BELOW_FLOOR_PRIORITY);
             }
         };
     }

@@ -1235,5 +1235,9 @@
 	"betterend.jei.infusion.time&val": "%s тиков",
 	"betterend.jei.container.infusion": "Рецепты наполнения",
 	"betterend.jei.alloying.experience_time": "%s XP | %s с",
-	"betterend.jei.container.alloying": "Плавка и сплавы"
+	"betterend.jei.container.alloying": "Плавка и сплавы",
+	"jukebox_song.betterend.strange_and_alien": "§5Firel§r - §fStrange And Alien§r",
+	"jukebox_song.betterend.grasping_at_stars": "§5Firel§r - §fGrasping At Stars§r",
+	"jukebox_song.betterend.endseeker": "§5Firel§r - §fEndseeker§r",
+	"jukebox_song.betterend.eo_dracona": "§5Firel§r - §fEo Dracona§r"
 }

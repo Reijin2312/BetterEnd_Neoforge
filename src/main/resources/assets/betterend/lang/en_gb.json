@@ -24,5 +24,9 @@
 	"betterend.jei.infusion.time&val": "%s ticks",
 	"betterend.jei.container.infusion": "Infusion Recipes",
 	"betterend.jei.alloying.experience_time": "%s XP | %s s",
-	"betterend.jei.container.alloying": "Alloying and Blasting"
+	"betterend.jei.container.alloying": "Alloying and Blasting",
+	"jukebox_song.betterend.strange_and_alien": "§5Firel§r - §fStrange And Alien§r",
+	"jukebox_song.betterend.grasping_at_stars": "§5Firel§r - §fGrasping At Stars§r",
+	"jukebox_song.betterend.endseeker": "§5Firel§r - §fEndseeker§r",
+	"jukebox_song.betterend.eo_dracona": "§5Firel§r - §fEo Dracona§r"
 }

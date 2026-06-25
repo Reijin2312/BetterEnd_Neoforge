@@ -44,7 +44,7 @@ public class MusicTrackerMixin {
 
     @Unique
     private boolean be_shouldChangeMusic(Music toMusic) {
-        return currentMusic == null || !toMusic.sound().value().location().equals(currentMusic.getSound().getLocation());
+        return currentMusic == null || !toMusic.sound().value().location().equals(currentMusic.getIdentifier());
     }
 
     @Inject(method = "startPlaying", at = @At("TAIL"))

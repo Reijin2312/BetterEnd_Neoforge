@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -50,6 +51,11 @@ public class ArmoredElytraLayer<S extends HumanoidRenderState, M extends EntityM
 
         ItemStack itemStack = state.chestEquipment;
         if (itemStack.isEmpty()) {
+            return;
+        }
+        // 1.21.11+: vanilla WingsLayer handles equippable items with GLIDER.
+        // Keep this layer only for legacy custom elytras without GLIDER.
+        if (itemStack.has(DataComponents.GLIDER)) {
             return;
         }
 
