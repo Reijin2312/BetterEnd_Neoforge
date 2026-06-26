@@ -63,7 +63,11 @@ public class EndHammerItem extends Item implements ItemModelProvider, ItemTagPro
     }
 
     public EndHammerItem(ToolMaterial material, float attackDamage, float attackSpeed, float knockback, Properties settings) {
-        super(settings.attributes(createAttributes(material, attackDamage, attackSpeed, knockback)));
+        super(settings
+                .durability(material.durability())
+                .repairable(material.repairItems())
+                .enchantable(material.enchantmentValue())
+                .attributes(createAttributes(material, attackDamage, attackSpeed, knockback)));
     }
 
     @Override
