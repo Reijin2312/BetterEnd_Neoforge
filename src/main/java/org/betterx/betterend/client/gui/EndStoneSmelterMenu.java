@@ -15,15 +15,16 @@ import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
+import org.anti_ad.mc.ipn.api.IPNIgnore;
 
 import org.jetbrains.annotations.NotNull;
 
+@IPNIgnore
 public class EndStoneSmelterMenu extends RecipeBookMenu<AlloyingRecipeInput, AlloyingRecipe> {
     public static final int INGREDIENT_SLOT_A = 0;
     public static final int INGREDIENT_SLOT_B = 1;
@@ -133,19 +134,13 @@ public class EndStoneSmelterMenu extends RecipeBookMenu<AlloyingRecipeInput, All
     }
 
     protected boolean isSmeltable(ItemStack itemStack) {
-        if (world.getRecipeManager()
-                 .getRecipeFor(AlloyingRecipe.TYPE, new AlloyingRecipeInput(itemStack), world)
-                 .isPresent()) {
-            return true;
-        }
-
-        SingleRecipeInput input = new SingleRecipeInput(itemStack);
-        return world.getRecipeManager().getRecipeFor(RecipeType.BLASTING, input, world).isPresent()
-                || world.getRecipeManager().getRecipeFor(RecipeType.SMELTING, input, world).isPresent();
+        return world.getRecipeManager()
+                    .getRecipeFor(AlloyingRecipe.TYPE, new AlloyingRecipeInput(itemStack), world)
+                    .isPresent();
     }
 
     public boolean isFuel(ItemStack itemStack) {
-        return EndStoneSmelterBlockEntity.canUseAsFuel(itemStack, this.world);
+        return EndStoneSmelterBlockEntity.canUseAsFuel(itemStack);
     }
 
     @Override
@@ -192,14 +187,14 @@ public class EndStoneSmelterMenu extends RecipeBookMenu<AlloyingRecipeInput, All
         return itemStack;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public int getSmeltProgress() {
         int time = propertyDelegate.get(2);
         int timeTotal = propertyDelegate.get(3);
         return timeTotal != 0 && time != 0 ? time * 24 / timeTotal : 0;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public int getFuelProgress() {
         int fuelTime = propertyDelegate.get(1);
         if (fuelTime == 0) {
@@ -208,7 +203,7 @@ public class EndStoneSmelterMenu extends RecipeBookMenu<AlloyingRecipeInput, All
         return propertyDelegate.get(0) * 13 / fuelTime;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public boolean isBurning() {
         return propertyDelegate.get(0) > 0;
     }

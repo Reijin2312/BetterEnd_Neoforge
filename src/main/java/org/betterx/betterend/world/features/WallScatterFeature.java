@@ -25,9 +25,9 @@ public abstract class WallScatterFeature<FC extends ScatterFeatureConfig> extend
     @Override
     public boolean place(FeaturePlaceContext<FC> featureConfig) {
         FC cfg = featureConfig.config();
-        final RandomSource random = featureConfig.random();
-        final BlockPos center = featureConfig.origin();
-        final WorldGenLevel world = featureConfig.level();
+        RandomSource random = featureConfig.random();
+        BlockPos center = featureConfig.origin();
+        WorldGenLevel world = featureConfig.level();
         int maxY = world.getHeight(Heightmap.Types.WORLD_SURFACE, center.getX(), center.getZ());
         int minY = BlocksHelper.upRay(world, new BlockPos(center.getX(), 0, center.getZ()), maxY);
         if (maxY < 10 || maxY < minY) {
@@ -54,16 +54,15 @@ public abstract class WallScatterFeature<FC extends ScatterFeatureConfig> extend
                 }
             }
         }
-
         return true;
     }
 
     private static void shuffle(RandomSource random, Direction[] directions) {
-        for (int i = 0; i < 4; i++) {
-            int j = random.nextInt(4);
-            Direction d = directions[i];
+        for (int i = 0; i < directions.length; i++) {
+            int j = random.nextInt(directions.length);
+            Direction direction = directions[i];
             directions[i] = directions[j];
-            directions[j] = d;
+            directions[j] = direction;
         }
     }
 }

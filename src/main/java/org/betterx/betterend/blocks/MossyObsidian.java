@@ -19,13 +19,13 @@ import net.minecraft.world.level.lighting.LightEngine;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import org.jetbrains.annotations.NotNull;
 
 public class MossyObsidian extends BaseBlock implements BehaviourObsidian, BlockLootProvider {
     public MossyObsidian() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.OBSIDIAN).strength(3).randomTicks());
+        super(FabricBlockSettings.copyOf(Blocks.OBSIDIAN).hardness(3).randomTicks());
     }
 
     @Override

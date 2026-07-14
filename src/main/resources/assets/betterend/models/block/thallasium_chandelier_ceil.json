@@ -3,7 +3,7 @@
 	"textures": {
 		"particle": "betterend:block/thallasium_chandelier_ceil",
 		"texture": "betterend:block/thallasium_chandelier_ceil",
-		"rod": "betterend:block/thallasium_chandelier_floor"
+		"rod": "betterend:block/thallasium_chandelier"
 	},
 	"elements": [ 	 
 		{

@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.chunk.MissingPaletteEntryException;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,16 +23,14 @@ import java.util.Comparator;
 public class BiomeColorsMixin {
     private static final int POISON_COLOR = ColorUtil.color(92, 160, 78);
     private static final int STREAM_COLOR = ColorUtil.color(105, 213, 244);
-    private static final Point[] OFFSETS = buildOffsets();
+    private static final Point[] OFFSETS;
 
     @Inject(method = "getAverageWaterColor", at = @At("RETURN"), cancellable = true)
     private static void be_getWaterColor(BlockAndTintGetter world, BlockPos pos, CallbackInfoReturnable<Integer> info) {
         if (Configs.CLIENT_CONFIG.sulfurWaterColor.get()) {
-            if (isDistantHorizonsTintContext(world)) {
-                // DH uses its own tint getters for LOD rendering; avoid world-state probing here.
+            if (world != null && world.getClass().getName().contains("distanthorizons")) {
                 return;
             }
-
             BlockAndTintGetter view = world;
             MutableBlockPos mut = new MutableBlockPos();
             mut.setY(pos.getY());
@@ -46,28 +43,21 @@ public class BiomeColorsMixin {
                         return;
                     }
                 }
-            } catch (MissingPaletteEntryException | UnsupportedOperationException ignored) {
-                // Avoid crashing on render-thread palette races (e.g., Sodium)
+            } catch (RuntimeException ignored) {
             }
         }
     }
 
-    private static boolean isDistantHorizonsTintContext(BlockAndTintGetter world) {
-        return world != null && world.getClass().getName().contains("distanthorizons");
-    }
-
-    private static Point[] buildOffsets() {
+    static {
         int index = 0;
-        Point[] offsets = new Point[20];
+        OFFSETS = new Point[20];
         for (int x = -2; x < 3; x++) {
             for (int z = -2; z < 3; z++) {
                 if ((x != 0 || z != 0) && (Math.abs(x) != 2 || Math.abs(z) != 2)) {
-                    offsets[index++] = new Point(x, z);
+                    OFFSETS[index++] = new Point(x, z);
                 }
             }
         }
-        Arrays.sort(offsets, Comparator.comparingInt(pos -> MHelper.sqr(pos.x) + MHelper.sqr(pos.y)));
-        return offsets;
+        Arrays.sort(OFFSETS, Comparator.comparingInt(pos -> MHelper.sqr(pos.x) + MHelper.sqr(pos.y)));
     }
-
 }

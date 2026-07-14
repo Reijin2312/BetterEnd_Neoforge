@@ -20,7 +20,7 @@ public abstract class EnderManMixin {
     private void be_isLookingAtMe(Player player, CallbackInfoReturnable<Boolean> info) {
         final ItemStack headItem = player.getItemBySlot(EquipmentSlot.HEAD);
 
-        if (player.isCreative() || player.hasEffect(EndStatusEffects.END_VEIL) || EnchantmentHelper.has(headItem, EndEnchantments.getEndVeilState())) {
+        if (player.isCreative() || player.hasEffect(EndStatusEffects.END_VEIL) || EnchantmentHelper.has(headItem, EndEnchantments.END_VEIL_STATE)) {
             info.setReturnValue(false);
         }
     }

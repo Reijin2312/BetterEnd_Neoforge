@@ -1,6 +1,6 @@
 {
-    "parent": "betterend:block/potted_cross",
+    "parent": "block/cross",
     "textures": {
-        "plant": "betterend:block/vaiolush_fern_potted"
+        "cross": "betterend:block/vaiolush_fern_potted"
     }
 }

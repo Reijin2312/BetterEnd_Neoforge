@@ -13,11 +13,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 
+import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class BetterEndSkyRenderer {
+public class BetterEndSkyRenderer implements DimensionRenderingRegistry.SkyRenderer {
     @FunctionalInterface
     interface BufferFunction {
         BufferBuilder make(Tesselator tesselator, float minSize, float maxSize, int count, long seed);
@@ -60,9 +63,20 @@ public class BetterEndSkyRenderer {
         }
     }
 
-    public void renderFallback(PoseStack matrices, Matrix4f projectionMatrix, float time) {
+    @Override
+    public void render(WorldRenderContext context) {
+        if (context.world() == null || context.matrixStack() == null) {
+            return;
+        }
+
         initialise();
 
+        Matrix4f projectionMatrix = context.projectionMatrix();
+        PoseStack matrices = context.matrixStack();
+
+        float time = ((context.world().getDayTime() + context
+                .tickCounter()
+                .getRealtimeDeltaTicks()) % 360000) * 0.000017453292f;
         float time2 = time * 2;
         float time3 = time * 3;
 
@@ -146,9 +160,7 @@ public class BetterEndSkyRenderer {
 
         float a = (BackgroundInfo.fogDensity - 1F);
         if (a > 0) {
-            if (a > 1F) {
-                a = 1F;
-            }
+            if (a > 1) a = 1;
             RenderSystem.setShaderTexture(0, FOG);
             renderBuffer(
                     matrices,
@@ -187,34 +199,6 @@ public class BetterEndSkyRenderer {
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-    }
-
-    public void renderSkyboxOnly(PoseStack matrices, Matrix4f projectionMatrix) {
-        initialise();
-
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-
-        RenderSystem.setShaderTexture(0, HORIZON);
-        renderBuffer(
-                matrices,
-                projectionMatrix,
-                horizon,
-                DefaultVertexFormat.POSITION_TEX,
-                1.0f,
-                1.0f,
-                1.0f,
-                1.0f
-        );
-
-        RenderSystem.depthMask(true);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
-    }
-
-    public void renderSkyboxWithStars(PoseStack matrices, Matrix4f projectionMatrix, float time) {
-        renderFallback(matrices, projectionMatrix, time);
     }
 
     private void renderBuffer(

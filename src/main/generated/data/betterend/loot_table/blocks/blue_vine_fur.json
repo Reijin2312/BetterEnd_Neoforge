@@ -47,10 +47,10 @@
                 },
                 {
                   "chances": [
-                    0.33333334,
-                    0.4166667,
-                    0.5555556,
-                    0.6666667
+                    2.4,
+                    3.0,
+                    3.9989998,
+                    4.998
                   ],
                   "condition": "minecraft:table_bonus",
                   "enchantment": "minecraft:fortune"
@@ -131,6 +131,5 @@
       ],
       "rolls": 1.0
     }
-  ],
-  "random_sequence": "betterend:blocks/blue_vine_fur"
+  ]
 }

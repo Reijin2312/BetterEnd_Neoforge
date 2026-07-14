@@ -25,8 +25,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
@@ -107,7 +107,7 @@ public class InfusionPedestal extends PedestalBlock implements BehaviourStone, B
             EndBlockProperties.PedestalState.PILLAR, EndModels.PEDESTAL_PILLAR
     );
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     protected TextureMapping createTextureMapping() {
         final var parentTexture = TextureMapping.getBlockTexture(this);
         return new TextureMapping()
@@ -118,7 +118,7 @@ public class InfusionPedestal extends PedestalBlock implements BehaviourStone, B
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         provideBlockModel(generator, createTextureMapping(), this, PEDESTAL_MODELS);
     }

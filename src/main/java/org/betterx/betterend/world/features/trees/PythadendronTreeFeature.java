@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.function.Function;
 
 public class PythadendronTreeFeature extends DefaultFeature {
+    private static final Function<BlockState, Boolean> REPLACE;
+    private static final Function<BlockState, Boolean> IGNORE;
+    private static final Function<PosInfo, BlockState> POST;
 
     @Override
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> featureConfig) {
@@ -66,8 +69,8 @@ public class PythadendronTreeFeature extends DefaultFeature {
                 1.1F,
                 (bpos) -> EndBlocks.PYTHADENDRON.getBark().defaultBlockState()
         );
-        function.setReplaceFunction(replaceFunc());
-        function.addPostProcess(postProcessFunc());
+        function.setReplaceFunction(REPLACE);
+        function.addPostProcess(POST);
         function.fillRecursive(world, pos);
 
         return true;
@@ -104,7 +107,7 @@ public class PythadendronTreeFeature extends DefaultFeature {
                 world,
                 EndBlocks.PYTHADENDRON.getBark().defaultBlockState(),
                 pos,
-                replaceFunc()
+                REPLACE
         );
 
         spline = SplineHelper.makeSpline(x, y, z, x2, y, z2, 5);
@@ -117,7 +120,7 @@ public class PythadendronTreeFeature extends DefaultFeature {
                 world,
                 EndBlocks.PYTHADENDRON.getBark().defaultBlockState(),
                 pos,
-                replaceFunc()
+                REPLACE
         );
 
         OpenSimplexNoise noise = new OpenSimplexNoise(random.nextInt());
@@ -193,24 +196,23 @@ public class PythadendronTreeFeature extends DefaultFeature {
             }
             return info.getState();
         });
-        sphere.fillRecursiveIgnore(world, pos, ignoreFunc());
+        sphere.fillRecursiveIgnore(world, pos, IGNORE);
     }
 
-    private static Function<BlockState, Boolean> replaceFunc() {
-        return (state) -> {
+    static {
+        REPLACE = (state) -> {
+			/*if (state.is(CommonBlockTags.END_STONES)) {
+				return true;
+			}*/
             if (state.getBlock() == EndBlocks.PYTHADENDRON_LEAVES) {
                 return true;
             }
             return BlocksHelper.replaceableOrPlant(state);
         };
-    }
 
-    private static Function<BlockState, Boolean> ignoreFunc() {
-        return EndBlocks.PYTHADENDRON::isTreeLog;
-    }
+        IGNORE = EndBlocks.PYTHADENDRON::isTreeLog;
 
-    private static Function<PosInfo, BlockState> postProcessFunc() {
-        return (info) -> {
+        POST = (info) -> {
             if (EndBlocks.PYTHADENDRON.isTreeLog(info.getStateUp()) && EndBlocks.PYTHADENDRON.isTreeLog(info.getStateDown())) {
                 return EndBlocks.PYTHADENDRON.getBark().defaultBlockState();
             }

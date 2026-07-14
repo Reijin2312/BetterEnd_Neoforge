@@ -25,8 +25,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public class BulbVineLanternBlock extends EndLanternBlock implements RenderLayerProvider, BehaviourMetal {
     private static final VoxelShape SHAPE_CEIL = Block.box(4, 4, 4, 12, 16, 12);
@@ -66,7 +66,7 @@ public class BulbVineLanternBlock extends EndLanternBlock implements RenderLayer
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         //get id of this block from registry
         final var id = BuiltInRegistries.BLOCK.getKey(this);

@@ -9,14 +9,14 @@ import org.betterx.betterend.rituals.EternalRitual;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import de.ambertation.wunderlib.network.PacketSender;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 
 public class RitualUpdate extends ClientBoundPacketHandler<RitualUpdate.Payload> {
     public static final ResourceLocation CHANNEL = BetterEnd.C.mk("ritual_update");
@@ -47,7 +47,7 @@ public class RitualUpdate extends ClientBoundPacketHandler<RitualUpdate.Payload>
             }
         }
 
-        public Payload(RegistryFriendlyByteBuf buf) {
+        public Payload(FriendlyByteBuf buf) {
             super(INSTANCE);
             center = buf.readBlockPos();
             axis = Direction.Axis.byName(BaseDataHandler.readString(buf));
@@ -56,7 +56,7 @@ public class RitualUpdate extends ClientBoundPacketHandler<RitualUpdate.Payload>
 
 
         @Override
-        protected void write(RegistryFriendlyByteBuf buf) {
+        protected void write(FriendlyByteBuf buf) {
             buf.writeBlockPos(center);
             BaseDataHandler.writeString(buf, axis.getName());
             buf.writeByte(flags);
@@ -73,7 +73,7 @@ public class RitualUpdate extends ClientBoundPacketHandler<RitualUpdate.Payload>
         }
 
         @Override
-        @OnlyIn(Dist.CLIENT)
+        @Environment(EnvType.CLIENT)
         protected void processOnGameThread(Minecraft client) {
             EternalRitual.updateActiveStateOnPedestals(
                     center,

@@ -1,0 +1,8 @@
+{
+  "pack": {
+    "description": {
+      "translate": "pack.betterend.patchouli_extensions.description"
+    },
+    "pack_format": 48
+  }
+}

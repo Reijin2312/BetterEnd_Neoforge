@@ -33,6 +33,8 @@ import java.util.function.Function;
 
 public class LucerniaFeature extends DefaultFeature {
     private static final Direction[] DIRECTIONS = Direction.values();
+    private static final Function<BlockState, Boolean> REPLACE;
+    private static final Function<BlockState, Boolean> IGNORE;
     private static final List<Vector3f> SPLINE;
     private static final List<Vector3f> ROOT;
 
@@ -54,7 +56,7 @@ public class LucerniaFeature extends DefaultFeature {
             SplineHelper.rotateSpline(spline, angle);
             SplineHelper.scale(spline, size * MHelper.randRange(0.5F, 1F, random));
             SplineHelper.offsetParts(spline, random, 1F, 0, 1F);
-            SplineHelper.fillSpline(spline, world, EndBlocks.LUCERNIA.getBark().defaultBlockState(), pos, replaceFunc());
+            SplineHelper.fillSpline(spline, world, EndBlocks.LUCERNIA.getBark().defaultBlockState(), pos, REPLACE);
             Vector3f last = spline.get(spline.size() - 1);
             float leavesRadius = (size * 0.13F + MHelper.randRange(0.8F, 1.5F, random)) * 1.4F;
             OpenSimplexNoise noise = new OpenSimplexNoise(random.nextLong());
@@ -161,7 +163,7 @@ public class LucerniaFeature extends DefaultFeature {
             }
             return info.getState();
         });
-        sphere.fillRecursiveIgnore(world, pos, ignoreFunc());
+        sphere.fillRecursiveIgnore(world, pos, IGNORE);
         BlocksHelper.setWithoutUpdate(world, pos, EndBlocks.LUCERNIA.getBark());
 
         support.forEach((bpos) -> {
@@ -202,26 +204,25 @@ public class LucerniaFeature extends DefaultFeature {
                         world,
                         EndBlocks.LUCERNIA.getBark().defaultBlockState(),
                         pos,
-                        replaceFunc()
+                        REPLACE
                 );
             }
         }
     }
 
-    private Function<BlockState, Boolean> replaceFunc() {
-        return (state) -> {
+    static {
+        REPLACE = (state) -> {
+			/*if (state.is(CommonBlockTags.END_STONES)) {
+				return true;
+			}*/
             if (state.getBlock() == EndBlocks.LUCERNIA_LEAVES) {
                 return true;
             }
             return BlocksHelper.replaceableOrPlant(state);
         };
-    }
 
-    private Function<BlockState, Boolean> ignoreFunc() {
-        return EndBlocks.LUCERNIA::isTreeLog;
-    }
+        IGNORE = EndBlocks.LUCERNIA::isTreeLog;
 
-    static {
         SPLINE = Lists.newArrayList(
                 new Vector3f(0.00F, 0.00F, 0.00F),
                 new Vector3f(0.10F, 0.35F, 0.00F),

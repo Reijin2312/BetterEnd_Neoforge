@@ -10,12 +10,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 
 import org.jetbrains.annotations.NotNull;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class CrystaliteArmorRenderer extends HumanoidArmorRenderer {
     private final static ResourceLocation FIRST_LAYER = BetterEnd.C.mk(
             "textures/models/armor/crystalite_layer_1.png");
@@ -28,19 +29,18 @@ public class CrystaliteArmorRenderer extends HumanoidArmorRenderer {
     private final static CrystaliteBootsModel BOOTS_MODEL = CrystaliteBootsModel.createModel(null);
     private static CrystaliteArmorRenderer INSTANCE = null;
 
-    public static CrystaliteArmorRenderer getInstance() {
+    public static void register() {
         if (INSTANCE == null) {
             INSTANCE = new CrystaliteArmorRenderer();
+            ArmorRenderer.register(
+                    INSTANCE,
+                    EndItems.CRYSTALITE_HELMET,
+                    EndItems.CRYSTALITE_CHESTPLATE,
+                    EndItems.CRYSTALITE_ELYTRA,
+                    EndItems.CRYSTALITE_LEGGINGS,
+                    EndItems.CRYSTALITE_BOOTS
+            );
         }
-        return INSTANCE;
-    }
-
-    public ResourceLocation textureForSlot(EquipmentSlot slot) {
-        return slot == EquipmentSlot.LEGS ? SECOND_LAYER : FIRST_LAYER;
-    }
-
-    public HumanoidModel<LivingEntity> modelFor(LivingEntity entity, EquipmentSlot slot) {
-        return getModelForSlot(entity, slot);
     }
 
     @NotNull

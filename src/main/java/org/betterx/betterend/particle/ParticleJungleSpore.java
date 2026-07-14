@@ -9,10 +9,10 @@ import net.minecraft.client.particle.SimpleAnimatedParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ParticleJungleSpore extends SimpleAnimatedParticle {
 
     protected ParticleJungleSpore(
@@ -62,7 +62,7 @@ public class ParticleJungleSpore extends SimpleAnimatedParticle {
         this.zd *= 0.99F;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static class FactoryJungleSpore implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
 

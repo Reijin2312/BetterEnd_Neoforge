@@ -1,6 +1,6 @@
 package org.betterx.betterend.world.features;
 
-import org.betterx.betterend.util.EndStructureHelper;
+import org.betterx.bclib.util.StructureHelper;
 import org.betterx.betterend.util.LootTableUtil;
 import org.betterx.wover.tag.api.predefined.CommonBlockTags;
 
@@ -102,7 +102,7 @@ public class BuildingListFeature extends NBTFeature<BuildingListFeatureConfig> {
 
         public StructureTemplate getStructure() {
             if (structure == null) {
-                structure = EndStructureHelper.readStructure(structurePath);
+                structure = StructureHelper.readStructure(structurePath);
             }
             return structure;
         }

@@ -20,14 +20,14 @@ import net.minecraft.world.level.lighting.LightEngine;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
 public class MossyDragonBoneBlock extends BaseRotatedPillarBlock implements BehaviourStone, BlockLootProvider {
     public MossyDragonBoneBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.BONE_BLOCK).strength(0.5F).randomTicks());
+        super(FabricBlockSettings.copyOf(Blocks.BONE_BLOCK).hardness(0.5F).randomTicks());
     }
 
 

@@ -9,8 +9,8 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public class EnderBlock extends BaseBlock.Stone {
 
@@ -23,7 +23,7 @@ public class EnderBlock extends BaseBlock.Stone {
         );
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public int getColor(BlockState state, BlockGetter world, BlockPos pos) {
         return 0xFF005548;
     }

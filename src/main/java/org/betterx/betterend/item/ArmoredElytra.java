@@ -17,8 +17,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, BetterEndElytra, ItemTagProvider {
     private final ResourceLocation wingTexture;
@@ -45,12 +45,12 @@ public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, Bett
         final Properties props = EndArmorItem.createDefaultEndArmorSettings(
                                                      ArmorSlot.CHESTPLATE_SLOT, material,
                                                      EndArmorItem.startAttributeBuilder(
-                                                     ArmorSlot.CHESTPLATE_SLOT,
-                                                     material,
-                                                     defense, toughness, 0.5f
-                                             ).build()
-                                     ).rarity(Rarity.EPIC)
-                                     .durability(durability);
+                                                             ArmorSlot.CHESTPLATE_SLOT,
+                                                             material,
+                                                             (int) defense, toughness, 0.5f
+                                                     ).build()
+                                             ).rarity(Rarity.EPIC)
+                                             .durability(durability);
         if (fireproof) {
             props.fireResistant();
         }
@@ -91,7 +91,7 @@ public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, Bett
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public ResourceLocation getModelTexture() {
         return wingTexture;
     }
@@ -112,7 +112,7 @@ public class ArmoredElytra extends BaseArmorItem implements MultiModelItem, Bett
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void registerModelPredicate() {
         ItemProperties.register(
                 this,

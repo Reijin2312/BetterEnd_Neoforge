@@ -7,10 +7,10 @@ import net.minecraft.client.particle.*;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ParticleGeyser extends TextureSheetParticle {
     private final MutableBlockPos mut = new MutableBlockPos();
     private boolean changeDir = false;
@@ -67,7 +67,7 @@ public class ParticleGeyser extends TextureSheetParticle {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static class FactoryGeyser implements ParticleProvider<SimpleParticleType> {
 
         private final SpriteSet sprites;

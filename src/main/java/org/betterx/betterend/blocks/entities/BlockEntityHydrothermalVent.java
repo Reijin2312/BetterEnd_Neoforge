@@ -19,6 +19,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import net.fabricmc.fabric.api.entity.event.v1.FabricElytraItem;
+
 import java.util.List;
 
 public class BlockEntityHydrothermalVent extends BlockEntity {
@@ -91,6 +93,6 @@ public class BlockEntityHydrothermalVent extends BlockEntity {
 
     private boolean hasElytra(LivingEntity entity) {
         Item item = entity.getItemBySlot(EquipmentSlot.CHEST).getItem();
-        return item instanceof ElytraItem;
+        return item instanceof ElytraItem /*|| item instanceof ElytraModelProvider*/ || item instanceof FabricElytraItem;
     }
 }

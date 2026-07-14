@@ -2,7 +2,7 @@
 
 # Better End
 
-Unofficial port of Better End Mod for Neoforge, MC 1.21.1
+Better End Mod for Fabric, MC 1.19
 
 Importing:
 

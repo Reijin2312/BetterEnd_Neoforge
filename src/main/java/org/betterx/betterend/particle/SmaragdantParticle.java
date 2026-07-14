@@ -7,10 +7,10 @@ import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class SmaragdantParticle extends SimpleAnimatedParticle {
     private double preVX;
     private double preVY;
@@ -81,7 +81,7 @@ public class SmaragdantParticle extends SimpleAnimatedParticle {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static class SmaragdantParticleFactory implements ParticleProvider<SimpleParticleType> {
 
         private final SpriteSet sprites;

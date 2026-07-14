@@ -1,6 +1,6 @@
 {
   "parent": "bclib:block/chest_item",
   "textures": {
-    "texture": "betterend:block/chest/helix_tree_chest"
+    "texture": "betterend:entity/chest/helix_tree_chest"
   }
 }

@@ -21,13 +21,13 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import org.jetbrains.annotations.NotNull;
 
 public class AncientEmeraldIceBlock extends BaseBlock implements BehaviourIce, BlockLootProvider {
     public AncientEmeraldIceBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.BLUE_ICE).randomTicks());
+        super(FabricBlockSettings.copyOf(Blocks.BLUE_ICE).randomTicks());
     }
 
     @Override

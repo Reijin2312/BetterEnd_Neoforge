@@ -11,8 +11,8 @@ import net.minecraft.data.models.model.TextureMapping;
 import net.minecraft.data.models.model.TextureSlot;
 import net.minecraft.world.level.block.Block;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public abstract class EndPedestal extends PedestalBlock {
 
@@ -22,7 +22,7 @@ public abstract class EndPedestal extends PedestalBlock {
 
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     protected TextureMapping createTextureMapping() {
         final var parentTexture = BetterEnd.C.convertNamespace(TextureMapping.getBlockTexture(parent));
         final var polishedTexture = BetterEnd.C.convertNamespace(TextureMapping.getBlockTexture(parent, "_polished"));

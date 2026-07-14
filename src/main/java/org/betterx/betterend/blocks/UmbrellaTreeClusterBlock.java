@@ -23,14 +23,14 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 public class UmbrellaTreeClusterBlock extends BaseBlock.Wood {
     public static final BooleanProperty NATURAL = BlockProperties.NATURAL;
 
     public UmbrellaTreeClusterBlock() {
-        super(BlockBehaviour.Properties
-                .ofFullCopy(Blocks.NETHER_WART_BLOCK)
+        super(FabricBlockSettings
+                .copyOf(Blocks.NETHER_WART_BLOCK)
                 .mapColor(MapColor.COLOR_PURPLE)
                 .lightLevel((bs) -> 15)
         );

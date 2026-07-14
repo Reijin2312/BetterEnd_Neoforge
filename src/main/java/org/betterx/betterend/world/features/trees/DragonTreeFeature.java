@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.function.Function;
 
 public class DragonTreeFeature extends DefaultFeature {
+    private static final Function<BlockState, Boolean> REPLACE;
+    private static final Function<BlockState, Boolean> IGNORE;
+    private static final Function<PosInfo, BlockState> POST;
     private static final List<Vector3f> BRANCH;
     private static final List<Vector3f> SIDE1;
     private static final List<Vector3f> SIDE2;
@@ -46,7 +49,7 @@ public class DragonTreeFeature extends DefaultFeature {
         List<Vector3f> spline = SplineHelper.makeSpline(0, 0, 0, 0, size, 0, 6);
         SplineHelper.offsetParts(spline, random, 1F, 0, 1F);
 
-        if (!SplineHelper.canGenerate(spline, pos, world, replaceFunc())) {
+        if (!SplineHelper.canGenerate(spline, pos, world, REPLACE)) {
             return false;
         }
         BlocksHelper.setWithoutUpdate(world, pos, AIR);
@@ -67,9 +70,9 @@ public class DragonTreeFeature extends DefaultFeature {
                 (bpos) -> EndBlocks.DRAGON_TREE.getBark().defaultBlockState()
         );
 
-        function.setReplaceFunction(replaceFunc());
-        function.addPostProcess(postProcessFunc());
-        function.fillRecursiveIgnore(world, pos, ignoreFunc());
+        function.setReplaceFunction(REPLACE);
+        function.addPostProcess(POST);
+        function.fillRecursiveIgnore(world, pos, IGNORE);
 
         return true;
     }
@@ -84,17 +87,17 @@ public class DragonTreeFeature extends DefaultFeature {
             List<Vector3f> branch = SplineHelper.copySpline(BRANCH);
             SplineHelper.rotateSpline(branch, angle);
             SplineHelper.scale(branch, scale);
-            SplineHelper.fillSpline(branch, world, EndBlocks.DRAGON_TREE.getBark().defaultBlockState(), pos, replaceFunc());
+            SplineHelper.fillSpline(branch, world, EndBlocks.DRAGON_TREE.getBark().defaultBlockState(), pos, REPLACE);
 
             branch = SplineHelper.copySpline(SIDE1);
             SplineHelper.rotateSpline(branch, angle);
             SplineHelper.scale(branch, scale);
-            SplineHelper.fillSpline(branch, world, EndBlocks.DRAGON_TREE.getBark().defaultBlockState(), pos, replaceFunc());
+            SplineHelper.fillSpline(branch, world, EndBlocks.DRAGON_TREE.getBark().defaultBlockState(), pos, REPLACE);
 
             branch = SplineHelper.copySpline(SIDE2);
             SplineHelper.rotateSpline(branch, angle);
             SplineHelper.scale(branch, scale);
-            SplineHelper.fillSpline(branch, world, EndBlocks.DRAGON_TREE.getBark().defaultBlockState(), pos, replaceFunc());
+            SplineHelper.fillSpline(branch, world, EndBlocks.DRAGON_TREE.getBark().defaultBlockState(), pos, REPLACE);
         }
         leavesBall(world, pos.above(offset), radius * 1.15F + 2, random, noise);
     }
@@ -116,7 +119,7 @@ public class DragonTreeFeature extends DefaultFeature {
                         world,
                         EndBlocks.DRAGON_TREE.getBark().defaultBlockState(),
                         pos,
-                        replaceFunc()
+                        REPLACE
                 );
             }
         }
@@ -177,7 +180,7 @@ public class DragonTreeFeature extends DefaultFeature {
             }
             return info.getState();
         });
-        sphere.fillRecursiveIgnore(world, pos, ignoreFunc());
+        sphere.fillRecursiveIgnore(world, pos, IGNORE);
 
         if (radius > 5) {
             int count = (int) (radius * 2.5F);
@@ -204,29 +207,26 @@ public class DragonTreeFeature extends DefaultFeature {
         BlocksHelper.setWithoutUpdate(world, pos, EndBlocks.DRAGON_TREE.getBark());
     }
 
-    private static Function<BlockState, Boolean> replaceFunc() {
-        return (state) -> {
+    static {
+        REPLACE = (state) -> {
+			/*if (state.is(CommonBlockTags.END_STONES)) {
+				return true;
+			}*/
             if (state.getBlock() == EndBlocks.DRAGON_TREE_LEAVES) {
                 return true;
             }
             return BlocksHelper.replaceableOrPlant(state);
         };
-    }
 
-    private static Function<BlockState, Boolean> ignoreFunc() {
-        return EndBlocks.DRAGON_TREE::isTreeLog;
-    }
+        IGNORE = EndBlocks.DRAGON_TREE::isTreeLog;
 
-    private static Function<PosInfo, BlockState> postProcessFunc() {
-        return (info) -> {
+        POST = (info) -> {
             if (EndBlocks.DRAGON_TREE.isTreeLog(info.getStateUp()) && EndBlocks.DRAGON_TREE.isTreeLog(info.getStateDown())) {
                 return EndBlocks.DRAGON_TREE.getBark().defaultBlockState();
             }
             return info.getState();
         };
-    }
 
-    static {
         BRANCH = Lists.newArrayList(
                 new Vector3f(0, 0, 0),
                 new Vector3f(0.1F, 0.3F, 0),

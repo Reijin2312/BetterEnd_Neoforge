@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class UmbrellaTreeFeature extends DefaultFeature {
+    private static final Function<BlockState, Boolean> REPLACE;
     private static final List<Vector3f> SPLINE;
     private static final List<Vector3f> ROOT;
 
@@ -70,7 +71,7 @@ public class UmbrellaTreeFeature extends DefaultFeature {
             SplineHelper.rotateSpline(spline, angle);
             SplineHelper.offsetParts(spline, random, 0.5F, 0, 0.5F);
 
-            if (SplineHelper.canGenerate(spline, pos, world, replaceFunc())) {
+            if (SplineHelper.canGenerate(spline, pos, world, REPLACE)) {
                 float rScale = (scale - 1) * 0.4F + 1;
                 SDF branch = SplineHelper.buildSDF(spline, 1.2F * rScale, 0.8F * rScale, (bpos) -> wood);
 
@@ -102,7 +103,7 @@ public class UmbrellaTreeFeature extends DefaultFeature {
             sdf = new SDFScale().setScale(scale).setSource(sdf);
         }
 
-        sdf.setReplaceFunction(replaceFunc()).addPostProcess((info) -> {
+        sdf.setReplaceFunction(REPLACE).addPostProcess((info) -> {
             if (EndBlocks.UMBRELLA_TREE.isTreeLog(info.getStateUp()) && EndBlocks.UMBRELLA_TREE.isTreeLog(info.getStateDown())) {
                 return EndBlocks.UMBRELLA_TREE.getBark().defaultBlockState();
             } else if (info.getState().equals(membrane)) {
@@ -153,7 +154,7 @@ public class UmbrellaTreeFeature extends DefaultFeature {
             Vector3f last = branch.get(branch.size() - 1);
             if (world.getBlockState(pos.offset((int) last.x(), (int) last.y(), (int) last.z()))
                      .is(CommonBlockTags.END_STONES)) {
-                SplineHelper.fillSplineForce(branch, world, wood, pos, replaceFunc());
+                SplineHelper.fillSplineForce(branch, world, wood, pos, REPLACE);
             }
         }
     }
@@ -214,10 +215,8 @@ public class UmbrellaTreeFeature extends DefaultFeature {
                 new Vector3f(0.8F, -0.20F, 0)
         );
         SplineHelper.offset(ROOT, new Vector3f(0, -0.45F, 0));
-    }
 
-    private Function<BlockState, Boolean> replaceFunc() {
-        return (state) -> {
+        REPLACE = (state) -> {
             if (state.is(EndBlocks.UMBRELLA_TREE_MEMBRANE)) {
                 return true;
             }

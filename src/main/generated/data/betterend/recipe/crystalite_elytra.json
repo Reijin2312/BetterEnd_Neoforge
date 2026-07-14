@@ -54,24 +54,24 @@
         "modifiers": [
           {
             "type": "minecraft:generic.armor",
-            "amount": 6.666666507720947,
-            "id": "betterend:armor_boost_chestplate",
+            "amount": 6.400000095367432,
+            "id": "betterend:armor_boost",
             "operation": "add_value",
             "slot": "chest"
           },
           {
             "type": "minecraft:generic.armor_toughness",
             "amount": 0.9600000381469727,
-            "id": "betterend:toughness_boost_chestplate",
+            "id": "betterend:toughness_boost",
             "operation": "add_value",
             "slot": "chest"
           },
           {
             "type": "minecraft:generic.knockback_resistance",
             "amount": 0.5,
-            "id": "betterend:base_knockback_resistance_chestplate",
+            "id": "betterend:base_knockback_resistance",
             "operation": "add_value",
-            "slot": "chest"
+            "slot": "mainhand"
           }
         ]
       }

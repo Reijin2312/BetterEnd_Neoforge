@@ -4,7 +4,6 @@ import org.betterx.bclib.util.MHelper;
 import org.betterx.bclib.util.StructureErode;
 import org.betterx.bclib.util.StructureHelper;
 import org.betterx.betterend.registry.EndStructures;
-import org.betterx.betterend.util.EndStructureHelper;
 import org.betterx.betterend.world.biome.EndBiome;
 
 import net.minecraft.core.BlockPos;
@@ -76,7 +75,7 @@ public class NBTPiece extends BasePiece {
         erosion = tag.getInt("erosion");
         pos = NbtUtils.readBlockPos(tag, "pos").orElse(BlockPos.ZERO);
         cover = tag.getBoolean("cover");
-        structure = EndStructureHelper.readStructure(structureID);
+        structure = StructureHelper.readStructure(structureID);
     }
 
     @Override

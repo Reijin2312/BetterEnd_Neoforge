@@ -5,18 +5,9 @@ import org.betterx.betterend.BetterEnd;
 import org.betterx.betterend.registry.EndBlocks;
 import org.betterx.betterend.registry.EndItems;
 
-import net.minecraft.core.registries.Registries;
-
-import net.neoforged.neoforge.registries.RegisterEvent;
-
 public class CreativeTabs {
-    private static boolean registered;
 
-    public static void onRegister(RegisterEvent event) {
-        if (!event.getRegistryKey().equals(Registries.CREATIVE_MODE_TAB)) return;
-        if (registered) return;
-        registered = true;
-        // гарантируем доступность блоков/предметов для иконок
+    public static void register() {
         org.betterx.wover.tabs.api.CreativeTabs
                 .start(BetterEnd.C)
                 .createTab("nature")
@@ -27,16 +18,10 @@ public class CreativeTabs {
                 .setIcon(EndBlocks.TENANEA_FLOWERS)
                 .buildAndAdd()
                 .createBlockOnlyTab(EndBlocks.END_MYCELIUM)
-                .setIcon(EndBlocks.END_MYCELIUM)
                 .buildAndAdd()
                 .createItemOnlyTab(EndItems.ETERNAL_CRYSTAL)
-                .setIcon(EndItems.ETERNAL_CRYSTAL)
                 .buildAndAdd()
                 .processRegistries()
                 .registerAllTabs();
-    }
-
-    public static void register() {
-        // no-op; registration happens during the registry event
     }
 }

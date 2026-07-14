@@ -10,11 +10,8 @@ import org.betterx.wover.tag.api.event.context.TagBootstrapContext;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -30,59 +27,26 @@ import java.util.function.Function;
 public class ColoredMaterial implements MaterialManager.Material {
     private static final Map<Integer, ItemLike> DYES = Maps.newHashMap();
     private static final Map<Integer, String> COLORS = Maps.newHashMap();
-    private static final Map<Integer, Integer> COLOR_VALUES = Maps.newHashMap();
     private final Map<Integer, Block> colors = Maps.newHashMap();
 
     public ColoredMaterial(Function<BlockBehaviour.Properties, Block> constructor, Block source, boolean craftEight) {
-        this(resolveBaseName(source), constructor, source, COLORS, DYES, COLOR_VALUES, craftEight);
-    }
-
-    public ColoredMaterial(
-            String baseName,
-            Function<BlockBehaviour.Properties, Block> constructor,
-            Block source,
-            boolean craftEight
-    ) {
-        this(baseName, constructor, source, COLORS, DYES, COLOR_VALUES, craftEight);
+        this(constructor, source, COLORS, DYES, craftEight);
     }
 
     private List<MaterialManager.MaterialRecipe> RECIPES;
 
     public ColoredMaterial(
-            String baseName,
             Function<BlockBehaviour.Properties, Block> constructor,
             Block source,
             Map<Integer, String> colors,
             Map<Integer, ItemLike> dyes,
-            boolean craftEight
-    ) {
-        this(baseName, constructor, source, colors, dyes, null, craftEight);
-    }
-
-    public ColoredMaterial(
-            Function<BlockBehaviour.Properties, Block> constructor,
-            Block source,
-            Map<Integer, String> colors,
-            Map<Integer, ItemLike> dyes,
-            boolean craftEight
-    ) {
-        this(resolveBaseName(source), constructor, source, colors, dyes, null, craftEight);
-    }
-
-    public ColoredMaterial(
-            String baseName,
-            Function<BlockBehaviour.Properties, Block> constructor,
-            Block source,
-            Map<Integer, String> colors,
-            Map<Integer, ItemLike> dyes,
-            Map<Integer, Integer> colorValues,
             boolean craftEight
     ) {
         if (ModCore.isDatagen()) {
             RECIPES = new ArrayList<>(colors.size());
             MaterialManager.register(this);
         }
-        String id = requireBaseName(baseName, source);
+        String id = BuiltInRegistries.BLOCK.getKey(source).getPath();
         colors.forEach((color, name) -> {
             String blockName = id + "_" + name;
             Block block = constructor.apply(BlockBehaviour.Properties
@@ -90,34 +54,30 @@ public class ColoredMaterial implements MaterialManager.Material {
                     .mapColor(MapColor.COLOR_BLACK));
             EndBlocks.registerBlock(blockName, block);
             if (ModCore.isDatagen()) {
-                ItemLike dye = dyes.get(color);
-                if (dye != null && dye != Items.AIR) {
-                    RECIPES.add(context -> {
-                        if (craftEight) {
-                            RecipeBuilder.crafting(BetterEnd.C.mk(blockName), block)
-                                         .outputCount(8)
-                                         .shape("###", "#D#", "###")
-                                         .addMaterial('#', source)
-                                         .addMaterial('D', dye)
-                                         .build(context);
-                        } else {
-                            RecipeBuilder.crafting(BetterEnd.C.mk(blockName), block)
-                                         .shapeless()
-                                         .addMaterial('#', source)
-                                         .addMaterial('D', dye)
-                                         .build(context);
-                        }
-                    });
-                }
+                RECIPES.add(context -> {
+                    if (craftEight) {
+                        RecipeBuilder.crafting(BetterEnd.C.mk(blockName), block)
+                                     .outputCount(8)
+                                     .shape("###", "#D#", "###")
+                                     .addMaterial('#', source)
+                                     .addMaterial('D', dyes.get(color))
+                                     .build(context);
+                    } else {
+                        RecipeBuilder.crafting(BetterEnd.C.mk(blockName), block)
+                                     .shapeless()
+                                     .addMaterial('#', source)
+                                     .addMaterial('D', dyes.get(color))
+                                     .build(context);
+                    }
+                });
             }
             this.colors.put(color, block);
-            int tintColor = colorValues != null ? colorValues.getOrDefault(color, color) : color;
-            BlocksHelper.addBlockColor(block, tintColor);
+            BlocksHelper.addBlockColor(block, color);
         });
     }
 
     public Block getByColor(DyeColor color) {
-        return colors.get(color.getId());
+        return colors.get(color.getMapColor().col);
     }
 
     public Block getByColor(int color) {
@@ -126,26 +86,10 @@ public class ColoredMaterial implements MaterialManager.Material {
 
     static {
         for (DyeColor color : DyeColor.values()) {
-            int colorId = color.getId();
-            COLORS.put(colorId, color.getName());
-            DYES.put(colorId, resolveDyeItem(color));
-            COLOR_VALUES.put(colorId, color.getMapColor().col);
+            int colorRGB = color.getMapColor().col;
+            COLORS.put(colorRGB, color.getName());
+            DYES.put(colorRGB, DyeItem.byColor(color));
         }
-    }
-
-    private static ItemLike resolveDyeItem(DyeColor color) {
-        Item dye = DyeItem.byColor(color);
-        if (dye != null && dye != Items.AIR) {
-            return dye;
-        }
-        Item depotDye = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(
-                "dye_depot",
-                color.getName() + "_dye"
-        ));
-        if (depotDye != Items.AIR) {
-            return depotDye;
-        }
-        return dye == null ? Items.AIR : dye;
     }
 
     @Override
@@ -163,20 +107,5 @@ public class ColoredMaterial implements MaterialManager.Material {
     @Override
     public void registerItemTags(ItemTagBootstrapContext context) {
 
-    }
-
-    private static String resolveBaseName(Block source) {
-        ResourceLocation key = BuiltInRegistries.BLOCK.getKey(source);
-        if (key == null) {
-            throw new IllegalStateException("ColoredMaterial base block is not registered yet: " + source);
-        }
-        return key.getPath();
-    }
-
-    private static String requireBaseName(String baseName, Block source) {
-        if (baseName == null || baseName.isBlank()) {
-            throw new IllegalArgumentException("ColoredMaterial base name is required for " + source);
-        }
-        return baseName;
     }
 }

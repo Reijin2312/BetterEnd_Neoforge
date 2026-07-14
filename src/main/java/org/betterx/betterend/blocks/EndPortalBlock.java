@@ -1,9 +1,7 @@
 package org.betterx.betterend.blocks;
 
 import org.betterx.bclib.client.render.BCLRenderLayer;
-import org.betterx.bclib.interfaces.BlockColorProvider;
 import org.betterx.bclib.interfaces.CustomColorProvider;
-import org.betterx.bclib.interfaces.ItemColorProvider;
 import org.betterx.bclib.interfaces.RenderLayerProvider;
 import org.betterx.betterend.BetterEnd;
 import org.betterx.betterend.advancements.BECriteria;
@@ -12,6 +10,8 @@ import org.betterx.betterend.registry.EndParticles;
 import org.betterx.betterend.registry.EndPortals;
 
 import net.minecraft.BlockUtil;
+import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
@@ -39,8 +39,8 @@ import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.Optional;
 
@@ -60,7 +60,7 @@ public class EndPortalBlock extends NetherPortalBlock implements RenderLayerProv
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         if (random.nextInt(100) == 0) {
             world.playLocalSound(
@@ -125,12 +125,12 @@ public class EndPortalBlock extends NetherPortalBlock implements RenderLayerProv
     }
 
     @Override
-    public BlockColorProvider getProvider() {
+    public BlockColor getProvider() {
         return (state, world, pos, tintIndex) -> EndPortals.getColor(state.getValue(PORTAL));
     }
 
     @Override
-    public ItemColorProvider getItemProvider() {
+    public ItemColor getItemProvider() {
         return (stack, tintIndex) -> EndPortals.getColor(0);
     }
 

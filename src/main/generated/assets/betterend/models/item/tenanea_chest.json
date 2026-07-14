@@ -1,6 +1,6 @@
 {
   "parent": "bclib:block/chest_item",
   "textures": {
-    "texture": "betterend:block/chest/tenanea_chest"
+    "texture": "betterend:entity/chest/tenanea_chest"
   }
 }

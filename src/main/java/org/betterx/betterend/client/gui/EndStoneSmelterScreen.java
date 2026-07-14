@@ -14,10 +14,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class EndStoneSmelterScreen extends AbstractContainerScreen<EndStoneSmelterMenu> implements RecipeUpdateListener {
     private final static ResourceLocation BACKGROUND_TEXTURE = BetterEnd.C.mk("textures/gui/smelter_gui.png");
 

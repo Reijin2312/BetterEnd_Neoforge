@@ -2,13 +2,12 @@ package org.betterx.betterend.registry;
 
 import org.betterx.betterend.item.model.CrystaliteArmorRenderer;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class EndModelProviders {
     public final static void register() {
-        // Armor models are provided via CrystaliteArmor.initializeClient
-        CrystaliteArmorRenderer.getInstance();
+        CrystaliteArmorRenderer.register();
     }
 }

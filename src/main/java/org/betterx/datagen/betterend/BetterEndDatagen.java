@@ -51,10 +51,15 @@ public class BetterEndDatagen extends WoverDataGenEntryPoint {
         globalPack.addProvider(EndMaterialRecipesProvider::new);
         globalPack.addProvider(EndEnchantmentProvider::new);
         globalPack.addProvider(EndChestLootTableProvider::new);
-        globalPack.addProvider(EndBlockLootTableProvider::new);
         globalPack.addProvider(EndModelProvider::new);
-        globalPack.addProvider(modCore -> (output, registries, existingFileHelper) ->
-                new EndAdvancementDataProvider(output, registries));
+
+
+        globalPack.callOnInitializeDatapack((generator, pack, location) -> {
+            if (location == null) {
+                pack.addProvider(EndAdvancementDataProvider::new);
+                pack.addProvider(EndBlockLootTableProvider::new);
+            }
+        });
 
         //Add providers for the byg integration
 //        addDatapack(BetterEnd.BYG_ADDITIONS_PACK)
@@ -67,10 +72,8 @@ public class BetterEndDatagen extends WoverDataGenEntryPoint {
                 .addProvider(NourishItemTagProvider::new);
 
         //Add providers for the patchouli integration
-        if (BetterEnd.ENABLE_GUIDEBOOK && BetterEnd.PATCHOULI_ADDITIONS_PACK != null) {
-            addDatapack(BetterEnd.PATCHOULI_ADDITIONS_PACK)
-                    .addProvider(PatchouliBookProvider::new);
-        }
+        addDatapack(BetterEnd.PATCHOULI_ADDITIONS_PACK)
+                .addProvider(PatchouliBookProvider::new);
     }
 
     @Override

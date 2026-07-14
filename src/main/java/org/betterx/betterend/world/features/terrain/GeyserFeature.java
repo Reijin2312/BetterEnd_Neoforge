@@ -33,6 +33,9 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
 import java.util.function.Function;
 
 public class GeyserFeature extends DefaultFeature {
+    protected static final Function<BlockState, Boolean> REPLACE1;
+    protected static final Function<BlockState, Boolean> REPLACE2;
+    private static final Function<BlockState, Boolean> IGNORE;
     private static final Direction[] HORIZONTAL = BlocksHelper.makeHorizontal();
 
     @Override
@@ -109,7 +112,7 @@ public class GeyserFeature extends DefaultFeature {
             bowl = new SDFRotation().setRotation(Axis.YP, i * 4F).setSource(bowl);
             sdf = new SDFUnion().setSourceA(sdf).setSourceB(bowl);
         }
-        sdf.setReplaceFunction(replaceFunc2()).fillRecursive(world, pos);
+        sdf.setReplaceFunction(REPLACE2).fillRecursive(world, pos);
 
         radius2 = radius2 * 0.5F;
         if (radius2 < 0.7F) {
@@ -141,29 +144,29 @@ public class GeyserFeature extends DefaultFeature {
 
         obj1.setBlock(WATER);
         obj2.setBlock(WATER);
-        sdf.setReplaceFunction(replaceFunc2());
+        sdf.setReplaceFunction(REPLACE2);
         sdf.fillRecursive(world, pos);
 
         obj1.setBlock(EndBlocks.BRIMSTONE);
         obj2.setBlock(EndBlocks.BRIMSTONE);
         new SDFDisplacement().setFunction((vec) -> -2F)
                              .setSource(sdf)
-                             .setReplaceFunction(replaceFunc1())
-                             .fillRecursiveIgnore(world, pos, ignoreFunc());
+                             .setReplaceFunction(REPLACE1)
+                             .fillRecursiveIgnore(world, pos, IGNORE);
 
         obj1.setBlock(EndBlocks.SULPHURIC_ROCK.stone);
         obj2.setBlock(EndBlocks.SULPHURIC_ROCK.stone);
         new SDFDisplacement().setFunction((vec) -> -4F)
                              .setSource(cave)
-                             .setReplaceFunction(replaceFunc1())
-                             .fillRecursiveIgnore(world, pos, ignoreFunc());
+                             .setReplaceFunction(REPLACE1)
+                             .fillRecursiveIgnore(world, pos, IGNORE);
 
         obj1.setBlock(Blocks.END_STONE);
         obj2.setBlock(Blocks.END_STONE);
         new SDFDisplacement().setFunction((vec) -> -6F)
                              .setSource(cave)
-                             .setReplaceFunction(replaceFunc1())
-                             .fillRecursiveIgnore(world, pos, ignoreFunc());
+                             .setReplaceFunction(REPLACE1)
+                             .fillRecursiveIgnore(world, pos, IGNORE);
 
         BlocksHelper.setWithoutUpdate(world, pos, WATER);
         MutableBlockPos mut = new MutableBlockPos().set(pos);
@@ -267,21 +270,17 @@ public class GeyserFeature extends DefaultFeature {
         return true;
     }
 
-    private Function<BlockState, Boolean> replaceFunc1() {
-        return (state) -> state.isAir() || (state.is(CommonBlockTags.END_STONES));
-    }
+    static {
+        REPLACE1 = (state) -> state.isAir() || (state.is(CommonBlockTags.END_STONES));
 
-    private Function<BlockState, Boolean> replaceFunc2() {
-        return (state) -> {
+        REPLACE2 = (state) -> {
             if (state.is(CommonBlockTags.END_STONES) || state.is(EndBlocks.HYDROTHERMAL_VENT) || state.is(EndBlocks.SULPHUR_CRYSTAL)) {
                 return true;
             }
             return BlocksHelper.replaceableOrPlant(state);
         };
-    }
 
-    private Function<BlockState, Boolean> ignoreFunc() {
-        return (state) -> state.is(Blocks.WATER) || state.is(Blocks.CAVE_AIR) || state.is(EndBlocks.SULPHURIC_ROCK.stone) || state
+        IGNORE = (state) -> state.is(Blocks.WATER) || state.is(Blocks.CAVE_AIR) || state.is(EndBlocks.SULPHURIC_ROCK.stone) || state
                 .is(EndBlocks.BRIMSTONE);
     }
 }

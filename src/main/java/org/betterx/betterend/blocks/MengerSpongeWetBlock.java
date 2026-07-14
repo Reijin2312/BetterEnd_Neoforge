@@ -25,14 +25,14 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 @SuppressWarnings("deprecation")
 public class MengerSpongeWetBlock extends BaseBlockNotFull implements RenderLayerProvider {
     public MengerSpongeWetBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.WET_SPONGE).noOcclusion());
+        super(FabricBlockSettings.copyOf(Blocks.WET_SPONGE).noOcclusion());
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MengerSpongeWetBlock extends BaseBlockNotFull implements RenderLaye
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         Direction direction = Direction.getRandom(random);
         if (direction != Direction.UP) {

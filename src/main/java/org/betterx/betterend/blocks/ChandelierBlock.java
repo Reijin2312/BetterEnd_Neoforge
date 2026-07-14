@@ -21,7 +21,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import com.google.common.collect.Maps;
 
@@ -31,7 +31,7 @@ public class ChandelierBlock extends BaseAttachedBlock.Metal implements RenderLa
     private static final EnumMap<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(Direction.class);
 
     public ChandelierBlock(Block source) {
-        super(BlockBehaviour.Properties.ofFullCopy(source)
+        super(FabricBlockSettings.copyOf(source)
                                  .lightLevel((bs) -> 15)
                                  .noCollission()
                                  .noOcclusion()

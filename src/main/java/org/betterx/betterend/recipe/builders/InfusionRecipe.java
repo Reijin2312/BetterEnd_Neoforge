@@ -14,7 +14,6 @@ import org.betterx.wover.recipe.api.BaseUnlockableRecipeBuilder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -23,19 +22,20 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
@@ -103,12 +103,7 @@ public class InfusionRecipe implements Recipe<InfusionRitual.InfusionInput>, Unk
             int level,
             HolderLookup.RegistryLookup<Enchantment> lookup
     ) {
-        final Holder<Enchantment> holder = EnchantmentUtils.getEnchantment(lookup, enchantment);
-        final ItemStack stack = new ItemStack(Items.ENCHANTED_BOOK);
-        if (holder != null) {
-            stack.enchant(holder, level);
-        }
-        return stack;
+        return EnchantedBookItem.createForEnchantment(new EnchantmentInstance(EnchantmentUtils.getEnchantment(lookup, enchantment), level));
     }
 
     public int getInfusionTime() {
@@ -150,7 +145,7 @@ public class InfusionRecipe implements Recipe<InfusionRitual.InfusionInput>, Unk
 
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public @NotNull String getGroup() {
         return this.group;
     }

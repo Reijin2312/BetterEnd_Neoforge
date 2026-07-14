@@ -1,9 +1,10 @@
 package org.betterx.betterend.client;
 
+import org.betterx.bclib.integration.modmenu.ModMenu;
 import org.betterx.betterend.BetterEnd;
+import org.betterx.betterend.client.render.BetterEndSkyRenderer;
 import org.betterx.betterend.config.Configs;
 import org.betterx.betterend.config.screen.ConfigScreen;
-import org.betterx.betterend.client.render.BetterEndSkyEffect;
 import org.betterx.betterend.events.ItemTooltipCallback;
 import org.betterx.betterend.interfaces.MultiModelItem;
 import org.betterx.betterend.item.CrystaliteArmor;
@@ -15,114 +16,55 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.world.level.Level;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
 
-import java.util.Map;
+public class BetterEndClient implements ClientModInitializer {
+    @Override
+    public void onInitializeClient() {
+        EndBlockEntityRenders.register();
+        EndScreens.register();
+        EndParticles.register();
+        EndEntitiesRenders.register();
+        EndModelProviders.register();
+        MultiModelItem.register();
+        registerTooltips();
 
-@OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = BetterEnd.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public class BetterEndClient {
-    private static final ModelResourceLocation CHECK_FLOWER_ID = ModelResourceLocation.inventory(
-            ResourceLocation.withDefaultNamespace("chorus_flower")
-    );
-    private static final ModelResourceLocation CHECK_PLANT_ID = ModelResourceLocation.inventory(
-            ResourceLocation.withDefaultNamespace("chorus_plant")
-    );
-    private static final ModelResourceLocation TO_LOAD_FLOWER_ID = ModelResourceLocation.standalone(
-            BetterEnd.C.mk("item/custom_chorus_flower")
-    );
-    private static final ModelResourceLocation TO_LOAD_PLANT_ID = ModelResourceLocation.standalone(
-            BetterEnd.C.mk("item/custom_chorus_plant")
-    );
 
-    @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            EndModelProviders.register();
-            MultiModelItem.register();
-            registerTooltips();
+        ModMenu.addModMenuScreen(BetterEnd.C.modId, ConfigScreen::new);
 
-            IConfigScreenFactory factory = (modContainer, parent) -> new ConfigScreen(parent);
-            ModList.get()
-                   .getModContainerById(BetterEnd.MOD_ID)
-                   .ifPresent(container -> container.registerExtensionPoint(IConfigScreenFactory.class, factory));
+        ResourceLocation checkFlowerId = ResourceLocation.withDefaultNamespace("item/chorus_flower");
+        ResourceLocation checkPlantId = ResourceLocation.withDefaultNamespace("item/chorus_plant");
+        ResourceLocation toLoadFlowerId = BetterEnd.C.mk("item/custom_chorus_flower");
+        ResourceLocation toLoadPlantId = BetterEnd.C.mk("item/custom_chorus_plant");
 
-            NeoForge.EVENT_BUS.addListener(BetterEndClient::onItemTooltip);
 
+        ModelLoadingPlugin.register(pluginContext -> {
+            pluginContext.resolveModel().register((context) -> {
+                if (GeneratorOptions.changeChorusPlant()) {
+                    if (context.id().equals(checkFlowerId)) {
+                        return context.getOrLoadModel(toLoadFlowerId);
+                    } else if (context.id().equals(checkPlantId)) {
+                        return context.getOrLoadModel(toLoadPlantId);
+                    }
+                }
+                return null;
+            });
         });
-    }
 
-    @SubscribeEvent
-    public static void registerScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
-        EndScreens.register(event);
-    }
-
-    @SubscribeEvent
-    public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        EndParticles.registerProviders(event);
-    }
-
-    @SubscribeEvent
-    public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
-        if (!Configs.CLIENT_CONFIG.customSky.get()) {
-            return;
+        if (Configs.CLIENT_CONFIG.customSky.get()) {
+            DimensionRenderingRegistry.registerSkyRenderer(Level.END, new BetterEndSkyRenderer());
         }
-        event.register(ResourceLocation.withDefaultNamespace("the_end"), new BetterEndSkyEffect());
-    }
-
-    @SubscribeEvent
-    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        EndEntitiesRenders.registerRenderers(event);
-        EndBlockEntityRenders.registerRenderers(event);
-    }
-
-    @SubscribeEvent
-    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        EndEntitiesRenders.registerLayerDefinitions(event);
-    }
-
-    @SubscribeEvent
-    public static void onRegisterAdditionalModels(ModelEvent.RegisterAdditional event) {
-        if (!GeneratorOptions.changeChorusPlant()) return;
-        event.register(TO_LOAD_FLOWER_ID);
-        event.register(TO_LOAD_PLANT_ID);
-    }
-
-    @SubscribeEvent
-    public static void onModifyBakedModels(ModelEvent.ModifyBakingResult event) {
-        Map<ModelResourceLocation, net.minecraft.client.resources.model.BakedModel> models = event.getModels();
-        if (GeneratorOptions.changeChorusPlant()) {
-            var flowerModel = models.get(TO_LOAD_FLOWER_ID);
-            var plantModel = models.get(TO_LOAD_PLANT_ID);
-            if (flowerModel != null) {
-                models.put(CHECK_FLOWER_ID, flowerModel);
-            }
-            if (plantModel != null) {
-                models.put(CHECK_PLANT_ID, plantModel);
-            }
+        if (BetterEnd.TRINKETS_CORE.isLoaded()) {
+            org.betterx.betterend.integration.trinkets.ElytraClient.register();
         }
-    }
-
-    private static void onItemTooltip(ItemTooltipEvent event) {
-        ItemTooltipCallback.fire(event.getEntity(), event.getItemStack(), event.getFlags(), event.getToolTip());
     }
 
     public static void registerTooltips() {
-        ItemTooltipCallback.register((player, stack, context, lines) -> {
+        ItemTooltipCallback.EVENT.register((player, stack, context, lines) -> {
             if (stack.getItem() instanceof CrystaliteArmor) {
                 boolean hasSet = false;
                 if (player != null) {
@@ -139,5 +81,4 @@ public class BetterEndClient {
             }
         });
     }
-
 }

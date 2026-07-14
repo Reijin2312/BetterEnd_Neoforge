@@ -19,8 +19,8 @@ import org.betterx.betterend.item.material.EndToolMaterial;
 import org.betterx.betterend.item.tool.EndHammerItem;
 import org.betterx.betterend.item.tool.EndPickaxe;
 import org.betterx.betterend.util.DebugHelpers;
-import org.betterx.wover.complex.api.equipment.ArmorSlot;
 import org.betterx.wover.item.api.ItemRegistry;
+import org.betterx.wover.complex.api.equipment.ArmorSlot;
 import org.betterx.wover.tag.api.predefined.CommonItemTags;
 
 import net.minecraft.resources.ResourceKey;
@@ -70,9 +70,6 @@ public class EndItems {
             "enchanted_membrane",
             new EnchantedItem(Items.PHANTOM_MEMBRANE)
     );
-    public static final Item GUIDE_BOOK = BetterEnd.ENABLE_GUIDEBOOK
-            ? registerEndItem("guidebook", new GuideBookItem())
-            : Items.AIR;
 
     // Music Discs
     public final static Item MUSIC_DISC_STRANGE_AND_ALIEN = registerEndDisc(
@@ -98,8 +95,7 @@ public class EndItems {
             new BaseArmorItem(
                     EndArmorMaterial.AETERNIUM,
                     ArmorItem.Type.HELMET,
-                    EndArmorItem.createDefaultEndArmorSettings(ArmorSlot.HELMET_SLOT, EndArmorTier.AETERNIUM)
-                                .fireResistant()
+                    EndArmorItem.createDefaultEndArmorSettings(ArmorSlot.HELMET_SLOT, EndArmorTier.AETERNIUM).fireResistant()
             )
     );
     public static final Item AETERNIUM_CHESTPLATE = registerEndItem(
@@ -107,8 +103,7 @@ public class EndItems {
             new BaseArmorItem(
                     EndArmorMaterial.AETERNIUM,
                     ArmorItem.Type.CHESTPLATE,
-                    EndArmorItem.createDefaultEndArmorSettings(ArmorSlot.CHESTPLATE_SLOT, EndArmorTier.AETERNIUM)
-                                .fireResistant()
+                    EndArmorItem.createDefaultEndArmorSettings(ArmorSlot.CHESTPLATE_SLOT, EndArmorTier.AETERNIUM).fireResistant()
             )
     );
     public static final Item AETERNIUM_LEGGINGS = registerEndItem(
@@ -116,8 +111,7 @@ public class EndItems {
             new BaseArmorItem(
                     EndArmorMaterial.AETERNIUM,
                     ArmorItem.Type.LEGGINGS,
-                    EndArmorItem.createDefaultEndArmorSettings(ArmorSlot.LEGGINGS_SLOT, EndArmorTier.AETERNIUM)
-                                .fireResistant()
+                    EndArmorItem.createDefaultEndArmorSettings(ArmorSlot.LEGGINGS_SLOT, EndArmorTier.AETERNIUM).fireResistant()
             )
     );
     public static final Item AETERNIUM_BOOTS = registerEndItem(
@@ -125,8 +119,7 @@ public class EndItems {
             new BaseArmorItem(
                     EndArmorMaterial.AETERNIUM,
                     ArmorItem.Type.BOOTS,
-                    EndArmorItem.createDefaultEndArmorSettings(ArmorSlot.BOOTS_SLOT, EndArmorTier.AETERNIUM)
-                                .fireResistant()
+                    EndArmorItem.createDefaultEndArmorSettings(ArmorSlot.BOOTS_SLOT, EndArmorTier.AETERNIUM).fireResistant()
             )
     );
     public static final Item CRYSTALITE_HELMET = registerEndItem("crystalite_helmet", new CrystaliteHelmet());
@@ -359,6 +352,7 @@ public class EndItems {
 
     @ApiStatus.Internal
     public static void ensureStaticallyLoaded() {
+        GuideBookItem.ensureStaticallyLoaded();
         if (BCLib.isDevEnvironment()) {
             DebugHelpers.generateDebugItems();
         }

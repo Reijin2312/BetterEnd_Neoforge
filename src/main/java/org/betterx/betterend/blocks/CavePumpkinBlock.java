@@ -19,7 +19,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +30,7 @@ public class CavePumpkinBlock extends BaseBlockNotFull implements RenderLayerPro
     private static final VoxelShape SHAPE_BIG;
 
     public CavePumpkinBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.PUMPKIN).lightLevel(state -> state.getValue(SMALL) ? 10 : 15));
+        super(FabricBlockSettings.copyOf(Blocks.PUMPKIN).luminance((state) -> state.getValue(SMALL) ? 10 : 15));
         registerDefaultState(defaultBlockState().setValue(SMALL, false));
     }
 

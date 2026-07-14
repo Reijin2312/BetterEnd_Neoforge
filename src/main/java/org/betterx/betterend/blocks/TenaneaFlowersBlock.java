@@ -1,13 +1,13 @@
 package org.betterx.betterend.blocks;
 
 import org.betterx.bclib.blocks.BaseVineBlock;
-import org.betterx.bclib.interfaces.BlockColorProvider;
 import org.betterx.bclib.interfaces.CustomColorProvider;
-import org.betterx.bclib.interfaces.ItemColorProvider;
 import org.betterx.bclib.util.MHelper;
 import org.betterx.betterend.registry.EndParticles;
 import org.betterx.ui.ColorUtil;
 
+import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
@@ -16,8 +16,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public class TenaneaFlowersBlock extends BaseVineBlock implements CustomColorProvider {
     public static final Vec3i[] COLORS;
@@ -27,7 +27,7 @@ public class TenaneaFlowersBlock extends BaseVineBlock implements CustomColorPro
     }
 
     @Override
-    public BlockColorProvider getProvider() {
+    public BlockColor getProvider() {
         return (state, world, pos, tintIndex) -> {
             if (pos == null) {
                 pos = BlockPos.ZERO;
@@ -52,7 +52,7 @@ public class TenaneaFlowersBlock extends BaseVineBlock implements CustomColorPro
     }
 
     @Override
-    public ItemColorProvider getItemProvider() {
+    public ItemColor getItemProvider() {
         return (stack, tintIndex) -> ColorUtil.color(255, 255, 255);
     }
 
@@ -61,7 +61,7 @@ public class TenaneaFlowersBlock extends BaseVineBlock implements CustomColorPro
         return false;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         super.animateTick(state, world, pos, random);
         if (random.nextInt(32) == 0) {

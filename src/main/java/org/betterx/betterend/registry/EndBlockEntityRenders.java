@@ -2,15 +2,15 @@ package org.betterx.betterend.registry;
 
 import org.betterx.betterend.client.render.PedestalItemRenderer;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class EndBlockEntityRenders {
-    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerBlockEntityRenderer(EndBlockEntities.PEDESTAL, PedestalItemRenderer::new);
-        event.registerBlockEntityRenderer(EndBlockEntities.ETERNAL_PEDESTAL, PedestalItemRenderer::new);
-        event.registerBlockEntityRenderer(EndBlockEntities.INFUSION_PEDESTAL, PedestalItemRenderer::new);
+    public static void register() {
+        BlockEntityRendererRegistry.register(EndBlockEntities.PEDESTAL, PedestalItemRenderer::new);
+        BlockEntityRendererRegistry.register(EndBlockEntities.ETERNAL_PEDESTAL, PedestalItemRenderer::new);
+        BlockEntityRendererRegistry.register(EndBlockEntities.INFUSION_PEDESTAL, PedestalItemRenderer::new);
     }
 }

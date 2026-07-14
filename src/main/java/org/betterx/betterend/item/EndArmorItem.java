@@ -35,11 +35,13 @@ public class EndArmorItem extends ArmorItem implements ItemModelProvider {
             ArmorSlot slot,
             ArmorTier tier
     ) {
-        return startAttributeBuilder(
-                slot,
-                tier,
-                tier.armorMaterial.value().getDefense(slot.armorType) / 1.25f,
-                tier.armorMaterial.value().toughness() / 1.25f,
+        return startAttributeBuilder(slot, tier,
+                EndArmorTier.CRYSTALITE.armorMaterial
+                        .value()
+                        .getDefense(slot.armorType),
+                EndArmorTier.CRYSTALITE.armorMaterial
+                        .value()
+                        .toughness(),
                 0.0f
         );
     }
@@ -47,72 +49,48 @@ public class EndArmorItem extends ArmorItem implements ItemModelProvider {
     public static ItemAttributeModifiers.Builder startAttributeBuilder(
             ArmorSlot slot,
             ArmorTier tier,
-            float defense,
+            int defense,
             float toughness,
             float knockbackResistance
     ) {
-        final EquipmentSlotGroup slotGroup = slotGroup(slot);
         final ItemAttributeModifiers.Builder builder = ItemAttributeModifiers
                 .builder()
                 .add(
                         Attributes.ARMOR,
                         new AttributeModifier(
-                                armorBoostId(slot),
-                                defense,
+                                ARMOR_BOOST,
+                                EndArmorTier.CRYSTALITE.armorMaterial
+                                        .value()
+                                        .getDefense(Type.CHESTPLATE) / 1.25f,
                                 AttributeModifier.Operation.ADD_VALUE
                         ),
-                        slotGroup
+                        EquipmentSlotGroup.CHEST
                 )
                 .add(
                         Attributes.ARMOR_TOUGHNESS,
                         new AttributeModifier(
-                                toughnessBoostId(slot),
-                                toughness,
+                                TOUGHNESS_BOOST,
+                                EndArmorTier.CRYSTALITE.armorMaterial
+                                        .value()
+                                        .toughness() / 1.25f,
                                 AttributeModifier.Operation.ADD_VALUE
                         ),
-                        slotGroup
+                        EquipmentSlotGroup.CHEST
                 );
 
         if (knockbackResistance > 0.0f) {
             builder.add(
                     Attributes.KNOCKBACK_RESISTANCE,
                     new AttributeModifier(
-                            knockbackResistanceId(slot),
+                            BASE_KNOCKBACK_RESISTANCE,
                             knockbackResistance,
                             AttributeModifier.Operation.ADD_VALUE
                     ),
-                    slotGroup
+                    EquipmentSlotGroup.MAINHAND
             );
         }
 
         return builder;
-    }
-
-    private static EquipmentSlotGroup slotGroup(ArmorSlot slot) {
-        switch (slot) {
-            case HELMET_SLOT:
-                return EquipmentSlotGroup.HEAD;
-            case CHESTPLATE_SLOT:
-                return EquipmentSlotGroup.CHEST;
-            case LEGGINGS_SLOT:
-                return EquipmentSlotGroup.LEGS;
-            case BOOTS_SLOT:
-                return EquipmentSlotGroup.FEET;
-            default:
-                return EquipmentSlotGroup.CHEST;
-        }
-    }
-
-    private static ResourceLocation armorBoostId(ArmorSlot slot) {
-        return BetterEnd.C.mk("armor_boost_" + slot.name);
-    }
-
-    private static ResourceLocation toughnessBoostId(ArmorSlot slot) {
-        return BetterEnd.C.mk("toughness_boost_" + slot.name);
-    }
-
-    private static ResourceLocation knockbackResistanceId(ArmorSlot slot) {
-        return BetterEnd.C.mk("base_knockback_resistance_" + slot.name);
     }
 
     public static Properties createDefaultEndArmorSettings(

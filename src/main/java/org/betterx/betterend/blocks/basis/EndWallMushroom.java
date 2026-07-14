@@ -7,8 +7,8 @@ import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 
 import net.minecraft.world.level.block.state.BlockState;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public class EndWallMushroom extends WallMushroomBlock implements SurvivesOnEndStone, BlockModelProvider {
 
@@ -22,7 +22,7 @@ public class EndWallMushroom extends WallMushroomBlock implements SurvivesOnEndS
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         generator.createCubeModel(this);
         generator.createFlatItem(this);

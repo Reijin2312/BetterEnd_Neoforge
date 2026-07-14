@@ -24,7 +24,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import com.google.common.collect.Lists;
 
@@ -36,7 +36,7 @@ public class MengerSpongeBlock extends BaseBlockNotFull implements RenderLayerPr
     public static final VoxelShape SHAPE;
 
     public MengerSpongeBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.SPONGE).noOcclusion());
+        super(FabricBlockSettings.copyOf(Blocks.SPONGE).noOcclusion());
     }
 
     @Override

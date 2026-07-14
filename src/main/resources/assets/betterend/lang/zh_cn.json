@@ -803,7 +803,7 @@
   "enchantment.betterend.end_veil": "末地面纱",
   "enchantment.betterend.end_veil.desc": "允许使用者注视末影人而不激怒它们",
   "entity.betterend.cubozoa": "箱水母",
-  "entity.betterend.dragonfly": "末影蜻蜓",
+  "entity.betterend.dragonfly": "蜻蜓",
   "entity.betterend.end_fish": "末地鱼",
   "entity.betterend.end_slime": "末地史莱姆",
   "entity.betterend.shadow_walker": "黯影行者",
@@ -925,7 +925,7 @@
   "item.betterend.smithing_template.tool_assembly.base_slot_description": "放入剑刃",
   "item.betterend.smithing_template.tool_assembly.ingredients": "剑柄",
   "item.betterend.spawn_egg_cubozoa": "箱水母刷怪蛋",
-  "item.betterend.spawn_egg_dragonfly": "末影蜻蜓刷怪蛋",
+  "item.betterend.spawn_egg_dragonfly": "蜻蜓刷怪蛋",
   "item.betterend.spawn_egg_end_fish": "末地鱼刷怪蛋",
   "item.betterend.spawn_egg_end_slime": "末地史莱姆刷怪蛋",
   "item.betterend.spawn_egg_shadow_walker": "黯影行者刷怪蛋",
@@ -1009,13 +1009,5 @@
   "upgrade.betterend.plate_upgrade": "加装太古合金护板",
   "upgrade.betterend.terminite_upgrade": "终末合金升级",
   "upgrade.betterend.thallasium_upgrade": "塔拉斯金剑柄",
-  "upgrade.betterend.tool_assembly": "组装剑",
-  "betterend.jei.container.alloying": "合金与高炉熔炼",
-  "betterend.jei.recipe_level.anvil": "等级：%s",
-  "betterend.jei.damage.amount&dmg": "工具损耗：%s",
-  "config.jade.plugin_betterend.plant_growth": "BetterEnd 植物",
-  "betterend.jei.infusion.time&val": "%s 刻",
-  "betterend.jei.container.infusion": "灌注配方",
-  "betterend.jei.container.anvil": "铁砧配方",
-  "betterend.jei.alloying.experience_time": "%s 经验 | %s 秒"
+  "upgrade.betterend.tool_assembly": "组装剑"
 }

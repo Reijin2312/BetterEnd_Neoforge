@@ -5,21 +5,26 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
-import java.util.ArrayList;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
+
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public interface ItemTooltipCallback {
-    List<ItemTooltipCallback> LISTENERS = new ArrayList<>();
-
-    static void register(ItemTooltipCallback callback) {
-        LISTENERS.add(callback);
-    }
-
-    static void fire(Player player, ItemStack stack, TooltipFlag context, List<Component> lines) {
-        for (ItemTooltipCallback callback : LISTENERS) {
-            callback.getTooltip(player, stack, context, lines);
-        }
-    }
+    /**
+     * Fired after the game has appended all base tooltip lines to the list.
+     */
+    Event<ItemTooltipCallback> EVENT = EventFactory.createArrayBacked(
+            ItemTooltipCallback.class,
+            callbacks -> (player, stack, context, lines) -> {
+                for (ItemTooltipCallback callback : callbacks) {
+                    callback.getTooltip(player, stack, context, lines);
+                }
+            }
+    );
 
     /**
      * Called when an item stack's tooltip is rendered. Text added to {@code lines} will be

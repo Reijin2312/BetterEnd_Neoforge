@@ -4,20 +4,15 @@ import org.betterx.betterend.BetterEnd;
 import org.betterx.betterend.effects.status.EndVeilEffect;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.neoforged.neoforge.registries.RegisterEvent;
+
 import org.jetbrains.annotations.ApiStatus;
 
 public class EndStatusEffects {
-    private static final ResourceKey<MobEffect> END_VEIL_KEY = ResourceKey.create(
-            Registries.MOB_EFFECT,
-            BetterEnd.C.mk("end_veil")
-    );
     public final static MobEffectInstance CRYSTALITE_HEALTH_REGEN = new MobEffectInstance(
             MobEffects.REGENERATION,
             80,
@@ -43,14 +38,10 @@ public class EndStatusEffects {
             true
     );
 
-    public static Holder<MobEffect> END_VEIL;
+    public final static Holder<MobEffect> END_VEIL = registerEffect("end_veil", new EndVeilEffect());
 
-    public static void onRegister(RegisterEvent event) {
-        if (!event.getRegistryKey().equals(Registries.MOB_EFFECT)) return;
-        event.register(Registries.MOB_EFFECT, helper -> {
-            helper.register(END_VEIL_KEY.location(), new EndVeilEffect());
-            END_VEIL = BuiltInRegistries.MOB_EFFECT.getHolder(END_VEIL_KEY).orElseThrow();
-        });
+    public static <E extends MobEffect> Holder<MobEffect> registerEffect(String name, E effect) {
+        return Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, BetterEnd.C.mk(name), effect);
     }
 
     @ApiStatus.Internal

@@ -78,9 +78,9 @@ public class UmbraValleyBiome extends EndBiome.Config {
                                             new UmbraSurfaceNoiseCondition(),
                                             List.of(
                                                     SurfaceRules.state(surfaceMaterial().getAltTopMaterial()),
-                                                    pallidiumHeavy(),
-                                                    pallidiumThin(),
-                                                    pallidiumTiny(),
+                                                    PALLIDIUM_HEAVY,
+                                                    PALLIDIUM_THIN,
+                                                    PALLIDIUM_TINY,
                                                     SurfaceRules.state(surfaceMaterial().getTopMaterial())
                                             )
                                     )

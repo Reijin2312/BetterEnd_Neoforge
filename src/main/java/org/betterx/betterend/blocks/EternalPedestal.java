@@ -46,8 +46,8 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import com.google.common.collect.Lists;
 
@@ -173,7 +173,7 @@ public class EternalPedestal extends PedestalBlock implements BehaviourStone, Bl
         return true;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     private void dispatchParticles(Level level, BlockPos blockPos, RandomSource random) {
         if (level instanceof ClientLevelAccess clientLevel) {
             if (level.getBlockEntity(blockPos) instanceof EternalPedestalEntity pedestal
@@ -252,7 +252,7 @@ public class EternalPedestal extends PedestalBlock implements BehaviourStone, Bl
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void animateTick(
             @NotNull BlockState blockState,
             @NotNull Level level,
@@ -285,7 +285,7 @@ public class EternalPedestal extends PedestalBlock implements BehaviourStone, Bl
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         final ResourceLocation id = TextureMapping.getBlockTexture(this);
         final ResourceLocation baseTexture = BetterEnd.C.mk("block/flavolite_polished");

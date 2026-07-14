@@ -81,8 +81,8 @@ public class SulphurSpringsBiome extends EndBiome.Config {
                         List.of(
                                 SurfaceRules.state(surfaceMaterial().getAltTopMaterial()),
                                 SurfaceRules.state(surfaceMaterial().getTopMaterial()),
-                                sulphuricRock(),
-                                brimstone()
+                                SULPHURIC_ROCK,
+                                BRIMSTONE
                         )
                 );
                 return super

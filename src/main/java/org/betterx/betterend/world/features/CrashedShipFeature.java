@@ -4,7 +4,6 @@ import org.betterx.bclib.api.v2.levelgen.features.features.DefaultFeature;
 import org.betterx.bclib.util.MHelper;
 import org.betterx.bclib.util.StructureErode;
 import org.betterx.bclib.util.StructureHelper;
-import org.betterx.betterend.util.EndStructureHelper;
 import org.betterx.betterend.util.BlockFixer;
 import org.betterx.wover.tag.api.predefined.CommonBlockTags;
 
@@ -46,7 +45,7 @@ public class CrashedShipFeature extends NBTFeature<NBTFeatureConfig> {
                     .getStructureManager()
                     .getOrCreate(ResourceLocation.withDefaultNamespace("end_city/ship"));
             if (structure == null) {
-                structure = EndStructureHelper.readStructure(STRUCTURE_PATH);
+                structure = StructureHelper.readStructure(STRUCTURE_PATH);
             }
         }
         return structure;

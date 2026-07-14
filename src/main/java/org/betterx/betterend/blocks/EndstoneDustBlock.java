@@ -19,9 +19,9 @@ import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -31,8 +31,8 @@ public class EndstoneDustBlock extends FallingBlock implements BlockTagProvider,
     public static final MapCodec<EndstoneDustBlock> CODEC = MapCodec.unit(EndstoneDustBlock::new);
 
     public EndstoneDustBlock() {
-        super(BlockBehaviour.Properties
-                .ofFullCopy(Blocks.SAND)
+        super(FabricBlockSettings
+                .copyOf(Blocks.SAND)
                 .mapColor(Blocks.END_STONE.defaultMapColor())
         );
     }
@@ -51,7 +51,7 @@ public class EndstoneDustBlock extends FallingBlock implements BlockTagProvider,
         return provider.drop(this);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public int getDustColor(BlockState state, BlockGetter world, BlockPos pos) {
         return COLOR;
     }

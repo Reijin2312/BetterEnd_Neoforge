@@ -11,82 +11,104 @@ import org.betterx.betterend.world.features.terrain.caves.CaveChunkPopulatorFeat
 import org.betterx.betterend.world.features.terrain.caves.RoundCaveFeature;
 import org.betterx.betterend.world.features.terrain.caves.TunelCaveFeature;
 import org.betterx.betterend.world.features.trees.*;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.level.levelgen.feature.Feature;
+import org.betterx.wover.feature.api.FeatureManager;
+import org.betterx.wover.state.api.WorldState;
 
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 public class EndFeatures {
-    public static final StalactiteFeature STALACTITE_FEATURE = new StalactiteFeature();
-    public static final BuildingListFeature BUILDING_LIST_FEATURE = new BuildingListFeature();
-    public static final VineFeature VINE_FEATURE = new VineFeature();
-    public static final WallPlantFeature WALL_PLANT_FEATURE = new WallPlantFeature();
-    public static final WallPlantOnLogFeature WALL_PLANT_ON_LOG_FEATURE = new WallPlantOnLogFeature();
-    public static final GlowPillarFeature GLOW_PILLAR_FEATURE = new GlowPillarFeature();
-    public static final HydraluxFeature HYDRALUX_FEATURE = new HydraluxFeature();
-    public static final LanceleafFeature LANCELEAF_FEATURE = new LanceleafFeature();
-    public static final MengerSpongeFeature MENGER_SPONGE_FEATURE = new MengerSpongeFeature();
-    public static final CaveChunkPopulatorFeature CAVE_CHUNK_POPULATOR = new CaveChunkPopulatorFeature();
-    public static final SinglePlantFeature SINGLE_PLANT_FEATURE = new SinglePlantFeature();
-    public static final SingleInvertedScatterFeature SINGLE_INVERTED_SCATTER_FEATURE = new SingleInvertedScatterFeature();
-    public static final DoublePlantFeature DOUBLE_PLANT_FEATURE = new DoublePlantFeature();
-    public static final UnderwaterPlantFeature UNDERWATER_PLANT_FEATURE = new UnderwaterPlantFeature();
-    public static final ArchFeature ARCH_FEATURE = new ArchFeature();
-    public static final ThinArchFeature THIN_ARCH_FEATURE = new ThinArchFeature();
-    public static final CharniaFeature CHARNIA_FEATURE = new CharniaFeature();
-    public static final BlueVineFeature BLUE_VINE_FEATURE = new BlueVineFeature();
-    public static final FilaluxFeature FILALUX_FEATURE = new FilaluxFeature();
-    public static final EndLilyFeature END_LILY_FEATURE = new EndLilyFeature();
-    public static final EndLotusFeature END_LOTUS_FEATURE = new EndLotusFeature();
-    public static final EndLotusLeafFeature END_LOTUS_LEAF_FEATURE = new EndLotusLeafFeature();
-    public static final BushFeature BUSH_FEATURE = new BushFeature();
-    public static final SingleBlockFeature SINGLE_BLOCK_FEATURE = new SingleBlockFeature();
-    public static final BushWithOuterFeature BUSH_WITH_OUTER_FEATURE = new BushWithOuterFeature();
-    public static final MossyGlowshroomFeature MOSSY_GLOWSHROOM_FEATURE = new MossyGlowshroomFeature();
-    public static final PythadendronTreeFeature PYTHADENDRON_TREE_FEATURE = new PythadendronTreeFeature();
-    public static final LacugroveFeature LACUGROVE_FEATURE = new LacugroveFeature();
-    public static final DragonTreeFeature DRAGON_TREE_FEATURE = new DragonTreeFeature();
-    public static final TenaneaFeature TENANEA_FEATURE = new TenaneaFeature();
-    public static final HelixTreeFeature HELIX_TREE_FEATURE = new HelixTreeFeature();
-    public static final UmbrellaTreeFeature UMBRELLA_TREE_FEATURE = new UmbrellaTreeFeature();
-    public static final JellyshroomFeature JELLYSHROOM_FEATURE = new JellyshroomFeature();
-    public static final GiganticAmaranitaFeature GIGANTIC_AMARANITA_FEATURE = new GiganticAmaranitaFeature();
-    public static final LucerniaFeature LUCERNIA_FEATURE = new LucerniaFeature();
-    public static final TenaneaBushFeature TENANEA_BUSH_FEATURE = new TenaneaBushFeature();
-    public static final Lumecorn LUMECORN_FEATURE = new Lumecorn();
-    public static final LargeAmaranitaFeature LARGE_AMARANITA_FEATURE = new LargeAmaranitaFeature();
-    public static final NeonCactusFeature NEON_CACTUS_FEATURE = new NeonCactusFeature();
+    public static final StalactiteFeature STALACTITE_FEATURE = inlineBuild("stalactite_feature", new StalactiteFeature());
+    public static final BuildingListFeature BUILDING_LIST_FEATURE = inlineBuild("building_list_feature", new BuildingListFeature());
+    public static final VineFeature VINE_FEATURE = inlineBuild("vine_feature", new VineFeature());
+    public static final WallPlantFeature WALL_PLANT_FEATURE = inlineBuild("wall_plant_feature", new WallPlantFeature());
+    public static final WallPlantOnLogFeature WALL_PLANT_ON_LOG_FEATURE = inlineBuild("wall_plant_on_log_feature", new WallPlantOnLogFeature());
+    public static final GlowPillarFeature GLOW_PILLAR_FEATURE = inlineBuild("glow_pillar_feature", new GlowPillarFeature());
+    public static final HydraluxFeature HYDRALUX_FEATURE = inlineBuild("hydralux_feature", new HydraluxFeature());
+    public static final LanceleafFeature LANCELEAF_FEATURE = inlineBuild("lanceleaf_feature", new LanceleafFeature());
+    public static final MengerSpongeFeature MENGER_SPONGE_FEATURE = inlineBuild("menger_sponge_feature", new MengerSpongeFeature());
+    public static final CaveChunkPopulatorFeature CAVE_CHUNK_POPULATOR = inlineBuild("cave_chunk_populator", new CaveChunkPopulatorFeature());
+    public static final SinglePlantFeature SINGLE_PLANT_FEATURE = inlineBuild("single_plant_feature", new SinglePlantFeature());
+    public static final SingleInvertedScatterFeature SINGLE_INVERTED_SCATTER_FEATURE = inlineBuild("single_inverted_scatter_feature", new SingleInvertedScatterFeature());
+    public static final DoublePlantFeature DOUBLE_PLANT_FEATURE = inlineBuild("double_plant_feature", new DoublePlantFeature());
+    public static final UnderwaterPlantFeature UNDERWATER_PLANT_FEATURE = inlineBuild("underwater_plant_feature", new UnderwaterPlantFeature());
+    public static final ArchFeature ARCH_FEATURE = inlineBuild("arch_feature", new ArchFeature());
+    public static final ThinArchFeature THIN_ARCH_FEATURE = inlineBuild("thin_arch_feature", new ThinArchFeature());
+    public static final CharniaFeature CHARNIA_FEATURE = inlineBuild("charnia_feature", new CharniaFeature());
+    public static final BlueVineFeature BLUE_VINE_FEATURE = inlineBuild("blue_vine_feature", new BlueVineFeature());
+    public static final FilaluxFeature FILALUX_FEATURE = inlineBuild("filalux_feature", new FilaluxFeature());
+    public static final EndLilyFeature END_LILY_FEATURE = inlineBuild("end_lily_feature", new EndLilyFeature());
+    public static final EndLotusFeature END_LOTUS_FEATURE = inlineBuild("end_lotus_feature", new EndLotusFeature());
+    public static final EndLotusLeafFeature END_LOTUS_LEAF_FEATURE = inlineBuild("end_lotus_leaf_feature", new EndLotusLeafFeature());
+    public static final BushFeature BUSH_FEATURE = inlineBuild("bush_feature", new BushFeature());
+    public static final SingleBlockFeature SINGLE_BLOCK_FEATURE = inlineBuild("single_block_feature", new SingleBlockFeature());
+    public static final BushWithOuterFeature BUSH_WITH_OUTER_FEATURE = inlineBuild("bush_with_outer_feature", new BushWithOuterFeature());
+    public static final MossyGlowshroomFeature MOSSY_GLOWSHROOM_FEATURE = inlineBuild("mossy_glowshroom", new MossyGlowshroomFeature());
+    public static final PythadendronTreeFeature PYTHADENDRON_TREE_FEATURE = inlineBuild("pythadendron_tree", new PythadendronTreeFeature());
+    public static final LacugroveFeature LACUGROVE_FEATURE = inlineBuild("lacugrove", new LacugroveFeature());
+    public static final DragonTreeFeature DRAGON_TREE_FEATURE = inlineBuild("dragon_tree", new DragonTreeFeature());
+    public static final TenaneaFeature TENANEA_FEATURE = inlineBuild("tenanea", new TenaneaFeature());
+    public static final HelixTreeFeature HELIX_TREE_FEATURE = inlineBuild("helix_tree", new HelixTreeFeature());
+    public static final UmbrellaTreeFeature UMBRELLA_TREE_FEATURE = inlineBuild("umbrella_tree", new UmbrellaTreeFeature());
+    public static final JellyshroomFeature JELLYSHROOM_FEATURE = inlineBuild("jellyshroom", new JellyshroomFeature());
+    public static final GiganticAmaranitaFeature GIGANTIC_AMARANITA_FEATURE = inlineBuild("gigantic_amaranita", new GiganticAmaranitaFeature());
+    public static final LucerniaFeature LUCERNIA_FEATURE = inlineBuild("lucernia", new LucerniaFeature());
+    public static final TenaneaBushFeature TENANEA_BUSH_FEATURE = inlineBuild("tenanea_bush", new TenaneaBushFeature());
+    public static final Lumecorn LUMECORN_FEATURE = inlineBuild("lumecorn", new Lumecorn());
+    public static final LargeAmaranitaFeature LARGE_AMARANITA_FEATURE = inlineBuild("large_amaranita", new LargeAmaranitaFeature());
+    public static final NeonCactusFeature NEON_CACTUS_FEATURE = inlineBuild("neon_cactus", new NeonCactusFeature());
 
     //Ores
-    public static final OreLayerFeature LAYERED_ORE_FEATURE = new OreLayerFeature();
+    public static final OreLayerFeature LAYERED_ORE_FEATURE = inlineBuild("ore_layer", new OreLayerFeature());
 
     //Lakes
-    public static final EndLakeFeature END_LAKE_FEATURE = new EndLakeFeature();
-    public static final DesertLakeFeature DESERT_LAKE_FEATURE = new DesertLakeFeature();
-    public static final SulphuricLakeFeature SULPHURIC_LAKE_FEATURE = new SulphuricLakeFeature();
+    public static final EndLakeFeature END_LAKE_FEATURE = inlineBuild("end_lake", new EndLakeFeature());
+    public static final DesertLakeFeature DESERT_LAKE_FEATURE = inlineBuild("desert_lake", new DesertLakeFeature());
+    public static final SulphuricLakeFeature SULPHURIC_LAKE_FEATURE = inlineBuild("sulphuric_lake", new SulphuricLakeFeature());
 
     //Terrain
-    public static final SurfaceVentFeature SURFACE_VENT_FEATURE = new SurfaceVentFeature();
-    public static final SulphurHillFeature SULPHUR_HILL_FEATURE = new SulphurHillFeature();
-    public static final ObsidianPillarBasementFeature OBSIDIAN_PILLAR_FEATURE = new ObsidianPillarBasementFeature();
-    public static final ObsidianBoulderFeature OBSIDIAN_BOULDER_FEATURE = new ObsidianBoulderFeature();
-    public static final FallenPillarFeature FALLEN_PILLAR_FEATURE = new FallenPillarFeature();
-    public static final CrashedShipFeature CRASHED_SHIP_FEATURE = new CrashedShipFeature();
-    public static final SilkMothNestFeature SILK_MOTH_NEST_FEATURE = new SilkMothNestFeature();
-    public static final IceStarFeature ICE_STAR_FEATURE = new IceStarFeature();
-    public static final RoundCaveFeature ROUND_CAVE_FEATURE = new RoundCaveFeature();
-    public static final SpireFeature SPIRE_FEATURE = new SpireFeature();
-    public static final FloatingSpireFeature FLOATING_SPIRE_FEATURE = new FloatingSpireFeature();
-    public static final GeyserFeature GEYSER_FEATURE = new GeyserFeature();
-    public static final BiomeIslandFeature OVERWORLD_ISLAND = new BiomeIslandFeature();
+    public static final SurfaceVentFeature SURFACE_VENT_FEATURE = inlineBuild("surface_vent", new SurfaceVentFeature());
+    public static final SulphurHillFeature SULPHUR_HILL_FEATURE = inlineBuild("sulphur_hill", new SulphurHillFeature());
+    public static final ObsidianPillarBasementFeature OBSIDIAN_PILLAR_FEATURE = inlineBuild("obsidian_pillar_basement", new ObsidianPillarBasementFeature());
+    public static final ObsidianBoulderFeature OBSIDIAN_BOULDER_FEATURE = inlineBuild("obsidian_boulder", new ObsidianBoulderFeature());
+    public static final FallenPillarFeature FALLEN_PILLAR_FEATURE = inlineBuild("fallen_pillar", new FallenPillarFeature());
+    public static final CrashedShipFeature CRASHED_SHIP_FEATURE = inlineBuild("crashed_ship", new CrashedShipFeature());
+    public static final SilkMothNestFeature SILK_MOTH_NEST_FEATURE = inlineBuild("silk_moth_nest", new SilkMothNestFeature());
+    public static final IceStarFeature ICE_STAR_FEATURE = inlineBuild("ice_star", new IceStarFeature());
+    public static final RoundCaveFeature ROUND_CAVE_FEATURE = inlineBuild("round_cave", new RoundCaveFeature());
+    public static final SpireFeature SPIRE_FEATURE = inlineBuild("spire", new SpireFeature());
+    public static final FloatingSpireFeature FLOATING_SPIRE_FEATURE = inlineBuild("floating_spire", new FloatingSpireFeature());
+    public static final GeyserFeature GEYSER_FEATURE = inlineBuild("geyser", new GeyserFeature());
+    public static final BiomeIslandFeature OVERWORLD_ISLAND = inlineBuild("overworld_island", new BiomeIslandFeature());
 
     // Caves
-    public static final SulphuricCaveFeature SULPHURIC_CAVE_FEATURE = new SulphuricCaveFeature();
-    public static final TunelCaveFeature TUNEL_CAVE_FEATURE = new TunelCaveFeature();
-    public static final SmaragdantCrystalFeature SMARAGDANT_CRYSTAL_FEATURE = new SmaragdantCrystalFeature();
-    public static final BigAuroraCrystalFeature BIG_AURORA_CRYSTAL_FEATURE = new BigAuroraCrystalFeature();
-    public static final CavePumpkinFeature CAVE_PUMPKIN_FEATURE = new CavePumpkinFeature();
-    private static boolean registered = false;
+    public static final SulphuricCaveFeature SULPHURIC_CAVE_FEATURE = inlineBuild("sulphuric_cave", new SulphuricCaveFeature());
+    public static final TunelCaveFeature TUNEL_CAVE_FEATURE = inlineBuild("tunel_cave", new TunelCaveFeature());
+    public static final SmaragdantCrystalFeature SMARAGDANT_CRYSTAL_FEATURE = inlineBuild("smaragdant_crystal", new SmaragdantCrystalFeature());
+    public static final BigAuroraCrystalFeature BIG_AURORA_CRYSTAL_FEATURE = inlineBuild("big_aurora_crystal", new BigAuroraCrystalFeature());
+    public static final CavePumpkinFeature CAVE_PUMPKIN_FEATURE = inlineBuild("cave_pumpkin", new CavePumpkinFeature());
+
+    public static <F extends Feature<FC>, FC extends FeatureConfiguration> F inlineBuild(String name, F feature) {
+        ResourceLocation l = BetterEnd.C.mk(name);
+
+        final Registry<Feature<?>> features;
+        if (WorldState.registryAccess() != null) {
+            features = WorldState.allStageRegistryAccess().registryOrThrow(Registries.FEATURE);
+        } else {
+            features = BuiltInRegistries.FEATURE;
+        }
+
+        if (features.containsKey(l)) {
+            return (F) features.get(l);
+        }
+
+
+        return FeatureManager.register(l, feature);
+    }
 
 //    public static void addBiomeFeatures(ResourceLocation id, Holder<Biome> biome) {
 //        if (!BetterEnd.MOD_ID.equals(id.getNamespace())) {
@@ -129,75 +151,6 @@ public class EndFeatures {
         }
     }
 
-    public static void register(RegisterEvent.RegisterHelper<Feature<?>> helper) {
-        if (registered) return;
-        registered = true;
-
-        helper.register(BetterEnd.C.mk("stalactite_feature"), STALACTITE_FEATURE);
-        helper.register(BetterEnd.C.mk("building_list_feature"), BUILDING_LIST_FEATURE);
-        helper.register(BetterEnd.C.mk("vine_feature"), VINE_FEATURE);
-        helper.register(BetterEnd.C.mk("wall_plant_feature"), WALL_PLANT_FEATURE);
-        helper.register(BetterEnd.C.mk("wall_plant_on_log_feature"), WALL_PLANT_ON_LOG_FEATURE);
-        helper.register(BetterEnd.C.mk("glow_pillar_feature"), GLOW_PILLAR_FEATURE);
-        helper.register(BetterEnd.C.mk("hydralux_feature"), HYDRALUX_FEATURE);
-        helper.register(BetterEnd.C.mk("lanceleaf_feature"), LANCELEAF_FEATURE);
-        helper.register(BetterEnd.C.mk("menger_sponge_feature"), MENGER_SPONGE_FEATURE);
-        helper.register(BetterEnd.C.mk("cave_chunk_populator"), CAVE_CHUNK_POPULATOR);
-        helper.register(BetterEnd.C.mk("single_plant_feature"), SINGLE_PLANT_FEATURE);
-        helper.register(BetterEnd.C.mk("single_inverted_scatter_feature"), SINGLE_INVERTED_SCATTER_FEATURE);
-        helper.register(BetterEnd.C.mk("double_plant_feature"), DOUBLE_PLANT_FEATURE);
-        helper.register(BetterEnd.C.mk("underwater_plant_feature"), UNDERWATER_PLANT_FEATURE);
-        helper.register(BetterEnd.C.mk("arch_feature"), ARCH_FEATURE);
-        helper.register(BetterEnd.C.mk("thin_arch_feature"), THIN_ARCH_FEATURE);
-        helper.register(BetterEnd.C.mk("charnia_feature"), CHARNIA_FEATURE);
-        helper.register(BetterEnd.C.mk("blue_vine_feature"), BLUE_VINE_FEATURE);
-        helper.register(BetterEnd.C.mk("filalux_feature"), FILALUX_FEATURE);
-        helper.register(BetterEnd.C.mk("end_lily_feature"), END_LILY_FEATURE);
-        helper.register(BetterEnd.C.mk("end_lotus_feature"), END_LOTUS_FEATURE);
-        helper.register(BetterEnd.C.mk("end_lotus_leaf_feature"), END_LOTUS_LEAF_FEATURE);
-        helper.register(BetterEnd.C.mk("bush_feature"), BUSH_FEATURE);
-        helper.register(BetterEnd.C.mk("single_block_feature"), SINGLE_BLOCK_FEATURE);
-        helper.register(BetterEnd.C.mk("bush_with_outer_feature"), BUSH_WITH_OUTER_FEATURE);
-        helper.register(BetterEnd.C.mk("mossy_glowshroom"), MOSSY_GLOWSHROOM_FEATURE);
-        helper.register(BetterEnd.C.mk("pythadendron_tree"), PYTHADENDRON_TREE_FEATURE);
-        helper.register(BetterEnd.C.mk("lacugrove"), LACUGROVE_FEATURE);
-        helper.register(BetterEnd.C.mk("dragon_tree"), DRAGON_TREE_FEATURE);
-        helper.register(BetterEnd.C.mk("tenanea"), TENANEA_FEATURE);
-        helper.register(BetterEnd.C.mk("helix_tree"), HELIX_TREE_FEATURE);
-        helper.register(BetterEnd.C.mk("umbrella_tree"), UMBRELLA_TREE_FEATURE);
-        helper.register(BetterEnd.C.mk("jellyshroom"), JELLYSHROOM_FEATURE);
-        helper.register(BetterEnd.C.mk("gigantic_amaranita"), GIGANTIC_AMARANITA_FEATURE);
-        helper.register(BetterEnd.C.mk("lucernia"), LUCERNIA_FEATURE);
-        helper.register(BetterEnd.C.mk("tenanea_bush"), TENANEA_BUSH_FEATURE);
-        helper.register(BetterEnd.C.mk("lumecorn"), LUMECORN_FEATURE);
-        helper.register(BetterEnd.C.mk("large_amaranita"), LARGE_AMARANITA_FEATURE);
-        helper.register(BetterEnd.C.mk("neon_cactus"), NEON_CACTUS_FEATURE);
-        helper.register(BetterEnd.C.mk("ore_layer"), LAYERED_ORE_FEATURE);
-        helper.register(BetterEnd.C.mk("end_lake"), END_LAKE_FEATURE);
-        helper.register(BetterEnd.C.mk("desert_lake"), DESERT_LAKE_FEATURE);
-        helper.register(BetterEnd.C.mk("sulphuric_lake"), SULPHURIC_LAKE_FEATURE);
-        helper.register(BetterEnd.C.mk("surface_vent"), SURFACE_VENT_FEATURE);
-        helper.register(BetterEnd.C.mk("sulphur_hill"), SULPHUR_HILL_FEATURE);
-        helper.register(BetterEnd.C.mk("obsidian_pillar_basement"), OBSIDIAN_PILLAR_FEATURE);
-        helper.register(BetterEnd.C.mk("obsidian_boulder"), OBSIDIAN_BOULDER_FEATURE);
-        helper.register(BetterEnd.C.mk("fallen_pillar"), FALLEN_PILLAR_FEATURE);
-        helper.register(BetterEnd.C.mk("crashed_ship"), CRASHED_SHIP_FEATURE);
-        helper.register(BetterEnd.C.mk("silk_moth_nest"), SILK_MOTH_NEST_FEATURE);
-        helper.register(BetterEnd.C.mk("ice_star"), ICE_STAR_FEATURE);
-        helper.register(BetterEnd.C.mk("round_cave"), ROUND_CAVE_FEATURE);
-        helper.register(BetterEnd.C.mk("spire"), SPIRE_FEATURE);
-        helper.register(BetterEnd.C.mk("floating_spire"), FLOATING_SPIRE_FEATURE);
-        helper.register(BetterEnd.C.mk("geyser"), GEYSER_FEATURE);
-        helper.register(BetterEnd.C.mk("overworld_island"), OVERWORLD_ISLAND);
-        helper.register(BetterEnd.C.mk("sulphuric_cave"), SULPHURIC_CAVE_FEATURE);
-        helper.register(BetterEnd.C.mk("tunel_cave"), TUNEL_CAVE_FEATURE);
-        helper.register(BetterEnd.C.mk("smaragdant_crystal"), SMARAGDANT_CRYSTAL_FEATURE);
-        helper.register(BetterEnd.C.mk("big_aurora_crystal"), BIG_AURORA_CRYSTAL_FEATURE);
-        helper.register(BetterEnd.C.mk("cave_pumpkin"), CAVE_PUMPKIN_FEATURE);
-    }
-
-    public static void onRegister(RegisterEvent event) {
-        if (!event.getRegistryKey().equals(Registries.FEATURE)) return;
-        event.register(Registries.FEATURE, EndFeatures::register);
+    public static void register() {
     }
 }

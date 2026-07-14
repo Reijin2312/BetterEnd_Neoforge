@@ -1,8 +1,8 @@
 package org.betterx.betterend.mixin.common;
 
 import org.betterx.bclib.util.BlocksHelper;
+import org.betterx.bclib.util.StructureHelper;
 import org.betterx.betterend.BetterEnd;
-import org.betterx.betterend.util.EndStructureHelper;
 import org.betterx.betterend.world.generator.GeneratorOptions;
 import org.betterx.wover.state.api.WorldConfig;
 
@@ -78,13 +78,13 @@ public class SpikeFeatureMixin {
 
         if (GeneratorOptions.replacePillars() && be_radiusInRange(radius)) {
             radius--;
-            StructureTemplate base = EndStructureHelper.readStructure(BetterEnd.C.mk("pillars/pillar_base_" + radius));
+            StructureTemplate base = StructureHelper.readStructure(BetterEnd.C.mk("pillars/pillar_base_" + radius));
             String path = "pillars/pillar_top_" + radius + (
                     spike
                             .isGuarded()
                             ? "_cage"
                             : "");
-            StructureTemplate top = EndStructureHelper.readStructure(BetterEnd.C.mk(path));
+            StructureTemplate top = StructureHelper.readStructure(BetterEnd.C.mk(path));
             Vec3i side = base.getSize();
             BlockPos pos1 = new BlockPos(x - (side.getX() >> 1), minY - 3, z - (side.getZ() >> 1));
             minY = pos1.getY() + side.getY();

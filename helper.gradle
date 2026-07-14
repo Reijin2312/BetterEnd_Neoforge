@@ -1,145 +1,307 @@
-apply plugin: 'com.modrinth.minotaur'
-apply plugin: "com.matthewprenger.cursegradle"
+buildscript {
+    dependencies {
+        classpath 'org.kohsuke:github-api:1.114'
+    }
 
-def getConfig(key, defVal) {
-    try {
-        def configFile = file('changelog.json')
-        def configJson = new groovy.json.JsonSlurper().parseText(configFile.text)
-        def value = configJson[key]
-        if (value == null) return defVal
-        return value
-    } catch (FileNotFoundException ignored) {
-        return defVal
+    repositories {
+        gradlePluginPortal()
     }
 }
+def env = System.getenv()
 
-def isReleaseMode = project.hasProperty("release_mode") && project.property("release_mode").toBoolean()
-def modDependenciesUrl = getConfig('mod_dependencies_url', "https://raw.githubusercontent.com/betterx/BetterX_Mod_Deps/main/mod_dependencies.json")
-def modDependenciesFile = getConfig('mod_dependencies_file', "${projectDir}/mod_dependencies.json")
-def modId = project.findProperty('mod_id') ?: project.archives_base_name
+//from https://lowcarbrob.medium.com/android-pro-tip-generating-your-apps-changelog-from-git-inside-build-gradle-19a07533eec4
+String generateChangelog() {
+    println "Assembeling Changelog ..."
+    def lastTag = "git describe --tags --abbrev=0".execute().text.trim()
+    def gitLogCmd = "git log $lastTag..HEAD --oneline --no-merges --pretty=format:\"%s\"".execute().text.trim()
 
-def modLoader = "neoforge"
-def gameVersion = project.minecraft_version
+    def features = ""
+    def fixes = ""
+    def changes = ""
+    gitLogCmd.eachLine { gitLine ->
+        def line = gitLine.substring(1, gitLine.length() - 1)
+        if (line.trim().startsWith("[")) {
+            def sline = line.split("]", 2)
+            if (sline.length == 2) {
+                def type = sline[0].trim().toLowerCase().substring(1)
+                def comment = sline[1].trim()
 
-def parseDependencyList = { String propName ->
-    if (!project.hasProperty(propName)) return []
-    def raw = project.property(propName)
-    if (raw == null) return []
-    def s = raw.toString().trim()
-    if (s.isEmpty()) return []
-    // Accept old format: ["a", "b"] or ['a','b']
-    if ((s.startsWith('[') && s.endsWith(']')) || (s.startsWith('(') && s.endsWith(')'))) {
-        try {
-            def v = evaluate(s)
-            return (v instanceof Collection) ? v.toList() : [v]
-        } catch (ignored) {
-            // fall through
+                //filter issue links
+                if (comment.contains("(")) {
+                    def cline = comment.split("\\(", 2)
+                    if (cline.length == 2 && cline[1].contains("#")) {
+                        comment = cline[0].trim()
+                    }
+                }
+
+                if (type == "fix" || type == "fixes" || type == "fixed") {
+                    fixes += "- $comment \n"
+                } else if (type == "feature" || type == "features") {
+                    features += "- $comment \n"
+                } else if (type == "change" || type == "changes" || type == "changed") {
+                    changes += "- $comment \n"
+                } else {
+                    println "Unknown Type: $type ($line)"
+                }
+            }
         }
+
     }
-    // Accept comma-separated: a,b,c
-    return s.split(',').collect { it.trim() }.findAll { it }
-}
-
-def requiredDependencies = parseDependencyList('required_dependencies')
-def optionalDependencies = parseDependencyList('optional_dependencies')
-
-println("-------------------------------------")
-println("Mod ID: ${modId}")
-println("Loader: ${modLoader}")
-println("Game Version: ${gameVersion}")
-println("Release Mode: ${isReleaseMode}")
-println("-------------------------------------")
-
-def modDependencies = [:]
-try {
-    if (!file(modDependenciesFile).exists()) {
-        println("Downloading mod dependencies from ${modDependenciesUrl}...")
-        def url = new URL(modDependenciesUrl)
-        def text = url.text
-        file(modDependenciesFile).text = text
+    def changelog = ""
+    if (!features.isEmpty()) {
+        changelog += "#### Features\n"
+        changelog += features.trim()
+        changelog += "\n\n"
+    }
+    if (!changes.isEmpty()) {
+        changelog += "#### Changes\n"
+        changelog += changes.trim()
+        changelog += "\n\n"
+    }
+    if (!fixes.isEmpty()) {
+        changelog += "#### Fixes\n"
+        changelog += fixes.trim()
+        changelog += "\n\n"
     }
 
-    def modDependenciesJson = new groovy.json.JsonSlurper().parseText(file(modDependenciesFile).text)
-    modDependencies = modDependenciesJson[modLoader][gameVersion]
-} catch (Exception e) {
-    println("Failed to load mod dependencies: ${e.getMessage()}")
+    println "Changelog since $lastTag:\n$changelog"
+    return changelog
 }
 
-def getDependencyInfo = { dep ->
-    def info = modDependencies[dep]
-    if (info == null) return null
-    return [
-            projectId: info.projectId,
-            fileId   : info.fileId,
-            modrinthId: info.modrinthId
-    ]
+task changelog() {
+    group = 'publishing'
+    doLast {
+        new File(projectDir, "CHANGES.md").text = generateChangelog()
+    }
 }
+
+def requiredDependencies = evaluate(project.required_dependencies)
+def optionalDependencies = evaluate(project.optional_dependencies)
 
 modrinth {
-    token = project.findProperty("modrinth_token") ?: ""
-    projectId = project.findProperty("modrinth_project_id") ?: ""
-    versionNumber = project.version
-    versionName = "${modId}-${project.version}"
-    versionType = isReleaseMode ? "release" : "beta"
-    uploadFile = jar
-
-    if (project.findProperty("modrinth_changelog") != null) {
-        changelog = project.findProperty("modrinth_changelog")
+    def changes = new File(projectDir, "CHANGES.md")
+    if (changes.exists()) {
+        changes = changes.getText('UTF-8')
     } else {
-        changelog = getConfig('changelog', "")
+        changes = ""
     }
-
-    gameVersions = [gameVersion]
-    loaders = [modLoader]
-
+    def modrinth_token = new File(projectDir, "../MODRINTH_TOKEN")
+    if (modrinth_token.exists()) {
+        modrinth_token = modrinth_token.text
+    } else {
+        modrinth_token = ""
+    }
+    def slurper = new groovy.json.JsonSlurper()
+    token = modrinth_token
+    //modrinth_id
+    projectId = findProperty('modrinth_id') ?: project.archives_base_name
+    versionNumber = project.mod_version
+    versionType = project.release_channel
+    uploadFile = remapJar
+    gameVersions = slurper.parseText(project.modrinth_versions)
+    loaders = ["fabric"]
+    changelog = changes
     dependencies {
         requiredDependencies.each { dep ->
-            def info = getDependencyInfo(dep)
-            if (info?.modrinthId != null) {
-                required.project(info.modrinthId)
+            print dep
+            required.project dep
+        }
+
+        optionalDependencies.each { dep ->
+            optional.project dep
+        }
+    }
+    debugMode = false
+}
+
+curseforge {
+    def projectID = findProperty('modrinth_id') ?: project.archives_base_name
+    def slurper = new groovy.json.JsonSlurper()
+    apiKey = new File(projectDir, "../CURSEFORGE_TOKEN")
+    if (apiKey.exists()) {
+        apiKey = apiKey.text
+    } else {
+        apiKey = ""
+    }
+
+    def changes = new File(projectDir, "CHANGES.md")
+    if (changes.exists()) {
+        changes = changes.getText('UTF-8')
+    } else {
+        changes = ""
+    }
+
+    project {
+        id = project.curseforge_id
+        changelogType = 'markdown'
+        changelog = changes
+        releaseType = project.release_channel
+        def versions = slurper.parseText(project.modrinth_versions);
+        def latestVersion = ''
+        for (v in versions) {
+            addGameVersion v
+            latestVersion = "[$v]"
+        }
+        addGameVersion 'Fabric'
+        addGameVersion 'Java 21'
+        relations {
+            requiredDependencies.each { dep ->
+                requiredDependency dep
+            }
+
+            optionalDependencies.each { dep ->
+                optionalDependency dep
             }
         }
-        optionalDependencies.each { dep ->
-            def info = getDependencyInfo(dep)
-            if (info?.modrinthId != null) {
-                optional.project(info.modrinthId)
+        mainArtifact(remapJar) {
+            displayName = "$projectID-$project.version $latestVersion"
+        }
+        afterEvaluate {
+            mainArtifact(remapJar.outputs)
+        }
+    }
+
+    options {
+        debug = false
+        forgeGradleIntegration = false
+    }
+}
+
+
+task nextVersion() {
+    group = 'publishing'
+
+    doLast {
+        def slurper = new groovy.json.JsonSlurper();
+        def projectID = findProperty('modrinth_id') ?: project.archives_base_name
+        def inputFile = rootProject.file('modrinth.json')
+        def gameVersions = java.net.URLEncoder.encode(project.modrinth_versions, "UTF-8")
+        def json = slurper.parseText('[{ "version_number" : "1.0.-1" }]')
+        try {
+            new URL("https://api.modrinth.com/v2/project/${projectID}/version?&game_versions=${gameVersions}").withInputStream { i -> inputFile.withOutputStream { it << i } }
+            json = slurper.parseText(inputFile.text)
+        } catch (FileNotFoundException) {
+        }
+        println(json)
+        def version = json[0].version_number
+
+        //increment patch version
+        def indexedVersionList = version.split(/\./).toList().withIndex()
+        indexedVersionList = indexedVersionList.collect { num, idx -> num.toInteger() }
+        indexedVersionList[2] = indexedVersionList[2].value + 1
+        def updatedVersion = indexedVersionList.join(".")
+
+        println "\n\n"
+        println "------------- CURRENT VERSION -------------"
+        println "Last Published Version: " + version
+        println "         Game Versions: " + json[0].game_versions
+        println "                Status: " + json[0].status
+        println "              Featured: " + json[0].featured
+        println "            Downloaded: " + json[0].downloads
+        println "\n"
+        println "-------------- NEXT VERSION ---------------"
+        println "Next Version: " + updatedVersion
+        println "\n\n"
+
+
+        def propertiesFile = new File("gradle.properties")
+        def newContents = propertiesFile.text.replaceFirst("mod_version=\\d+.\\d+.\\d+", "mod_version=${updatedVersion}")
+        propertiesFile.text = newContents
+
+        def rootFabricFile = rootProject.file("src/main/resources/fabric.mod.json")
+        def rootFabricFileJson = slurper.parseText(rootFabricFile.text)
+        allprojects.each { proj ->
+            if (proj.path != ':') {
+                println "Ignoring ${proj}"
+                return
             }
+            println "Updating Version in ${proj}"
+
+            def fabricFile = proj.file("src/main/resources/fabric.mod.json")
+            def fabricJson = slurper.parseText(fabricFile.text)
+            fabricJson.version = updatedVersion
+            fabricJson.depends.minecraft = slurper.parseText(modrinth_versions)
+            fabricJson.depends.fabricloader = rootFabricFileJson.depends.fabricloader
+            fabricJson.depends['fabric-api'] = rootFabricFileJson.depends['fabric-api']
+            fabricJson.depends.java = rootFabricFileJson.depends.java
+
+            fabricFile.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(fabricJson))
         }
     }
 }
 
-def curseforgeProjectId = project.findProperty("curseforge_project_id") ?: project.findProperty("curseforge_id")
-def curseforgeApiKey = project.findProperty("curseforge_api_key") ?: ""
-if (curseforgeProjectId) {
-    curseforge {
-        apiKey = curseforgeApiKey
+import org.kohsuke.github.GHReleaseBuilder
+import org.kohsuke.github.GitHub
 
-        project {
-            id = curseforgeProjectId
-        changelogType = 'markdown'
-        changelog = getConfig('changelog', "")
-        releaseType = isReleaseMode ? "release" : "beta"
-        addGameVersion gameVersion
-        addGameVersion modLoader.capitalize()
+task github(dependsOn: [build, remapJar, sourcesJar]) {
+    group = 'publishing'
+    def slurper = new groovy.json.JsonSlurper()
+    def apiKey = new File(projectDir, "../GITHUB_TOKEN")
 
-        mainArtifact(jar) {
-            displayName = "${modId}-${project.version}"
+    onlyIf {
+        apiKey.exists()
+    }
 
-            relations {
-                requiredDependencies.each { dep ->
-                    def info = getDependencyInfo(dep)
-                    if (info?.projectId != null) {
-                        requiredDependency(dep)
+    doLast {
+        apiKey = apiKey.text
+        def changes = new File(projectDir, "CHANGES.md")
+        if (changes.exists()) {
+            changes = changes.getText('UTF-8')
+        } else {
+            changes = ""
+        }
+
+        def github = GitHub.connectUsingOAuth(apiKey as String)
+        def repository = github.getRepository("quiqueck/" + archivesBaseName)
+
+        def releaseBuilder = new GHReleaseBuilder(repository, version as String)
+        releaseBuilder.name("${archivesBaseName}-${version}")
+        releaseBuilder.body(changes)
+        releaseBuilder.commitish("1.20")
+
+        def ghRelease = releaseBuilder.create()
+        ghRelease.uploadAsset(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar"), "application/java-archive");
+        ghRelease.uploadAsset(file("${project.buildDir}/libs/${archivesBaseName}-${version}-sources.jar"), "application/java-archive");
+        ghRelease.uploadAsset(file("${project.buildDir}/libs/${archivesBaseName}-${version}-javadoc.jar"), "application/java-archive");
+
+        subprojects.each { sub ->
+            ghRelease.uploadAsset(file("${sub.buildDir}/libs/${sub.archivesBaseName}-${version}.jar"), "application/java-archive");
+            ghRelease.uploadAsset(file("${sub.buildDir}/libs/${sub.archivesBaseName}-${version}-sources.jar"), "application/java-archive");
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            def githubName = findProperty('github_base_name') ?: project.archives_base_name
+            artifactId = project.archives_base_name
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+
+            // Optional POM configuration
+            pom {
+                name = project.archives_base_name
+                url = "https://github.com/quiqueck/${githubName}"
+
+                licenses {
+                    license {
+                        name = 'The MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
                     }
                 }
-                optionalDependencies.each { dep ->
-                    def info = getDependencyInfo(dep)
-                    if (info?.projectId != null) {
-                        optionalDependency(dep)
-                    }
+
+                scm {
+                    connection = "scm:git:https://github.com/quiqueck/${githubName}.git"
+                    developerConnection = "scm:git:https://github.com/quiqueck/${githubName}.git"
+                    url = "https://github.com/quiqueck/${githubName}"
                 }
             }
-        }
         }
     }
 }

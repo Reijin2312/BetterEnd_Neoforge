@@ -22,12 +22,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import org.joml.Vector3f;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class PedestalItemRenderer<T extends PedestalBlockEntity> implements BlockEntityRenderer<T> {
     public PedestalItemRenderer(BlockEntityRendererProvider.Context ctx) {
         super();

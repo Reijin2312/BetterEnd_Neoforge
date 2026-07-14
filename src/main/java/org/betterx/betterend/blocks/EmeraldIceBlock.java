@@ -25,16 +25,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class EmeraldIceBlock extends HalfTransparentBlock implements RenderLayerProvider, RuntimeBlockModelProvider, BehaviourIce, BlockLootProvider {
     public EmeraldIceBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.ICE));
+        super(FabricBlockSettings.copyOf(Blocks.ICE));
     }
 
     @Override
@@ -85,7 +85,7 @@ public class EmeraldIceBlock extends HalfTransparentBlock implements RenderLayer
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public BlockModel getItemModel(ResourceLocation resourceLocation) {
         return getBlockModel(resourceLocation, defaultBlockState());
     }

@@ -41,7 +41,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import java.util.Collections;
 import java.util.List;
@@ -54,8 +54,9 @@ public class SilkMothNestBlock extends BaseBlock implements RenderLayerProvider,
     private static final VoxelShape BOTTOM = box(0, 0, 0, 16, 16, 16);
 
     public SilkMothNestBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.WHITE_WOOL)
-                                 .strength(0.5F, 0.1F)
+        super(FabricBlockSettings.copyOf(Blocks.WHITE_WOOL)
+                                 .hardness(0.5F)
+                                 .resistance(0.1F)
                                  .sound(SoundType.WOOL)
                                  .noOcclusion()
                                  .randomTicks());

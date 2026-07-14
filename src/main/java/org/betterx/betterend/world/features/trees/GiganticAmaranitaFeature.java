@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.function.Function;
 
 public class GiganticAmaranitaFeature extends DefaultFeature {
+    private static final Function<BlockState, Boolean> REPLACE;
+    private static final Function<BlockState, Boolean> IGNORE;
+    private static final Function<PosInfo, BlockState> POST;
+
     @Override
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> featureConfig) {
         final RandomSource random = featureConfig.random();
@@ -39,7 +43,7 @@ public class GiganticAmaranitaFeature extends DefaultFeature {
         List<Vector3f> spline = SplineHelper.makeSpline(0, 0, 0, 0, size, 0, 5);
         SplineHelper.offsetParts(spline, random, 0.7F, 0, 0.7F);
 
-        if (!SplineHelper.canGenerate(spline, pos, world, replaceFunc())) {
+        if (!SplineHelper.canGenerate(spline, pos, world, REPLACE)) {
             return false;
         }
         BlocksHelper.setWithoutUpdate(world, pos, AIR);
@@ -57,14 +61,14 @@ public class GiganticAmaranitaFeature extends DefaultFeature {
                 (int) (capPos.z() + 0.5F)
         ), Mth.floor(size / 1.6F));
 
-        function.setReplaceFunction(replaceFunc());
-        function.addPostProcess(postProcessFunc());
-        function.fillRecursiveIgnore(world, pos, ignoreFunc());
+        function.setReplaceFunction(REPLACE);
+        function.addPostProcess(POST);
+        function.fillRecursiveIgnore(world, pos, IGNORE);
 
         for (int i = 0; i < 3; i++) {
             List<Vector3f> copy = SplineHelper.copySpline(spline);
             SplineHelper.offsetParts(copy, random, 0.2F, 0, 0.2F);
-            SplineHelper.fillSplineForce(copy, world, EndBlocks.AMARANITA_HYPHAE.defaultBlockState(), pos, replaceFunc());
+            SplineHelper.fillSplineForce(copy, world, EndBlocks.AMARANITA_HYPHAE.defaultBlockState(), pos, REPLACE);
         }
 
         return true;
@@ -355,16 +359,12 @@ public class GiganticAmaranitaFeature extends DefaultFeature {
         }
     }
 
-    private Function<BlockState, Boolean> replaceFunc() {
-        return BlocksHelper::replaceableOrPlant;
-    }
+    static {
+        REPLACE = BlocksHelper::replaceableOrPlant;
 
-    private Function<BlockState, Boolean> ignoreFunc() {
-        return EndBlocks.DRAGON_TREE::isTreeLog;
-    }
+        IGNORE = EndBlocks.DRAGON_TREE::isTreeLog;
 
-    private Function<PosInfo, BlockState> postProcessFunc() {
-        return (info) -> {
+        POST = (info) -> {
             if (!info.getStateUp().is(EndBlocks.AMARANITA_STEM) || !info.getStateDown().is(EndBlocks.AMARANITA_STEM)) {
                 return EndBlocks.AMARANITA_HYPHAE.defaultBlockState();
             }

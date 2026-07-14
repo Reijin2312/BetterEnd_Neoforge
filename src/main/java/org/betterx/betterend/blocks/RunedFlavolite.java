@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import com.google.common.collect.Lists;
 
@@ -24,14 +24,16 @@ public class RunedFlavolite extends BaseBlock.Stone {
     public static final BooleanProperty ACTIVATED = BlockProperties.ACTIVE;
 
     public RunedFlavolite(boolean unbreakable) {
-        super(BlockBehaviour.Properties.ofFullCopy(EndBlocks.FLAVOLITE.polished)
+        super(FabricBlockSettings.copyOf(EndBlocks.FLAVOLITE.polished)
                                  .strength(
                                          unbreakable ? -1 : 1,
                                          unbreakable
                                                  ? Blocks.BEDROCK.getExplosionResistance()
                                                  : Blocks.OBSIDIAN.getExplosionResistance()
                                  )
-                                 .lightLevel(state -> state.getValue(ACTIVATED) ? 8 : 0));
+                                 .luminance(state -> {
+                                     return state.getValue(ACTIVATED) ? 8 : 0;
+                                 }));
         this.registerDefaultState(stateDefinition.any().setValue(ACTIVATED, false));
     }
 

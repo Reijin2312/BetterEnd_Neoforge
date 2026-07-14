@@ -11,8 +11,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public class EnchantedItem extends ModelProviderItem {
 
@@ -29,7 +29,7 @@ public class EnchantedItem extends ModelProviderItem {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public BlockModel getItemModel(ResourceLocation resourceLocation) {
         ResourceLocation sourceId = BuiltInRegistries.ITEM.getKey(source);
         return ModelsHelper.createItemModel(sourceId);

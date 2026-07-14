@@ -23,9 +23,9 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import com.google.common.collect.Lists;
 
@@ -37,7 +37,7 @@ public class UmbrellaTreeMembraneBlock extends SlimeBlock implements RenderLayer
     private static final OpenSimplexNoise NOISE = new OpenSimplexNoise(0);
 
     public UmbrellaTreeMembraneBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.SLIME_BLOCK));
+        super(FabricBlockSettings.copyOf(Blocks.SLIME_BLOCK));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class UmbrellaTreeMembraneBlock extends SlimeBlock implements RenderLayer
         return state.getValue(COLOR) > 0;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public boolean skipRendering(BlockState state, BlockState stateFrom, Direction direction) {
         if (state.getValue(COLOR) > 0) {
             return super.skipRendering(state, stateFrom, direction);
@@ -86,7 +86,7 @@ public class UmbrellaTreeMembraneBlock extends SlimeBlock implements RenderLayer
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public BlockModel getItemModel(ResourceLocation resourceLocation) {
         return getBlockModel(resourceLocation, defaultBlockState());
     }

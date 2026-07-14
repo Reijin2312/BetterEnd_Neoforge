@@ -21,11 +21,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
+
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 
 import java.util.Comparator;
 import java.util.List;
@@ -33,7 +34,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class EndAdvancementDataProvider extends AdvancementDataProvider {
     public EndAdvancementDataProvider(
-            PackOutput output,
+            FabricDataOutput output,
             CompletableFuture<HolderLookup.Provider> registryLookup
     ) {
         super(List.of(BetterEnd.MOD_ID), output, registryLookup);
@@ -72,14 +73,13 @@ public class EndAdvancementDataProvider extends AdvancementDataProvider {
                 .requirements(Strategy.OR)
                 .build();
 
-        Holder<Structure> portalHolder = structures.getOrThrow(EndStructures.ETERNAL_PORTAL.key());
         ResourceLocation portal = AdvancementManager.Builder
                 .create(BetterEnd.C.mk("portal"))
                 .parent(enterEnd)
                 .startDisplay(EndBlocks.ETERNAL_PEDESTAL)
                 .frame(AdvancementType.GOAL)
                 .endDisplay()
-                .addAtStructureCriterion("eternal_portal", portalHolder)
+                .addAtStructureCriterion("eternal_portal", EndStructures.ETERNAL_PORTAL.getHolder(structures))
                 .requirements(Strategy.OR)
                 .build();
 
@@ -124,14 +124,13 @@ public class EndAdvancementDataProvider extends AdvancementDataProvider {
                     .build();
 
 
-            Holder<Structure> villageHolder = structures.getOrThrow(EndStructures.END_VILLAGE.key());
             ResourceLocation village = AdvancementManager.Builder
                     .create(BetterEnd.C.mk("village"))
                     .parent(allTheBiomes)
                     .startDisplay(EndBlocks.TENANEA.getBlock(WoodSlots.DOOR))
                     .frame(AdvancementType.GOAL)
                     .endDisplay()
-                    .addAtStructureCriterion("end_village", villageHolder)
+                    .addAtStructureCriterion("end_village", EndStructures.END_VILLAGE.getHolder(structures))
                     .requirements(Strategy.OR)
                     .build();
         }

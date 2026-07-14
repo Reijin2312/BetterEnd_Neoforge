@@ -50,8 +50,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import com.google.common.collect.Lists;
 
@@ -382,12 +382,12 @@ public class PedestalBlock extends BaseBlockNotFull implements EntityBlock, Bloc
     );
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         provideBlockModel(generator, createTextureMapping(), this);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static void provideBlockModel(
             WoverBlockModelGenerators generator,
             TextureMapping mapping,
@@ -396,7 +396,7 @@ public class PedestalBlock extends BaseBlockNotFull implements EntityBlock, Bloc
         provideBlockModel(generator, mapping, pedestalBlock, PEDESTAL_MODELS);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static void provideBlockModel(
             WoverBlockModelGenerators generator,
             TextureMapping mapping,
@@ -418,7 +418,7 @@ public class PedestalBlock extends BaseBlockNotFull implements EntityBlock, Bloc
         generator.delegateItemModel(pedestalBlock, id.withSuffix("_default"));
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     protected TextureMapping createTextureMapping() {
         final var parentTexture = TextureMapping.getBlockTexture(parent);
         return new TextureMapping()

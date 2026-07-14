@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public class MurkweedBlock extends EndPlantBlock implements SurvivesOnShadowGrass {
     public MurkweedBlock() {
@@ -28,7 +28,7 @@ public class MurkweedBlock extends EndPlantBlock implements SurvivesOnShadowGras
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         double x = pos.getX() + random.nextDouble();
         double y = pos.getY() + random.nextDouble() * 0.5 + 0.5;

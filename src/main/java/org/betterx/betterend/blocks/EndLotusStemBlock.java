@@ -25,7 +25,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import com.google.common.collect.Maps;
 
@@ -39,7 +39,7 @@ public class EndLotusStemBlock extends BaseBlock implements SimpleWaterloggedBlo
     private static final Map<Axis, VoxelShape> SHAPES = Maps.newEnumMap(Axis.class);
 
     public EndLotusStemBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS));
+        super(FabricBlockSettings.copyOf(Blocks.OAK_PLANKS));
         this.registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false)
                                                      .setValue(SHAPE, TripleShape.MIDDLE)
                                                      .setValue(LEAF, false)

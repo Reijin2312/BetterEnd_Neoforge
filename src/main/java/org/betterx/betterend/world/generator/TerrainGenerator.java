@@ -11,6 +11,7 @@ import org.betterx.wover.block.api.BlockHelper;
 import org.betterx.wover.common.generator.api.biomesource.BiomeSourceWithConfig;
 import org.betterx.wover.generator.api.biomesource.WoverBiomeData;
 import org.betterx.wover.generator.api.biomesource.end.WoverEndConfig;
+import org.betterx.wover.generator.impl.biomesource.end.WoverEndBiomeSource;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -31,7 +32,6 @@ import com.google.common.collect.Maps;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -56,7 +56,12 @@ public class TerrainGenerator {
     private static Sampler sampler;
 
     public static void initNoise(long seed, BiomeSource biomeSource, Sampler sampler) {
-        TerrainGenerator.config = resolveEndConfig(biomeSource);
+        TerrainGenerator.config = null;
+        if (biomeSource instanceof BiomeSourceWithConfig bcl) {
+            if (bcl.getBiomeSourceConfig() instanceof WoverEndConfig config)
+                TerrainGenerator.config = config;
+        }
+
         if (config == null) {
             TerrainGenerator.biomeSource = null;
             TerrainGenerator.sampler = null;
@@ -73,24 +78,6 @@ public class TerrainGenerator {
         TerrainGenerator.biomeSource = biomeSource;
         TerrainGenerator.sampler = sampler;
 
-    }
-
-    private static @Nullable WoverEndConfig resolveEndConfig(BiomeSource biomeSource) {
-        BiomeSource source = biomeSource;
-        for (int depth = 0; depth < 8 && source != null; depth++) {
-            if (source instanceof BiomeSourceWithConfig bcl) {
-                if (bcl.getBiomeSourceConfig() instanceof WoverEndConfig resolved) {
-                    return resolved;
-                }
-            }
-            BiomeSource original = BlueprintCompat.unwrapOriginalSource(source);
-            if (original != null && original != source) {
-                source = original;
-                continue;
-            }
-            break;
-        }
-        return null;
     }
 
     public static void fillTerrainDensity(double[] buffer, int posX, int posZ, int scaleXZ, int scaleY, int maxHeight) {
@@ -255,11 +242,10 @@ public class TerrainGenerator {
             if (chunkGenerator instanceof NoiseBasedChunkGenerator) {
                 Holder<NoiseGeneratorSettings> sHolder = ((NoiseBasedChunkGeneratorAccessor) chunkGenerator)
                         .be_getSettings();
-                WoverEndConfig endConfig = resolveEndConfig(chunkGenerator.getBiomeSource());
-                if (endConfig != null) {
+                if (chunkGenerator.getBiomeSource() instanceof WoverEndBiomeSource bcl) {
                     BETargetChecker.class
                             .cast(sHolder.value())
-                            .be_setTarget(endConfig.generatorVersion == WoverEndConfig.EndBiomeGeneratorType.PAULEVS);
+                            .be_setTarget(bcl.getBiomeSourceConfig().generatorVersion == WoverEndConfig.EndBiomeGeneratorType.PAULEVS);
                 } else {
                     BETargetChecker.class
                             .cast(sHolder.value())
@@ -318,51 +304,6 @@ public class TerrainGenerator {
                             : interpolator.be_getSlice1())[cellXZ];
                     fillTerrainDensity(ds, x, z, sizeXZ, sizeY, noiseSettings.height());
                 }
-            }
-        }
-    }
-
-    private static final class BlueprintCompat {
-        private static final String CLASS_NAME = "com.teamabnormals.blueprint.common.world.modification.ModdedBiomeSource";
-        private static final String FIELD_NAME = "originalSource";
-        private static volatile boolean initialized;
-        private static volatile Class<?> moddedBiomeSourceClass;
-        private static volatile Field originalSourceField;
-
-        private BlueprintCompat() {
-        }
-
-        @Nullable
-        static BiomeSource unwrapOriginalSource(BiomeSource source) {
-            ensureInitialized();
-            if (moddedBiomeSourceClass == null || originalSourceField == null) {
-                return null;
-            }
-            if (!moddedBiomeSourceClass.isInstance(source)) {
-                return null;
-            }
-            try {
-                Object original = originalSourceField.get(source);
-                return original instanceof BiomeSource biomeSource ? biomeSource : null;
-            } catch (IllegalAccessException ignored) {
-                return null;
-            }
-        }
-
-        private static void ensureInitialized() {
-            if (initialized) {
-                return;
-            }
-            initialized = true;
-            try {
-                Class<?> clazz = Class.forName(CLASS_NAME, false, BlueprintCompat.class.getClassLoader());
-                Field field = clazz.getDeclaredField(FIELD_NAME);
-                field.setAccessible(true);
-                moddedBiomeSourceClass = clazz;
-                originalSourceField = field;
-            } catch (ClassNotFoundException | NoSuchFieldException ignored) {
-                moddedBiomeSourceClass = null;
-                originalSourceField = null;
             }
         }
     }

@@ -1,190 +1,50 @@
 plugins {
-    id 'java-library'
+    id 'fabric-loom' version "${loom_version}"
     id 'maven-publish'
-
-    id 'net.neoforged.moddev' version "${moddev_version}"
-
     id "com.modrinth.minotaur" version "2.+"
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
+
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
-
-def modId = project.findProperty('mod_id') ?: project.archives_base_name
-def refmapName = "${modId}.refmap.json"
-def neoformMappingsDir = file("${gradle.gradleUserHomeDir}/caches/neoformruntime/intermediate_results")
-def neoformMappingCandidates = fileTree(neoformMappingsDir) { include "mergeMappings*_output.tsrg" }
-def mappingHasToken = { File file, String token ->
-    def found = false
-    file.withReader("UTF-8") { reader ->
-        String line
-        while ((line = reader.readLine()) != null) {
-            if (line.contains(token)) {
-                found = true
-                break
-            }
-        }
-    }
-    return found
-}
-def resolveNeoformMappingFile = {
-    def candidates = neoformMappingCandidates.files
-    if (candidates.isEmpty()) {
-        return null
-    }
-    def preferred = candidates.find { mappingHasToken(it, "loadBlockStateDefinitions") }
-    return preferred ?: candidates.max { it.lastModified() }
-}
-def mixinMappingsFile = layout.buildDirectory.file("mappings/${modId}-mixin-reobf.tsrg")
-def mixinOutMappingsFile = layout.buildDirectory.file("mappings/${modId}-mixin-out.tsrg")
 def local_bclib = findProject(':BCLib') != null
 def local_wunderlib = findProject(':wunderlib') != null
 def local_wover = findProject(':WorldWeaver') != null
-def simpleBuildRequested = gradle.startParameter.taskNames.contains("simpleBuild")
-def enableJeiRuntime = (project.findProperty("enable_jei_runtime")?.toString()?.toBoolean()) ?: false
-def enableJadeRuntime = (project.findProperty("enable_jade_runtime")?.toString()?.toBoolean()) ?: false
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-    withSourcesJar()
-}
-
-neoForge {
-    version = project.neoforge_version
-    accessTransformers = files("src/main/resources/META-INF/accesstransformer.cfg")
+loom {
+    accessWidenerPath = file("src/main/resources/betterend.accesswidener")
     runs {
-        client {
-            client()
-        }
-        server {
-            server()
-        }
-        data {
-            data()
-            programArguments.addAll(
-                    "--mod", modId,
-                    "--all",
-                    "--output", file("src/main/generated").toString(),
-                    "--existing", file("src/main/resources").toString()
-            )
+        // This adds a new gradle task that runs the datagen API: "gradlew runDatagenClient"
+        datagenClient {
+            inherit client
+            name "Data Generation"
+            vmArg "-Dfabric-api.datagen"
+            vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
+            vmArg "-Dfabric-api.datagen.strict-validation"
+            vmArg "-Dfabric-api.datagen.modid=${project.modrinth_id}"
+
+            runDir "build/datagen"
         }
     }
-    mods {
-        "${modId}" {
-            sourceSet sourceSets.main
-        }
+
+    if (local_bclib || local_wover || local_wunderlib) {
+        enableTransitiveAccessWideners = true
     }
 }
-
-repositories {
-    mavenCentral()
-    maven { url 'https://maven.neoforged.net/releases' }
-    maven { url "https://maven.dblsaiko.net/" }
-    maven { url "https://maven.shedaniel.me/" }
-    maven { url 'https://maven.blamejared.com' }
-    maven { url 'https://api.modrinth.com/maven' }
-    maven { url 'https://jitpack.io' }
-    maven { url "https://maven.bai.lol" }
-    maven { url 'https://maven.terraformersmc.com/releases' }
-    maven { url 'https://maven.terraformersmc.com' }
-    maven { url 'https://maven.ambertation.de/releases' }
-    maven { url 'https://repo.spongepowered.org/repository/maven-public/' }
-    flatDir { dirs 'libs' }
-}
-
-dependencies {
-    // MixinExtras
-    compileOnly "io.github.llamalad7:mixinextras-neoforge:0.5.0"
-    annotationProcessor "org.spongepowered:mixin:0.8.7:processor"
-
-    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-
-    // compile against the API
-    compileOnly "mcp.mobius.waila:wthit-api:neo-${project.wthit_version}"
-    // run against the full jar
-    runtimeOnly "mcp.mobius.waila:wthit:neo-${project.wthit_version}"
-
-    compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
-    runtimeOnly "dev.emi:emi-neoforge:${emi_version}"
-
-    compileOnly "mezz.jei:jei-1.21.1-neoforge-api:${project.jei_version}"
-    if (enableJeiRuntime) {
-        runtimeOnly "mezz.jei:jei-1.21.1-neoforge:${project.jei_version}"
-    } else {
-        println "JEI runtime disabled (set -Penable_jei_runtime=true to re-enable)"
-    }
-
-    compileOnly "maven.modrinth:jade:${project.jade_version}"
-    if (enableJadeRuntime) {
-        runtimeOnly "maven.modrinth:jade:${project.jade_version}"
-    } else {
-        println "Jade runtime disabled (set -Penable_jade_runtime=true to re-enable)"
-    }
-
-    println "Using local BCLib: ${local_bclib}"
-    if (local_bclib) {
-        implementation project(path: ":BCLib", configuration: 'dev')
-    } else {
-        implementation "org.betterx:bclib:${project.bclib_version}"
-    }
-
-    println "Using local WunderLib: ${local_wunderlib}"
-    if (local_wunderlib) {
-        implementation project(path: ":wunderlib", configuration: 'dev')
-    } else if (local_wover) {
-        implementation "de.ambertation:wunderlib:${project.wunderlib_version}"
-    }
-
-    println "Using local WorldWeaver: ${local_wover}"
-    if (local_wover) {
-        implementation project(path: ":WorldWeaver", configuration: 'dev')
-        gradle.knownWoverModules.each {
-            implementation project(path: ":WorldWeaver:$it", configuration: 'dev')
-        }
-    } else if (local_bclib) {
-        implementation "org.betterx:worldweaver:${project.wover_version}"
-    }
-}
-
 
 sourceSets {
     main {
+        // Add the datagenned files into the jar.
         resources {
-            srcDirs += ['src/main/generated']
+            srcDirs += [
+                    'src/main/generated'
+            ]
         }
     }
-}
-
-def datagenTaskDeps = [tasks.matching { it.name == "runData" }]
-if (!simpleBuildRequested) {
-    if (local_bclib) {
-        datagenTaskDeps << project(":BCLib").tasks.matching { it.name == "runData" }
-    }
-    if (local_wunderlib) {
-        datagenTaskDeps << project(":wunderlib").tasks.matching { it.name == "runData" }
-    }
-    if (local_wover) {
-        datagenTaskDeps << project(":WorldWeaver").tasks.matching { it.name == "runData" }
-    }
-}
-
-tasks.register("generateBetterXResources") {
-    group = "neoforge"
-    description = "Runs datagen for BetterEnd and local BetterX libraries."
-    dependsOn(datagenTaskDeps)
-}
-
-def generatedResourcesDir = file("src/main/generated")
-tasks.register("syncGeneratedResources", Copy) {
-    group = "neoforge"
-    description = "Syncs generated datagen resources into build outputs for dev runs."
-    from(generatedResourcesDir)
-    into(layout.buildDirectory.dir("resources/main"))
-    mustRunAfter(tasks.named("processResources"))
 }
 
 subprojects { subproject ->
@@ -192,318 +52,173 @@ subprojects { subproject ->
         javadocTask.failOnError false
         javadocTask.enabled = false
     }
+
     subproject.tasks.withType(Jar) { jarTask ->
-        if (jarTask.name == 'javadocJar') jarTask.enabled = false
+        if (jarTask.name == 'javadocJar') {
+            jarTask.enabled = false
+        }
+    }
+}
+
+dependencies {
+    //to change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // https://mvnrepository.com/artifact/javax.annotation/jsr305
+    compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+
+    // run against the full jar
+    modRuntimeOnly "mcp.mobius.waila:wthit:fabric-${project.wthit_version}"
+
+    //1.19.3 modApi "vazkii.patchouli:Patchouli:${project.patchouli_version}"
+    println "Using local BCLib: ${local_bclib}"
+    if (local_bclib) {
+        implementation project(path: ":BCLib", configuration: 'dev')
+    } else {
+        modImplementation "org.betterx:bclib:${project.bclib_version}"
+    }
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+    modLocalRuntime "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
+
+    //needed for trinkets, otherwise BetterEnd would require users to install trinkets
+    //modApi "org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}"
+    modLocalRuntime "org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}"
+    modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
+    modLocalRuntime "dev.emi:trinkets:${project.trinkets_version}"
+
+    modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
+    modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
+
+    modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+    println "Using local WunderLib: ${local_wunderlib}"
+    if (local_wunderlib) {
+        implementation project(path: ":wunderlib", configuration: 'dev')
+    } else {
+        modImplementation "de.ambertation:wunderlib:${project.wunderlib_version}"
+    }
+
+    println "Using local WorldWeaver: ${local_wover}"
+    if (local_wover) {
+        implementation project(path: ":WorldWeaver", configuration: 'localDev')
+
+        gradle.knownWoverModules.each {
+            implementation project(path: ":WorldWeaver:$it", configuration: 'localDev')
+        }
+    } else {
+        modImplementation "org.betterx:worldweaver:${project.wover_version}"
+    }
+}
+
+
+repositories {
+    mavenCentral()
+    maven { url "https://maven.fabricmc.net/" }
+    maven { url "https://maven.shedaniel.me" }
+    maven { url 'https://jitpack.io' }
+    maven { url "https://maven.bai.lol" }
+    maven { url 'https://maven.terraformersmc.com' }
+    maven { url 'https://maven.ambertation.de/releases' }
+    maven {
+        name = "Ladysnake Mods"
+        url = 'https://maven.ladysnake.org/releases'
+    }
+    flatDir {
+        dirs 'override'
     }
 }
 
 processResources {
-    println "Version: ${project.mod_version}"
-    inputs.property "version", project.mod_version
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    filesMatching("META-INF/neoforge.mods.toml") {
-        expand(
-                "mod_id": modId,
-                "version": project.mod_version,
-                "minecraft_version": project.minecraft_version,
-                "neoforge_version": project.neoforge_version,
-                "bclib_version": project.bclib_version,
-                "wover_version": project.wover_version,
-                "wunderlib_version": project.wunderlib_version
-        )
+    println "Version: ${project.version}"
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
     }
 }
 
-tasks.named("jar") {
-    dependsOn(tasks.named("generateBetterXResources"))
-    dependsOn(tasks.named("syncGeneratedResources"))
-    from("src/main/generated")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.named("sourcesJar") {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.withType(JavaCompile).configureEach {
-    def refmapOutput = layout.buildDirectory.file("resources/main/${refmapName}").get().asFile
+// ensure that the encoding is set to UTF-8, no matter what the system default is
+// this fixes some edge cases with special characters not displaying correctly
+// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
-    options.release = 21
-    options.compilerArgs += [
-            "-AoutRefMapFile=${refmapOutput}",
-            "-AoutTsrgFile=${mixinOutMappingsFile.get().asFile}",
-            "-AmappingTypes=tsrg",
-            "-ApluginVersion=0.8",
-            "-AdefaultObfuscationEnv=searge"
-    ]
-    dependsOn(tasks.named("generateMixinMappings"))
-    doFirst {
-        def args = options.compilerArgs
-        args.removeAll { it.startsWith("-AreobfTsrgFile=") }
-        def mappingFile = mixinMappingsFile.get().asFile
-        if (mappingFile.exists()) {
-            args.add("-AreobfTsrgFile=${mappingFile}")
-        } else {
-            logger.warn("Mixin mapping file not found at ${mappingFile}; mixin refmap generation may fail.")
-        }
-    }
+    it.options.release = 21
 }
 
-tasks.register("generateMixinMappings") {
-    inputs.files(neoformMappingCandidates)
-    outputs.file(mixinMappingsFile)
-    doLast {
-        def inputFile = resolveNeoformMappingFile()
-        if (inputFile == null) {
-            logger.warn("NeoForm tsrg mappings not found in ${neoformMappingsDir}; mixin mapping generation skipped.")
-            return
-        }
-        def outputFile = mixinMappingsFile.get().asFile
-        outputFile.parentFile.mkdirs()
-
-        def lines = inputFile.readLines("UTF-8")
-        def looksNamed = { String name ->
-            name != null && (name.contains("/") || name.contains("."))
-        }
-
-        int leftNamed = 0
-        int rightNamed = 0
-        int sampled = 0
-        for (def line : lines) {
-            if (line.startsWith("tsrg2") || line.startsWith("\t") || line.trim().isEmpty()) {
-                continue
-            }
-            def parts = line.trim().split("\\s+")
-            if (parts.length >= 2) {
-                if (looksNamed(parts[0])) {
-                    leftNamed++
-                }
-                if (looksNamed(parts[1])) {
-                    rightNamed++
-                }
-                sampled++
-                if (sampled >= 200) {
-                    break
-                }
-            }
-        }
-        def direction = rightNamed >= leftNamed ? "obf-to-named" : "named-to-obf"
-
-        def classMap = [:]
-        for (def line : lines) {
-            if (line.startsWith("tsrg2") || line.startsWith("\t") || line.trim().isEmpty()) {
-                continue
-            }
-            def parts = line.trim().split("\\s+")
-            if (parts.length >= 2) {
-                def left = parts[0]
-                def right = parts[1]
-                if (direction == "obf-to-named") {
-                    classMap[left] = right
-                } else {
-                    classMap[right] = left
-                }
-            }
-        }
-
-        def mapDesc = { String desc ->
-            def sb = new StringBuilder(desc.length())
-            int i = 0
-            while (i < desc.length()) {
-                char c = desc.charAt(i)
-                if (c == 'L') {
-                    int semi = desc.indexOf(';', i)
-                    if (semi == -1) {
-                        sb.append(desc.substring(i))
-                        break
-                    }
-                    def typeName = desc.substring(i + 1, semi)
-                    def mapped = classMap.get(typeName, typeName)
-                    sb.append('L').append(mapped).append(';')
-                    i = semi + 1
-                } else {
-                    sb.append(c)
-                    i++
-                }
-            }
-            return sb.toString()
-        }
-
-        def outLines = []
-        outLines << "tsrg2 searge notch"
-        for (def line : lines) {
-            if (line.startsWith("tsrg2") || line.trim().isEmpty()) {
-                continue
-            }
-            if (line.startsWith("\t\t")) {
-                outLines << line
-                continue
-            }
-            if (line.startsWith("\t")) {
-                def trimmed = line.trim()
-                def parts = trimmed.split("\\s+")
-                if (parts.length == 2) {
-                    def leftName = parts[0]
-                    def rightName = parts[1]
-                    def obfName = direction == "obf-to-named" ? leftName : rightName
-                    def namedName = direction == "obf-to-named" ? rightName : leftName
-                    outLines << "\t${namedName} ${obfName}"
-                } else if (parts.length >= 3) {
-                    def leftName = parts[0]
-                    def leftDesc = parts[1]
-                    def rightName = parts[2]
-                    def obfName = direction == "obf-to-named" ? leftName : rightName
-                    def namedName = direction == "obf-to-named" ? rightName : leftName
-                    def namedDesc = mapDesc(leftDesc)
-                    outLines << "\t${namedName} ${namedDesc} ${obfName}"
-                }
-                continue
-            }
-            def parts = line.trim().split("\\s+")
-            if (parts.length >= 2) {
-                def left = parts[0]
-                def right = parts[1]
-                def obfName = direction == "obf-to-named" ? left : right
-                def namedName = direction == "obf-to-named" ? right : left
-                outLines << "${namedName} ${obfName}"
-            }
-        }
-
-        outputFile.text = outLines.join(System.lineSeparator())
-    }
+// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+// if it is present.
+// If you remove this task, sources will not be generated.
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = "sources"
+    from sourceSets.main.allSource
 }
 
-tasks.register("fixMixinRefmap") {
-    def refmapFile = layout.buildDirectory.file("resources/main/${refmapName}")
-    inputs.file(refmapFile).optional(true)
-    outputs.file(refmapFile)
-    dependsOn(tasks.named("processResources"))
-    dependsOn(tasks.named("compileJava"))
-    doLast {
-        def file = refmapFile.get().asFile
-        if (!file.exists()) {
-            logger.warn("Refmap not found at ${file}")
-            return
-        }
-        def json = new groovy.json.JsonSlurper().parse(file)
-        def stripOwnerIfNeeded = { String key, String value ->
-            if (value == null) {
-                return value
-            }
-            def ownerQualified = key.startsWith("L") && key.contains(";")
-            if (ownerQualified) {
-                return value
-            }
-            if (value.startsWith("L")) {
-                int semi = value.indexOf(';')
-                if (semi > 0 && semi + 1 < value.length()) {
-                    return value.substring(semi + 1)
-                }
-            }
-            return value
-        }
-
-        def fixSection = { Map section ->
-            section.each { mixinClass, mappings ->
-                if (!(mappings instanceof Map)) {
-                    return
-                }
-                mappings.keySet().each { key ->
-                    def original = mappings[key]
-                    if (original instanceof String) {
-                        mappings[key] = stripOwnerIfNeeded(key, original)
-                    }
-                }
-            }
-        }
-
-        if (json.mappings instanceof Map) {
-            fixSection(json.mappings as Map)
-        }
-        if (json.data instanceof Map) {
-            json.data.each { env, mappings ->
-                if (mappings instanceof Map) {
-                    fixSection(mappings as Map)
-                }
-            }
-        }
-
-        file.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json))
-    }
-}
-
-tasks.named("compileJava") {
-    finalizedBy(tasks.named("fixMixinRefmap"))
-}
-
-tasks.matching { it.name == "runData" }.configureEach {
-    dependsOn(tasks.named("fixMixinRefmap"))
-    finalizedBy(tasks.named("syncGeneratedResources"))
-    // Datagen runs against named classes; disable refmap remapping to avoid obf targets.
-    systemProperty "mixin.env.disableRefMap", "true"
-}
-
-tasks.matching { it.name == "createMinecraftArtifacts" }.configureEach {
-    doNotTrackState("Work around Gradle 8.8 state tracking for moddev task outputs.")
+java {
+    withSourcesJar()
 }
 
 jar {
-    dependsOn(tasks.named("fixMixinRefmap"))
     from "LICENSE"
     from "LICENSE.ASSETS"
 }
 
-// Collect built jars for BetterEnd and its local BetterX libraries into one folder
-def distDir = new File(rootProject.projectDir.parentFile, "betterx-dist")
-def modrinthModsDir = new File("C:/Users/Redmi/AppData/Roaming/ModrinthApp/profiles/NeoForge 1.21.1/mods")
-tasks.register("copyDistJars", Copy) {
-    dependsOn(
-            tasks.named("jar"),
-            project(":BCLib").tasks.named("jar"),
-            project(":WorldWeaver").tasks.named("jar"),
-            project(":wunderlib").tasks.named("jar")
-    )
-    from(tasks.named("jar"))
-    from(project(":BCLib").tasks.named("jar"))
-    from(project(":WorldWeaver").tasks.named("jar"))
-    from(project(":wunderlib").tasks.named("jar"))
-    into(distDir)
+//change duplicate strategy for processResources task
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.WARN
+}
+tasks.sourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
+configurations {
+    dev {
+        transitive true
+        canBeConsumed true
+        canBeResolved true
+        extendsFrom api
+    }
+}
+
+artifacts {
+    dev jar
+}
+
+def modrinthModsDir = file(findProperty("modrinth_mods_dir") ?: "C:/Users/Redmi/AppData/Roaming/ModrinthApp/profiles/1.21.1 server/mods")
+def fabricRuntimeProjects = [project]
+if (local_bclib) fabricRuntimeProjects.add(project(":BCLib"))
+if (local_wover) fabricRuntimeProjects.add(project(":WorldWeaver"))
+if (local_wunderlib) fabricRuntimeProjects.add(project(":wunderlib"))
+
 tasks.register("copyModrinthJars", Copy) {
-    dependsOn(
-            tasks.named("jar"),
-            project(":BCLib").tasks.named("jar"),
-            project(":WorldWeaver").tasks.named("jar"),
-            project(":wunderlib").tasks.named("jar")
-    )
-    from(tasks.named("jar"))
-    from(project(":BCLib").tasks.named("jar"))
-    from(project(":WorldWeaver").tasks.named("jar"))
-    from(project(":wunderlib").tasks.named("jar"))
+    dependsOn {
+        fabricRuntimeProjects.collect { it.tasks.findByName("remapJar") }.findAll { it != null }
+    }
+    from {
+        fabricRuntimeProjects.collect { it.tasks.findByName("remapJar")?.outputs?.files }.findAll { it != null }
+    }
+    rename { fileName -> fileName.endsWith(".jar") ? "${fileName[0..-5]}-fabric.jar" : fileName }
     into(modrinthModsDir)
 }
 
 tasks.named("build") {
     finalizedBy("copyModrinthJars")
-    if (!simpleBuildRequested) {
-        finalizedBy("copyDistJars")
-    }
-}
-
-tasks.register("simpleBuild") {
-    group = "build"
-    description = "Запускает runData и build только для BetterEnd, без datagen локальных BetterX библиотек."
-    dependsOn("build")
 }
 
 apply from: "helper.gradle"
 
 allprojects {
+    // Allow 400 errors.
     gradle.projectsEvaluated {
         tasks.withType(JavaCompile) {
             options.compilerArgs << "-Xmaxerrs" << "5000"
+            //<< "-Xlint:rawtypes"
+            //<< "-Xlint:unchecked"
+            //<< "-Xlint:deprecation"
         }
     }
 }

@@ -9,13 +9,20 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
 
 public class GuideBookItem extends ModelProviderItem {
+    public static final Item GUIDE_BOOK = EndItems.getItemRegistry().register("guidebook", new GuideBookItem());
+
+    public static void register() {
+    }
+
     public GuideBookItem() {
         super(EndItems.makeEndItemSettings().stacksTo(1));
     }
@@ -39,5 +46,9 @@ public class GuideBookItem extends ModelProviderItem {
     ) {
         list.add(LangUtil.getText("book.betterend", "subtitle")
                          .withStyle(ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC));
+    }
+
+    @ApiStatus.Internal
+    public static final void ensureStaticallyLoaded() {
     }
 }

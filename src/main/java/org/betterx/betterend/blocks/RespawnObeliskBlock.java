@@ -2,9 +2,7 @@ package org.betterx.betterend.blocks;
 
 import org.betterx.bclib.blocks.BaseBlock;
 import org.betterx.bclib.client.render.BCLRenderLayer;
-import org.betterx.bclib.interfaces.BlockColorProvider;
 import org.betterx.bclib.interfaces.CustomColorProvider;
-import org.betterx.bclib.interfaces.ItemColorProvider;
 import org.betterx.bclib.interfaces.RenderLayerProvider;
 import org.betterx.bclib.util.BlocksHelper;
 import org.betterx.betterend.particle.InfusionParticleType;
@@ -14,6 +12,8 @@ import org.betterx.ui.ColorUtil;
 import org.betterx.wover.block.api.BlockProperties;
 import org.betterx.wover.block.api.BlockProperties.TripleShape;
 
+import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -41,7 +41,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 import com.google.common.collect.Lists;
 
@@ -55,7 +55,7 @@ public class RespawnObeliskBlock extends BaseBlock.Stone implements CustomColorP
     public static final EnumProperty<TripleShape> SHAPE = BlockProperties.TRIPLE_SHAPE;
 
     public RespawnObeliskBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.END_STONE).lightLevel((state) -> {
+        super(FabricBlockSettings.copyOf(Blocks.END_STONE).luminance((state) -> {
             return (state.getValue(SHAPE) == TripleShape.BOTTOM) ? 0 : 15;
         }));
     }
@@ -156,12 +156,12 @@ public class RespawnObeliskBlock extends BaseBlock.Stone implements CustomColorP
     }
 
     @Override
-    public BlockColorProvider getProvider() {
+    public BlockColor getProvider() {
         return ((CustomColorProvider) EndBlocks.AURORA_CRYSTAL).getProvider();
     }
 
     @Override
-    public ItemColorProvider getItemProvider() {
+    public ItemColor getItemProvider() {
         return (stack, tintIndex) -> {
             return ColorUtil.color(255, 255, 255);
         };

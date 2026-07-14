@@ -10,7 +10,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.fml.loading.FMLPaths;
+import net.fabricmc.loader.api.FabricLoader;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -24,7 +24,7 @@ public class EndPortals {
     private static PortalInfo[] portals;
 
     public static void loadPortals() {
-        File file = new File(FMLPaths.CONFIGDIR.get().toString(), "betterend/portals.json");
+        File file = new File(FabricLoader.getInstance().getConfigDir().toString(), "betterend/portals.json");
         JsonObject json;
         if (!file.exists()) {
             file.getParentFile().mkdirs();

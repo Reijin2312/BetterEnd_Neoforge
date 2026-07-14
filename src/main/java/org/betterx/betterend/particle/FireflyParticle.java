@@ -10,10 +10,10 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class FireflyParticle extends SimpleAnimatedParticle {
     private double preVX;
     private double preVY;
@@ -75,7 +75,7 @@ public class FireflyParticle extends SimpleAnimatedParticle {
         super.tick();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static class FireflyParticleFactory implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
 

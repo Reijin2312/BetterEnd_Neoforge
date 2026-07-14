@@ -31,7 +31,7 @@ public class EndEnchantmentProvider extends WoverEnchantmentProvider {
                                 EquipmentSlotGroup.HEAD
                         )
                 )
-                .withEffect(EndEnchantments.getEndVeilState())
+                .withEffect(EndEnchantments.END_VEIL_STATE)
         );
 
     }

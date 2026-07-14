@@ -1,13 +1,12 @@
-name: Report a Bug (NeoForge)
+name: Report a Bug
 description: File a bug report
 title: "[Bug] "
-labels: ["bug"]
+labels: [ "bug" ]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to report a Bug in BetterEnd (NeoForge)!
-
+        Thanks for taking the time to report a Bug in BetterEnd!
   - type: textarea
     id: what-happened
     attributes:
@@ -17,48 +16,42 @@ body:
       value: "A bug happened!"
     validations:
       required: true
-
   - type: markdown
     attributes:
       value: |
         ## Versions
-
   - type: input
     id: bn_version
     attributes:
-      label: BetterEnd (NeoForge)
+      label: BetterEnd
       description: What version of BetterEnd are you running?
-      placeholder: 21.x.x
+      placeholder: 21.0.x
     validations:
       required: true
-
   - type: input
     id: bclib_version
     attributes:
-      label: BCLib (NeoForge)
+      label: BCLib
       description: What version of BCLib are you running?
-      placeholder: 21.x.x
+      placeholder: 21.0.x
     validations:
       required: true
-
   - type: input
-    id: wover_version
+    id: fabric_api_version
     attributes:
-      label: WorldWeaver (NeoForge)
-      description: What version of WorldWeaver are you running?
-      placeholder: 21.x.x
+      label: Fabric API
+      description: What version of Fabric API is installed
+      placeholder: 0.10x.x
     validations:
-      required: true
-
+      required: false
   - type: input
-    id: neoforge_version
+    id: fabric_loader_version
     attributes:
-      label: NeoForge
-      description: What version of NeoForge are you using?
-      placeholder: 21.x.x
+      label: Fabric Loader
+      description: What version of Fabric Loader do you use
+      placeholder: 0.15.x
     validations:
-      required: true
-
+      required: false
   - type: dropdown
     id: mc_version
     attributes:
@@ -66,26 +59,27 @@ body:
       description: What version of Minecraft is installed?
       options:
         - "1.21"
-        - "1.21.1"
-        - "1.21.11"
+        - 1.20.4
+        - 1.20.1
+        - 1.19.4
+        - 1.19.3 [unsupported]
+        - 1.19.2
+        - Older
     validations:
       required: true
-
   - type: markdown
     attributes:
       value: |
         ## Additional Information
-
   - type: textarea
     id: logs
     attributes:
       label: Relevant log output
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: shell
-
   - type: textarea
     id: other_mods
     attributes:
       label: Other Mods
-      description: If you can, please supply a list of installed Mods (besides BetterEnd, BCLib, and WorldWeaver). This information may already be included in the log above.
+      description: If you can, please supply a list of installed Mods (besides BetterEnd and BCLib). This information may already be included in the log above.
       render: shell

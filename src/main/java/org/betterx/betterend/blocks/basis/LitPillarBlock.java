@@ -4,8 +4,8 @@ import org.betterx.bclib.blocks.BaseRotatedPillarBlock;
 
 import net.minecraft.resources.ResourceLocation;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.Optional;
 
@@ -16,13 +16,13 @@ public class LitPillarBlock extends BaseRotatedPillarBlock {
         super(settings);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     protected Optional<String> createBlockPattern(ResourceLocation blockId) {
         String name = blockId.getPath();
         return Optional.of(PATTERN.replace("name", name));
     }
 
-//    @OnlyIn(Dist.CLIENT)
+//    @Environment(EnvType.CLIENT)
 //    @Override
 //    public void provideBlockModels(WoverBlockModelGenerators generator) {
 //        var res = TextureMapping.getBlockTexture(this);

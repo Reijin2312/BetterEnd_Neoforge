@@ -5,10 +5,10 @@ import org.betterx.bclib.blocks.BaseRotatedPillarBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.MapColor;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 
 public class AmaranitaStemBlock extends BaseRotatedPillarBlock {
     public AmaranitaStemBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).mapColor(MapColor.COLOR_LIGHT_GREEN));
+        super(FabricBlockSettings.copyOf(Blocks.OAK_PLANKS).mapColor(MapColor.COLOR_LIGHT_GREEN));
     }
 }

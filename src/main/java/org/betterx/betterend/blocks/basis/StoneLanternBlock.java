@@ -2,12 +2,12 @@ package org.betterx.betterend.blocks.basis;
 
 import org.betterx.bclib.behaviours.interfaces.BehaviourStone;
 import org.betterx.bclib.client.models.BCLModels;
-import org.betterx.bclib.interfaces.BlockColorProvider;
 import org.betterx.bclib.interfaces.CustomColorProvider;
-import org.betterx.bclib.interfaces.ItemColorProvider;
 import org.betterx.betterend.registry.EndBlocks;
 import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 
+import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.models.blockstates.MultiVariantGenerator;
@@ -23,8 +23,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -39,12 +39,12 @@ public class StoneLanternBlock extends EndLanternBlock implements CustomColorPro
     }
 
     @Override
-    public BlockColorProvider getProvider() {
+    public BlockColor getProvider() {
         return ((CustomColorProvider) EndBlocks.AURORA_CRYSTAL).getProvider();
     }
 
     @Override
-    public ItemColorProvider getItemProvider() {
+    public ItemColor getItemProvider() {
         return ((CustomColorProvider) EndBlocks.AURORA_CRYSTAL).getItemProvider();
     }
 
@@ -55,7 +55,7 @@ public class StoneLanternBlock extends EndLanternBlock implements CustomColorPro
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void provideBlockModels(WoverBlockModelGenerators generator) {
         //get id of this block from registry
         final var id = BuiltInRegistries.BLOCK.getKey(this);

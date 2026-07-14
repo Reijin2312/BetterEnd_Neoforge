@@ -43,6 +43,8 @@ public class ItemTagProvider extends WoverTagProvider.ForItems {
 
         context.add(ItemTags.BEACON_PAYMENT_ITEMS, EndItems.AETERNIUM_INGOT);
 
+        context.add(CommonItemTags.IRON_INGOTS, EndBlocks.THALLASIUM.ingot);
+
         context.add(EndTags.ALLOYING_IRON, Items.IRON_ORE, Items.DEEPSLATE_IRON_ORE, Items.RAW_IRON);
         context.add(EndTags.ALLOYING_GOLD, Items.GOLD_ORE, Items.DEEPSLATE_GOLD_ORE, Items.RAW_GOLD);
         context.add(EndTags.ALLOYING_COPPER, Items.COPPER_ORE, Items.DEEPSLATE_COPPER_ORE, Items.RAW_COPPER);
@@ -50,6 +52,7 @@ public class ItemTagProvider extends WoverTagProvider.ForItems {
         context.add(ItemTags.FISHES, EndItems.END_FISH_RAW, EndItems.END_FISH_COOKED);
 
 /*
+THALLASIUM = IRON
 TERMINITE = DIAMOND
 AETERNIUM > NETHERITE
  */
