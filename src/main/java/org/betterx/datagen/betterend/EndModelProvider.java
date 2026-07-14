@@ -383,6 +383,22 @@ public class EndModelProvider extends WoverModelProvider {
     private ModelOverides.@NotNull BlockModelProvider createRandomPillarModel(WoverBlockModelGenerators generator) {
         return block -> {
             final var model = ModelLocationUtils.getModelLocation(block);
+            if (!modelExists(model)) {
+                ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(block);
+                String path = blockId.getPath();
+                boolean isBark = path.endsWith("_bark");
+                String textureBase = isBark ? path.substring(0, path.length() - "_bark".length()) + "_log" : path;
+                ResourceLocation side = BetterEnd.C.mk("block/" + textureBase + "_side");
+                ResourceLocation end = isBark ? side : BetterEnd.C.mk("block/" + textureBase + "_top");
+
+                ModelTemplates.CUBE_COLUMN.create(
+                        block,
+                        new TextureMapping().put(TextureSlot.END, end).put(TextureSlot.SIDE, side),
+                        generator.modelOutput()
+                );
+                markGenerated(model);
+            }
+
             final var models = new ArrayList<ResourceLocation>();
             models.add(model);
             for (int i = 2; i <= 5; i++) {
