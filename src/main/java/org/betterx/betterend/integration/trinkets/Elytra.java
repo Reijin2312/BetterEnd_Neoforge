@@ -84,7 +84,3 @@ public class Elytra {
         return false;
     }
 }
-
-
-
-

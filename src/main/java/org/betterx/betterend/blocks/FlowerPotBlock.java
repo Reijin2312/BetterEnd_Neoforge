@@ -199,6 +199,38 @@ public class FlowerPotBlock extends BaseBlockNotFull implements RenderLayerProvi
         }
     }
 
+    /**
+     * Returns the exact plant and soil ordering used by flower pots. Datagen
+     * needs this to create block-state variants that match runtime IDs.
+     */
+    public static PottableEntries getPottableEntries() {
+        ensurePottableEntriesInitialized();
+        return new PottableEntries(plants.clone(), soils.clone());
+    }
+
+    private static void ensurePottableEntriesInitialized() {
+        if (plants != null && soils != null) {
+            return;
+        }
+
+        synchronized (FlowerPotBlock.class) {
+            if (plants != null && soils != null) {
+                return;
+            }
+
+            EndBlocks.ensureRegistered();
+            for (Block block : EndBlocks.getModBlocks()) {
+                if (block instanceof FlowerPotBlock flowerPot) {
+                    flowerPot.postInit();
+                    break;
+                }
+            }
+        }
+    }
+
+    public record PottableEntries(Block[] plants, Block[] soils) {
+    }
+
     private int maxNotNull(Block[] array) {
         int max = 0;
         for (int i = 0; i < array.length; i++) {

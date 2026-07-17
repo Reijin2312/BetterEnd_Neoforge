@@ -27,6 +27,7 @@
     "ServerLevelMixin",
     "SlimeMixin",
     "SpikeFeatureMixin",
+    "StructureMixin",
     "WorldGenRegionMixin",
     "portal.EntityMixin"
   ],

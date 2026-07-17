@@ -22,7 +22,7 @@ public class EndOreFeatures {
     public static final PlacedFeatureKey DRAGON_BONE_BLOCK_ORE = PlacedFeatureManager
             .createKey(BetterEnd.C.mk("dragon_bone_ore"))
             .setDecoration(GenerationStep.Decoration.UNDERGROUND_ORES);
-    
+
     public static final PlacedFeatureKey VIOLECITE_LAYER = PlacedFeatureManager
             .createKey(BetterEnd.C.mk("violecite_layer"))
             .setDecoration(GenerationStep.Decoration.UNDERGROUND_ORES);

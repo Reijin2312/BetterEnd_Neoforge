@@ -20,4 +20,3 @@ public class ElytraClient {
                 ).size() == 0).orElse(true));
     }
 }
-

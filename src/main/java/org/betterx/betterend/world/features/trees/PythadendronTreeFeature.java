@@ -201,9 +201,9 @@ public class PythadendronTreeFeature extends DefaultFeature {
 
     static {
         REPLACE = (state) -> {
-			/*if (state.is(CommonBlockTags.END_STONES)) {
-				return true;
-			}*/
+            /*if (state.is(CommonBlockTags.END_STONES)) {
+                return true;
+            }*/
             if (state.getBlock() == EndBlocks.PYTHADENDRON_LEAVES) {
                 return true;
             }

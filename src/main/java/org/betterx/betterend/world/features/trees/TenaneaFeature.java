@@ -177,9 +177,9 @@ public class TenaneaFeature extends DefaultFeature {
 
     static {
         REPLACE = (state) -> {
-			/*if (state.is(CommonBlockTags.END_STONES)) {
-				return true;
-			}*/
+            /*if (state.is(CommonBlockTags.END_STONES)) {
+                return true;
+            }*/
             if (state.getBlock() == EndBlocks.TENANEA_LEAVES) {
                 return true;
             }

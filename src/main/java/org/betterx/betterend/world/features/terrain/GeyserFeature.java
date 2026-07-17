@@ -271,7 +271,7 @@ public class GeyserFeature extends DefaultFeature {
     }
 
     static {
-        REPLACE1 = (state) -> state.isAir() || (state.is(CommonBlockTags.END_STONES));
+        REPLACE1 = (state) -> state.isAir() || state.is(CommonBlockTags.END_STONES);
 
         REPLACE2 = (state) -> {
             if (state.is(CommonBlockTags.END_STONES) || state.is(EndBlocks.HYDROTHERMAL_VENT) || state.is(EndBlocks.SULPHUR_CRYSTAL)) {

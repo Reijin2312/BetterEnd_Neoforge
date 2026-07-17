@@ -1,8 +1,24 @@
 plugins {
     id 'fabric-loom' version "${loom_version}"
     id 'maven-publish'
+    id "com.diffplug.spotless" version "6.25.0"
     id "com.modrinth.minotaur" version "2.+"
     id "com.matthewprenger.cursegradle" version "1.4.0"
+}
+
+spotless {
+    java {
+        target 'src/*/java/**/*.java'
+        targetExclude 'src/main/generated/**'
+        trimTrailingWhitespace()
+        endWithNewline()
+        removeUnusedImports()
+        indentWithSpaces(4)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    dependsOn(tasks.named("spotlessApply"))
 }
 
 sourceCompatibility = JavaVersion.VERSION_21
@@ -45,6 +61,33 @@ sourceSets {
             ]
         }
     }
+}
+
+tasks.register("generateBetterEndResources") {
+    group = "fabric"
+    description = "Runs BetterEnd datagen before packaging the mod."
+    dependsOn(tasks.named("runDatagenClient"))
+}
+
+def generatedResourcesDir = file("src/main/generated")
+tasks.register("syncGeneratedResources", Copy) {
+    group = "fabric"
+    description = "Syncs generated datagen resources into build outputs."
+    from(generatedResourcesDir)
+    into(layout.buildDirectory.dir("resources/main"))
+    mustRunAfter(tasks.named("processResources"))
+    mustRunAfter(tasks.named("runDatagenClient"))
+}
+
+tasks.named("jar") {
+    dependsOn(tasks.named("generateBetterEndResources"))
+    dependsOn(tasks.named("syncGeneratedResources"))
+    from(generatedResourcesDir)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named("runDatagenClient") {
+    finalizedBy(tasks.named("syncGeneratedResources"))
 }
 
 subprojects { subproject ->
@@ -95,6 +138,8 @@ dependencies {
     modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
     modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
 
+    modCompileOnly "mezz.jei:jei-1.21.1-fabric-api:${project.jei_version}"
+
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
 
     println "Using local WunderLib: ${local_wunderlib}"
@@ -123,6 +168,7 @@ repositories {
     maven { url "https://maven.shedaniel.me" }
     maven { url 'https://jitpack.io' }
     maven { url "https://maven.bai.lol" }
+    maven { url "https://maven.blamejared.com" }
     maven { url 'https://maven.terraformersmc.com' }
     maven { url 'https://maven.ambertation.de/releases' }
     maven {
@@ -169,10 +215,10 @@ jar {
 
 //change duplicate strategy for processResources task
 tasks.processResources {
-    duplicatesStrategy = DuplicatesStrategy.WARN
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 tasks.sourcesJar {
-    duplicatesStrategy = DuplicatesStrategy.WARN
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 configurations {

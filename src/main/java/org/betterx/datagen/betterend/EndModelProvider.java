@@ -3,8 +3,12 @@ package org.betterx.datagen.betterend;
 import org.betterx.bclib.blocks.BaseVineBlock;
 import org.betterx.bclib.complexmaterials.set.wood.WoodSlots;
 import org.betterx.betterend.BetterEnd;
+import org.betterx.betterend.blocks.EndBlockProperties;
+import org.betterx.betterend.blocks.FlowerPotBlock;
 import org.betterx.betterend.blocks.basis.PedestalBlock;
+import org.betterx.betterend.blocks.basis.PottableLeavesBlock;
 import org.betterx.betterend.client.models.EndModels;
+import org.betterx.betterend.interfaces.PottablePlant;
 import org.betterx.betterend.registry.EndBlocks;
 import org.betterx.wover.block.api.BlockProperties;
 import org.betterx.wover.block.api.BlockRegistry;
@@ -14,11 +18,14 @@ import org.betterx.wover.core.api.ModCore;
 import org.betterx.wover.datagen.api.provider.WoverModelProvider;
 
 import net.minecraft.data.models.ItemModelGenerators;
+import net.minecraft.data.models.blockstates.Condition;
+import net.minecraft.data.models.blockstates.MultiPartGenerator;
 import net.minecraft.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.data.models.blockstates.PropertyDispatch;
 import net.minecraft.data.models.blockstates.Variant;
 import net.minecraft.data.models.blockstates.VariantProperties;
 import net.minecraft.data.models.model.ModelTemplates;
+import net.minecraft.data.models.model.ModelLocationUtils;
 import net.minecraft.data.models.model.TextureMapping;
 import net.minecraft.data.models.model.TextureSlot;
 import net.minecraft.core.Direction;
@@ -26,12 +33,32 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.core.registries.BuiltInRegistries;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 public class EndModelProvider extends WoverModelProvider {
+    private static final ResourceLocation POTTED_CROSS_PARENT = BetterEnd.C.mk("block/potted_cross");
+    private static final ResourceLocation POTTED_TINTED_CROSS_PARENT = BetterEnd.C.mk("block/potted_tinted_cross");
+    private static final double POTTED_PLANT_MIN_Y = 7.5D;
+    private final Set<ResourceLocation> generatedModels = new HashSet<>();
+    private final Map<ResourceLocation, String> resourceCache = new HashMap<>();
+
     @Override
     protected void bootstrapItemModels(ItemModelGenerators itemModelGenerator) {
 
@@ -227,22 +254,52 @@ public class EndModelProvider extends WoverModelProvider {
                              .override(EndBlocks.MENGER_SPONGE, generator::delegateItemModel)
                              .override(EndBlocks.MENGER_SPONGE_WET, generator::delegateItemModel)
                              .override(EndBlocks.VIOLECITE.brickWall, b -> generator.delegateItemModel(b, BetterEnd.C.mk("block/violecite_bricks_wall_post")))
-                             .override(EndBlocks.MOSSY_GLOWSHROOM.getLog(), createRandomPillarModel(generator, 5))
-                             .override(EndBlocks.MOSSY_GLOWSHROOM.getBark(), createRandomPillarModel(generator, 5))
-                             .override(EndBlocks.MOSSY_GLOWSHROOM.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator, 5))
-                             .override(EndBlocks.MOSSY_GLOWSHROOM.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator, 5))
-                             .override(EndBlocks.PYTHADENDRON.getLog(), createRandomPillarModel(generator, 4))
-                             .override(EndBlocks.PYTHADENDRON.getBark(), createRandomPillarModel(generator, 4))
-                             .override(EndBlocks.LACUGROVE.getLog(), createRandomPillarModel(generator, 4))
-                             .override(EndBlocks.LACUGROVE.getBark(), createRandomPillarModel(generator, 4))
-                             .override(EndBlocks.DRAGON_TREE.getLog(), createRandomPillarModel(generator, 4))
-                             .override(EndBlocks.DRAGON_TREE.getBark(), createRandomPillarModel(generator, 4))
-                             .override(EndBlocks.LUCERNIA.getLog(), createRandomPillarModel(generator, 4))
-                             .override(EndBlocks.LUCERNIA.getBark(), createRandomPillarModel(generator, 4))
+                             .override(EndBlocks.MOSSY_GLOWSHROOM.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.MOSSY_GLOWSHROOM.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.MOSSY_GLOWSHROOM.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.MOSSY_GLOWSHROOM.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.PYTHADENDRON.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.PYTHADENDRON.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.PYTHADENDRON.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.PYTHADENDRON.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.LACUGROVE.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.LACUGROVE.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.LACUGROVE.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.LACUGROVE.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.DRAGON_TREE.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.DRAGON_TREE.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.DRAGON_TREE.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.DRAGON_TREE.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.LUCERNIA.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.LUCERNIA.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.LUCERNIA.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.LUCERNIA.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.END_LOTUS.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.END_LOTUS.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.END_LOTUS.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.END_LOTUS.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.TENANEA.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.TENANEA.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.TENANEA.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.TENANEA.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.HELIX_TREE.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.HELIX_TREE.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.HELIX_TREE.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.HELIX_TREE.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.UMBRELLA_TREE.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.UMBRELLA_TREE.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.UMBRELLA_TREE.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.UMBRELLA_TREE.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
+                             .override(EndBlocks.JELLYSHROOM.getLog(), createRandomPillarModel(generator))
+                             .override(EndBlocks.JELLYSHROOM.getBark(), createRandomPillarModel(generator))
+                             .override(EndBlocks.JELLYSHROOM.getBlock(WoodSlots.STRIPPED_LOG), createRandomPillarModel(generator))
+                             .override(EndBlocks.JELLYSHROOM.getBlock(WoodSlots.STRIPPED_BARK), createRandomPillarModel(generator))
                              .override(EndBlocks.NEON_CACTUS, b -> generator.delegateItemModel(b, BetterEnd.C.mk("block/neon_cactus_small")))
                              .ignore(EndBlocks.AMARANITA_STEM)
                              .ignore(EndBlocks.MOSSY_DRAGON_BONE)
         );
+
+        generateFlowerPotModels(generator);
     }
 
     private static ModelOverides.@NotNull BlockModelProvider createAmberMossPathModel(
@@ -305,16 +362,32 @@ public class EndModelProvider extends WoverModelProvider {
         generator.delegateItemModel(block, models.get(0));
     }
 
-    private static ModelOverides.@NotNull BlockModelProvider createRandomPillarModel(
-            WoverBlockModelGenerators generator,
-            int variants
-    ) {
+    private ModelOverides.@NotNull BlockModelProvider createRandomPillarModel(WoverBlockModelGenerators generator) {
         return block -> {
-            ResourceLocation model = TextureMapping.getBlockTexture(block);
-            List<ResourceLocation> models = new ArrayList<>(variants);
+            ResourceLocation model = ModelLocationUtils.getModelLocation(block);
+            if (!modelExists(model)) {
+                ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(block);
+                String path = blockId.getPath();
+                boolean isBark = path.endsWith("_bark");
+                String textureBase = isBark ? path.substring(0, path.length() - "_bark".length()) + "_log" : path;
+                ResourceLocation side = BetterEnd.C.mk("block/" + textureBase + "_side");
+                ResourceLocation end = isBark ? side : BetterEnd.C.mk("block/" + textureBase + "_top");
+
+                ModelTemplates.CUBE_COLUMN.create(
+                        block,
+                        new TextureMapping().put(TextureSlot.END, end).put(TextureSlot.SIDE, side),
+                        generator.modelOutput()
+                );
+                generatedModels.add(model);
+            }
+
+            List<ResourceLocation> models = new ArrayList<>();
             models.add(model);
-            for (int i = 2; i <= variants; i++) {
-                models.add(model.withSuffix("_" + i));
+            for (int i = 2; i <= 5; i++) {
+                ResourceLocation variant = model.withSuffix("_" + i);
+                if (modelExists(variant)) {
+                    models.add(variant);
+                }
             }
 
             generator.acceptBlockState(MultiVariantGenerator
@@ -345,6 +418,324 @@ public class EndModelProvider extends WoverModelProvider {
             }
             return variant;
         }).toList();
+    }
+
+    private void generateFlowerPotModels(WoverBlockModelGenerators generator) {
+        EndBlocks.ensureRegistered();
+        FlowerPotBlock.PottableEntries pottables = FlowerPotBlock.getPottableEntries();
+        Block[] plants = pottables.plants();
+        Block[] soils = pottables.soils();
+
+        ResourceLocation[] soilModels = new ResourceLocation[soils.length];
+        for (int i = 0; i < soils.length; i++) {
+            Block soil = soils[i];
+            if (soil == null) continue;
+
+            ResourceLocation modelId = BetterEnd.C.mk("block/flower_pot_soil_" + i);
+            soilModels[i] = modelId;
+            if (modelExists(modelId)) continue;
+
+            ResourceLocation soilId = BuiltInRegistries.BLOCK.getKey(soil);
+            if (soilId == null) continue;
+
+            String texture = soilId.getPath() + "_top";
+            if (texture.contains("rutiscus")) texture += "_1";
+            JsonObject model = createPatternModel(
+                    BetterEnd.C.mk("patterns/block/flower_pot_soil.json"),
+                    Map.of("%texture%", texture)
+            );
+            if (model == null) {
+                BetterEnd.LOGGER.warn("Missing flower pot soil pattern for {}", soilId);
+                continue;
+            }
+            generator.acceptModelOutput(modelId, () -> model);
+            generatedModels.add(modelId);
+        }
+
+        Map<Block, ResourceLocation> plantModels = new HashMap<>();
+        for (Block block : EndBlocks.getModBlocks()) {
+            if (!(block instanceof FlowerPotBlock)) continue;
+
+            MultiPartGenerator multipart = MultiPartGenerator
+                    .multiPart(block)
+                    .with(Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(block)));
+
+            for (int i = 0; i < soilModels.length; i++) {
+                ResourceLocation soilModel = soilModels[i];
+                if (soilModel != null) {
+                    multipart.with(
+                            Condition.condition().term(EndBlockProperties.SOIL_ID, i + 1),
+                            Variant.variant().with(VariantProperties.MODEL, soilModel)
+                    );
+                }
+            }
+
+            for (int i = 0; i < plants.length; i++) {
+                Block plant = plants[i];
+                if (plant == null) continue;
+
+                ResourceLocation plantModel = plantModels.computeIfAbsent(
+                        plant,
+                        candidate -> resolvePottedPlantModel(generator, candidate)
+                );
+                if (plantModel != null) {
+                    multipart.with(
+                            Condition.condition().term(EndBlockProperties.PLANT_ID, i + 1),
+                            Variant.variant().with(VariantProperties.MODEL, plantModel)
+                    );
+                }
+            }
+
+            generator.acceptBlockState(multipart);
+        }
+    }
+
+    private ResourceLocation resolvePottedPlantModel(WoverBlockModelGenerators generator, Block plant) {
+        ResourceLocation plantId = BuiltInRegistries.BLOCK.getKey(plant);
+        if (plantId == null) return null;
+
+        ResourceLocation pottedModelId = ResourceLocation.fromNamespaceAndPath(
+                plantId.getNamespace(),
+                "block/" + plantId.getPath() + "_potted"
+        );
+        if (modelExists(pottedModelId)) return pottedModelId;
+
+        if (plant instanceof SaplingBlock) {
+            return createPottedCross(generator, pottedModelId, TextureMapping.getBlockTexture(plant), false);
+        }
+
+        if (plant instanceof PottableLeavesBlock) {
+            ResourceLocation leavesModel = createPottedLeavesModel(generator, pottedModelId, plantId);
+            if (leavesModel != null) return leavesModel;
+        }
+
+        ResourceLocation stateModel = resolveStateModel(plant);
+        if (stateModel != null) {
+            ResourceLocation crossModel = createPottedCrossFromModel(generator, pottedModelId, stateModel);
+            if (crossModel != null) return crossModel;
+
+            ResourceLocation shiftedModel = createPottedModelFromModel(generator, pottedModelId, stateModel);
+            if (shiftedModel != null) return shiftedModel;
+
+            return stateModel;
+        }
+
+        return createPottedCross(generator, pottedModelId, TextureMapping.getBlockTexture(plant), false);
+    }
+
+    private ResourceLocation resolveStateModel(Block plant) {
+        ResourceLocation plantId = BuiltInRegistries.BLOCK.getKey(plant);
+        if (plantId == null) return null;
+
+        JsonObject blockState = readBlockStateJson(plantId);
+        if (blockState == null || !blockState.has("variants")) return null;
+
+        JsonElement variants = blockState.get("variants");
+        JsonElement variant = null;
+        if (variants.isJsonArray()) {
+            if (!variants.getAsJsonArray().isEmpty()) variant = variants.getAsJsonArray().get(0);
+        } else if (variants.isJsonObject()) {
+            String state = plant instanceof PottablePlant pottablePlant ? pottablePlant.getPottedState() : "";
+            variant = variants.getAsJsonObject().get(state == null ? "" : state);
+        }
+        if (variant == null) return null;
+
+        String model = null;
+        if (variant.isJsonArray()) {
+            if (!variant.getAsJsonArray().isEmpty()) {
+                model = variant.getAsJsonArray().get(0).getAsJsonObject().get("model").getAsString();
+            }
+        } else if (variant.isJsonObject() && variant.getAsJsonObject().has("model")) {
+            model = variant.getAsJsonObject().get("model").getAsString();
+        }
+        if (model == null || model.isBlank()) return null;
+
+        ResourceLocation modelId = ResourceLocation.tryParse(model);
+        return modelId != null ? modelId : ResourceLocation.withDefaultNamespace(model);
+    }
+
+    private ResourceLocation createPottedLeavesModel(
+            WoverBlockModelGenerators generator,
+            ResourceLocation modelId,
+            ResourceLocation plantId
+    ) {
+        if (modelExists(modelId)) return modelId;
+
+        String leaves = plantId.getPath().contains("lucernia") ? plantId.getPath() + "_1" : plantId.getPath();
+        String stem = plantId.getPath().replace("_leaves", "_log_side");
+        JsonObject model = createPatternModel(
+                BetterEnd.C.mk("patterns/block/potted_leaves.json"),
+                Map.of("%leaves%", leaves, "%stem%", stem)
+        );
+        if (model == null) {
+            BetterEnd.LOGGER.warn("Missing potted leaves pattern for {}", plantId);
+            return null;
+        }
+        generator.acceptModelOutput(modelId, () -> model);
+        generatedModels.add(modelId);
+        return modelId;
+    }
+
+    private ResourceLocation createPottedCrossFromModel(
+            WoverBlockModelGenerators generator,
+            ResourceLocation pottedModelId,
+            ResourceLocation sourceModelId
+    ) {
+        JsonObject model = readModelJson(sourceModelId);
+        if (model == null || !model.has("parent")) return null;
+
+        String parent = model.get("parent").getAsString();
+        boolean tinted = parent.endsWith("tinted_cross");
+        if (!tinted && !parent.endsWith("cross")) return null;
+
+        ResourceLocation texture = getModelTexture(model, "cross");
+        if (texture == null) texture = getModelTexture(model, "particle");
+        return texture == null ? null : createPottedCross(generator, pottedModelId, texture, tinted);
+    }
+
+    private ResourceLocation createPottedModelFromModel(
+            WoverBlockModelGenerators generator,
+            ResourceLocation pottedModelId,
+            ResourceLocation sourceModelId
+    ) {
+        if (modelExists(pottedModelId)) return pottedModelId;
+
+        JsonObject model = readModelJson(sourceModelId);
+        if (model == null || !model.has("elements") || !model.get("elements").isJsonArray()) return null;
+        JsonArray elements = model.getAsJsonArray("elements");
+        if (elements.isEmpty()) return null;
+
+        double minY = findMinElementY(elements);
+        if (!Double.isFinite(minY)) return null;
+
+        JsonObject pottedModel = model.deepCopy();
+        shiftElementsY(pottedModel.getAsJsonArray("elements"), POTTED_PLANT_MIN_Y - minY);
+        generator.acceptModelOutput(pottedModelId, () -> pottedModel);
+        generatedModels.add(pottedModelId);
+        return pottedModelId;
+    }
+
+    private ResourceLocation createPottedCross(
+            WoverBlockModelGenerators generator,
+            ResourceLocation modelId,
+            ResourceLocation texture,
+            boolean tinted
+    ) {
+        if (modelExists(modelId)) return modelId;
+
+        JsonObject model = new JsonObject();
+        model.addProperty("parent", (tinted ? POTTED_TINTED_CROSS_PARENT : POTTED_CROSS_PARENT).toString());
+        JsonObject textures = new JsonObject();
+        textures.addProperty("plant", texture.toString());
+        model.add("textures", textures);
+        generator.acceptModelOutput(modelId, () -> model);
+        generatedModels.add(modelId);
+        return modelId;
+    }
+
+    private double findMinElementY(JsonArray elements) {
+        double minY = Double.POSITIVE_INFINITY;
+        for (JsonElement element : elements) {
+            if (!element.isJsonObject()) continue;
+            JsonObject modelElement = element.getAsJsonObject();
+            minY = minCoordinateY(minY, modelElement.get("from"));
+            minY = minCoordinateY(minY, modelElement.get("to"));
+        }
+        return minY;
+    }
+
+    private double minCoordinateY(double minY, JsonElement coordinates) {
+        if (coordinates == null || !coordinates.isJsonArray()) return minY;
+        JsonArray array = coordinates.getAsJsonArray();
+        return array.size() < 2 ? minY : Math.min(minY, array.get(1).getAsDouble());
+    }
+
+    private void shiftElementsY(JsonArray elements, double offset) {
+        for (JsonElement element : elements) {
+            if (!element.isJsonObject()) continue;
+            JsonObject modelElement = element.getAsJsonObject();
+            shiftCoordinateY(modelElement, "from", offset);
+            shiftCoordinateY(modelElement, "to", offset);
+            if (modelElement.has("rotation") && modelElement.get("rotation").isJsonObject()) {
+                shiftCoordinateY(modelElement.getAsJsonObject("rotation"), "origin", offset);
+            }
+        }
+    }
+
+    private void shiftCoordinateY(JsonObject modelElement, String key, double offset) {
+        if (!modelElement.has(key) || !modelElement.get(key).isJsonArray()) return;
+        JsonArray coordinates = modelElement.getAsJsonArray(key);
+        if (coordinates.size() >= 2) {
+            coordinates.set(1, new JsonPrimitive(coordinates.get(1).getAsDouble() + offset));
+        }
+    }
+
+    private ResourceLocation getModelTexture(JsonObject model, String key) {
+        if (!model.has("textures")) return null;
+        JsonObject textures = model.getAsJsonObject("textures");
+        if (textures == null || !textures.has(key)) return null;
+
+        String value = textures.get(key).getAsString();
+        if (value.isBlank() || value.startsWith("#")) return null;
+        ResourceLocation texture = ResourceLocation.tryParse(value);
+        return texture != null ? texture : ResourceLocation.withDefaultNamespace(value);
+    }
+
+    private JsonObject createPatternModel(ResourceLocation patternId, Map<String, String> replacements) {
+        String template = readRawResource(patternId);
+        if (template == null) return null;
+
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            template = template.replace(entry.getKey(), entry.getValue());
+        }
+        try {
+            return JsonParser.parseString(template).getAsJsonObject();
+        } catch (RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    private boolean modelExists(ResourceLocation modelId) {
+        return generatedModels.contains(modelId) || readModelJson(modelId) != null;
+    }
+
+    private JsonObject readBlockStateJson(ResourceLocation blockId) {
+        return readJson(ResourceLocation.fromNamespaceAndPath(
+                blockId.getNamespace(),
+                "blockstates/" + blockId.getPath() + ".json"
+        ));
+    }
+
+    private JsonObject readModelJson(ResourceLocation modelId) {
+        return readJson(ResourceLocation.fromNamespaceAndPath(
+                modelId.getNamespace(),
+                "models/" + modelId.getPath() + ".json"
+        ));
+    }
+
+    private JsonObject readJson(ResourceLocation resourceId) {
+        String json = readRawResource(resourceId);
+        if (json == null) return null;
+        try {
+            return JsonParser.parseString(json).getAsJsonObject();
+        } catch (RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    private String readRawResource(ResourceLocation id) {
+        String cached = resourceCache.get(id);
+        if (cached != null) return cached;
+
+        String path = "assets/" + id.getNamespace() + "/" + id.getPath();
+        try (InputStream input = EndModelProvider.class.getClassLoader().getResourceAsStream(path)) {
+            if (input == null) return null;
+            String content = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+            resourceCache.put(id, content);
+            return content;
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private static ModelOverides.@NotNull BlockModelProvider createTwistedVineModel(WoverBlockModelGenerators generator) {

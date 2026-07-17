@@ -773,6 +773,14 @@ public class EndBlocks {
         return getBlockRegistry().allBlocks().toList();
     }
 
+    /**
+     * Ensures the lazy block registry has populated all static block fields.
+     * This is also needed by datagen providers that inspect the mod block list.
+     */
+    public static void ensureRegistered() {
+        getBlockRegistry();
+    }
+
     @SafeVarargs
     public static <T extends Block> T registerBlock(String name, T block, TagKey<Block>... tags) {
         return getBlockRegistry().register(name, block, tags);

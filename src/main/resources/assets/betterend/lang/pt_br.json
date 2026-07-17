@@ -15,8 +15,8 @@
   "biome.betterend.megalake": "Megalake",
   "biome.betterend.crystal_mountains": "Montanhas de Cristal",
 
-  "entity.betterend.dragonfly": "Libélula",
-  "item.betterend.spawn_egg_dragonfly": "Ovo gerador de Libélula",
+  "entity.betterend.dragonfly": "Libélula do Ender",
+  "item.betterend.spawn_egg_dragonfly": "Ovo gerador de Libélula do Ender",
 
   "entity.betterend.end_slime": "Slime do End",
   "item.betterend.spawn_egg_end_slime": "ovo gerador de Slime do End",
@@ -913,5 +913,13 @@
   "block.betterend.pallidium_heavy": "Pallidio (Cobertura pesada)",
   "block.betterend.pallidium_thin": "Pallidio (Cobertuna fina)",
   "block.betterend.pallidium_tiny": "Pallidio (Cobertura dispersada)",
-  "block.betterend.flammalix": "Flammalixe"
+  "block.betterend.flammalix": "Flammalixe",
+  "betterend.jei.alloying.experience_time": "%s XP | %s s",
+  "betterend.jei.container.alloying": "Liga e Fundição",
+  "betterend.jei.container.anvil": "Receitas de Bigorna",
+  "betterend.jei.container.infusion": "Receitas de Infusão",
+  "betterend.jei.damage.amount&dmg": "Dano da ferramenta: %s",
+  "betterend.jei.infusion.time&val": "%s ticks",
+  "betterend.jei.recipe_level.anvil": "Nível: %s",
+  "config.jade.plugin_betterend.plant_growth": "Plantas do BetterEnd"
 }

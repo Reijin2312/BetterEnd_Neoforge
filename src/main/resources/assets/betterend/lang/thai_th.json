@@ -11,8 +11,8 @@
   "biome.betterend.chorus_forest": "ป่าคอรัส",
   "biome.betterend.megalake": "หนองน้ำ เมก้าเลค",
   "biome.betterend.crystal_mountains": "หุบเขา คลิสตั่ล",
-  "entity.betterend.dragonfly": "แมลงปอ",
-  "item.betterend.spawn_egg_dragonfly": "ไข่แมลงปอ",
+  "entity.betterend.dragonfly": "แมลงปอเอ็นเดอร์",
+  "item.betterend.spawn_egg_dragonfly": "ไข่แมลงปอเอ็นเดอร์",
   "entity.betterend.end_slime": "End Slime",
   "item.betterend.spawn_egg_end_slime": "ไข่ สไลม์ ",
   "block.betterend.end_mycelium": "เอ็นด์ เชื้อรา",
@@ -817,5 +817,13 @@
   "block.betterend.pallidium_heavy": "Pallidium (Heavy Cover)",
   "block.betterend.pallidium_thin": "Pallidium (Thin Cover)",
   "block.betterend.pallidium_tiny": "Pallidium (Tiny Cover)",
-  "block.betterend.flammalix": "Flammalix"
+  "block.betterend.flammalix": "Flammalix",
+  "betterend.jei.alloying.experience_time": "%s XP | %s วินาที",
+  "betterend.jei.container.alloying": "การผสมโลหะและถลุง",
+  "betterend.jei.container.anvil": "สูตรทั่งตีเหล็ก",
+  "betterend.jei.container.infusion": "สูตรผสานพลัง",
+  "betterend.jei.damage.amount&dmg": "ความเสียหายเครื่องมือ: %s",
+  "betterend.jei.infusion.time&val": "%s ทิก",
+  "betterend.jei.recipe_level.anvil": "ระดับ: %s",
+  "config.jade.plugin_betterend.plant_growth": "พืช BetterEnd"
 }

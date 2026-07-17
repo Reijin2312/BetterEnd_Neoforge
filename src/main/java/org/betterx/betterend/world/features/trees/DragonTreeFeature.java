@@ -209,9 +209,9 @@ public class DragonTreeFeature extends DefaultFeature {
 
     static {
         REPLACE = (state) -> {
-			/*if (state.is(CommonBlockTags.END_STONES)) {
-				return true;
-			}*/
+            /*if (state.is(CommonBlockTags.END_STONES)) {
+                return true;
+            }*/
             if (state.getBlock() == EndBlocks.DRAGON_TREE_LEAVES) {
                 return true;
             }

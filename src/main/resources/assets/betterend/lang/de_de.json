@@ -816,7 +816,7 @@
   "enchantment.betterend.end_veil": "Endschleier",
   "enchantment.betterend.end_veil.desc": "Enderman bemerken nicht wenn sie vom Spieler angesehen werden.",
   "entity.betterend.cubozoa": "Cubozoa",
-  "entity.betterend.dragonfly": "Libelle",
+  "entity.betterend.dragonfly": "Enderlibelle",
   "entity.betterend.end_fish": "Endfisch",
   "entity.betterend.end_slime": "Endschleim",
   "entity.betterend.shadow_walker": "Schattenwanderer",
@@ -943,7 +943,7 @@
   "item.betterend.smithing_template.tool_assembly.base_slot_description": "Klinge einsetzen",
   "item.betterend.smithing_template.tool_assembly.ingredients": "Schwertgriffe",
   "item.betterend.spawn_egg_cubozoa": "Cubozoa-Spawn-Ei",
-  "item.betterend.spawn_egg_dragonfly": "Libellen-Spawn-Ei",
+  "item.betterend.spawn_egg_dragonfly": "Enderlibellen-Spawn-Ei",
   "item.betterend.spawn_egg_end_fish": "Endfisch-Spawn-Ei",
   "item.betterend.spawn_egg_end_slime": "Endschleim-Spawn-Ei",
   "item.betterend.spawn_egg_shadow_walker": "Schattenwanderer-Spawn-Ei",
@@ -1054,5 +1054,13 @@
   "upgrade.betterend.plate_upgrade": "Ätherbeschichtung",
   "upgrade.betterend.terminite_upgrade": "Terminiteverbesserung",
   "upgrade.betterend.thallasium_upgrade": "Thallasium Schwertgriff",
-  "upgrade.betterend.tool_assembly": "Schwerter Zusammensetzen"
+  "upgrade.betterend.tool_assembly": "Schwerter Zusammensetzen",
+  "betterend.jei.alloying.experience_time": "%s EP | %s s",
+  "betterend.jei.container.alloying": "Legieren und Schmelzen",
+  "betterend.jei.container.anvil": "Amboss-Rezepte",
+  "betterend.jei.container.infusion": "Infusionsrezepte",
+  "betterend.jei.damage.amount&dmg": "Werkzeugschaden: %s",
+  "betterend.jei.infusion.time&val": "%s Ticks",
+  "betterend.jei.recipe_level.anvil": "Stufe: %s",
+  "config.jade.plugin_betterend.plant_growth": "BetterEnd-Pflanzen"
 }

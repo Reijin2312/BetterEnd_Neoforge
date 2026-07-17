@@ -112,5 +112,3 @@ public class EndBiomeBuilder extends WoverBiomeBuilder.AbstractWoverBiomeBuilder
         );
     }
 }
-
-

@@ -25,4 +25,3 @@ public class ThinArchFeatureConfig implements FeatureConfiguration {
         this.block = block;
     }
 }
-

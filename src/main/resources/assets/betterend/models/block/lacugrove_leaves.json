@@ -1,0 +1,7 @@
+{
+  "parent": "betterend:block/cube_noshade",
+  "textures": {
+    "texture": "betterend:block/lacugrove_leaves"
+  }
+}
+

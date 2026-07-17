@@ -162,7 +162,7 @@ public class SilkMothNestBlock extends BaseBlock implements RenderLayerProvider,
         world.addFreshEntity(moth);
         world.playSound(null, pos, SoundEvents.BEEHIVE_EXIT, SoundSource.BLOCKS, 1, 1);
     }
-    
+
     @Override
     protected ItemInteractionResult useItemOn(
             ItemStack stack,

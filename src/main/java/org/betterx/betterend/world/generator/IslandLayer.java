@@ -153,39 +153,39 @@ public class IslandLayer {
         SDF sdf = new SDFCappedCone().setHeight(hh).setRadius1(radiusBottom).setRadius2(radiusTop);
         return new SDFTranslate().setTranslate(0, minY + hh, 0).setSource(sdf);
     }
-	
-	/*private static NativeImage loadMap(String path) {
-		InputStream stream = IslandLayer.class.getResourceAsStream(path);
-		if (stream != null) {
-			try {
-				NativeImage map = NativeImage.read(stream);
-				stream.close();
-				return map;
-			}
-			catch (IOException e) {
-				BetterEnd.LOGGER.warn(e.getMessage());
-			}
-		}
-		return null;
-	}*/
-	
-	/*static {
-		NativeImage map = loadMap("/assets/" + BetterEnd.MOD_ID + "/textures/heightmaps/mountain_1.png");
-		
-		SDF cone1 = makeCone(0, 0.4F, 0.2F, -0.3F);
-		SDF cone2 = makeCone(0.4F, 0.5F, 0.1F, -0.1F);
-		SDF cone3 = makeCone(0.5F, 0.45F, 0.03F, 0.0F);
-		SDF cone4 = makeCone(0.45F, 0, 0.02F, 0.03F);
-		
-		SDF coneBottom = new SDFSmoothUnion().setRadius(0.02F).setSourceA(cone1).setSourceB(cone2);
-		SDF coneTop = new SDFSmoothUnion().setRadius(0.02F).setSourceA(cone3).setSourceB(cone4);
-		
-		SDF map1 = new SDFHeightmap().setMap(map).setIntensity(0.3F).setSource(coneTop);
-		NOISE = (SDFRadialNoiseMap) new SDFRadialNoiseMap().setSource(coneTop);
-		
-		ISLAND = new SDF[] {
-			new SDFSmoothUnion().setRadius(0.01F).setSourceA(coneTop).setSourceB(coneBottom),
-			new SDFSmoothUnion().setRadius(0.01F).setSourceA(map1).setSourceB(coneBottom)
-		};
-	}*/
+
+    /*private static NativeImage loadMap(String path) {
+        InputStream stream = IslandLayer.class.getResourceAsStream(path);
+        if (stream != null) {
+            try {
+                NativeImage map = NativeImage.read(stream);
+                stream.close();
+                return map;
+            }
+            catch (IOException e) {
+                BetterEnd.LOGGER.warn(e.getMessage());
+            }
+        }
+        return null;
+    }*/
+
+    /*static {
+        NativeImage map = loadMap("/assets/" + BetterEnd.MOD_ID + "/textures/heightmaps/mountain_1.png");
+
+        SDF cone1 = makeCone(0, 0.4F, 0.2F, -0.3F);
+        SDF cone2 = makeCone(0.4F, 0.5F, 0.1F, -0.1F);
+        SDF cone3 = makeCone(0.5F, 0.45F, 0.03F, 0.0F);
+        SDF cone4 = makeCone(0.45F, 0, 0.02F, 0.03F);
+
+        SDF coneBottom = new SDFSmoothUnion().setRadius(0.02F).setSourceA(cone1).setSourceB(cone2);
+        SDF coneTop = new SDFSmoothUnion().setRadius(0.02F).setSourceA(cone3).setSourceB(cone4);
+
+        SDF map1 = new SDFHeightmap().setMap(map).setIntensity(0.3F).setSource(coneTop);
+        NOISE = (SDFRadialNoiseMap) new SDFRadialNoiseMap().setSource(coneTop);
+
+        ISLAND = new SDF[] {
+            new SDFSmoothUnion().setRadius(0.01F).setSourceA(coneTop).setSourceB(coneBottom),
+            new SDFSmoothUnion().setRadius(0.01F).setSourceA(map1).setSourceB(coneBottom)
+        };
+    }*/
 }

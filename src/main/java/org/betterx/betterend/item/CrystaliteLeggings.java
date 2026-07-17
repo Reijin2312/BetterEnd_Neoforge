@@ -21,7 +21,7 @@ public class CrystaliteLeggings extends CrystaliteArmor {
                                 4.0,
                                 AttributeModifier.Operation.ADD_VALUE
                         ),
-                        EquipmentSlotGroup.HEAD
+                        EquipmentSlotGroup.LEGS
                 ).build()
         );
     }

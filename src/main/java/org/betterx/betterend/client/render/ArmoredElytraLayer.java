@@ -34,7 +34,13 @@ public class ArmoredElytraLayer<T extends LivingEntity, M extends EntityModel<T>
 
     public ArmoredElytraLayer(RenderLayerParent<T, M> renderLayerParent, EntityModelSet entityModelSet) {
         super(renderLayerParent, entityModelSet);
-        elytraModel = new ArmoredElytraModel<>(entityModelSet.bakeLayer(EndEntitiesRenders.ARMORED_ELYTRA));
+        ArmoredElytraModel<T> model;
+        try {
+            model = new ArmoredElytraModel<>(entityModelSet.bakeLayer(EndEntitiesRenders.ARMORED_ELYTRA));
+        } catch (IllegalArgumentException ex) {
+            model = null;
+        }
+        elytraModel = model;
     }
 
     public ResourceLocation wingTextureOverride(T livingEntity) {
@@ -55,29 +61,43 @@ public class ArmoredElytraLayer<T extends LivingEntity, M extends EntityModel<T>
             PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity,
             float f, float g, float h, float j, float k, float l
     ) {
-        ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
-        if (itemStack.is(Items.ELYTRA)) {
-            ResourceLocation resourceLocation;
-            if (livingEntity instanceof AbstractClientPlayer abstractClientPlayer) {
-                final PlayerSkin playerSkin = abstractClientPlayer.getSkin();
-                if (playerSkin.elytraTexture() != null) {
-                    resourceLocation = playerSkin.elytraTexture();
-                } else if (playerSkin.capeTexture() != null && abstractClientPlayer.isModelPartShown(PlayerModelPart.CAPE)) {
-                    resourceLocation = playerSkin.capeTexture();
-                } else {
-                    resourceLocation = wingTextureOverride(livingEntity);
-                }
-            } else {
-                resourceLocation = wingTextureOverride(livingEntity);
-            }
-
-            poseStack.pushPose();
-            poseStack.translate(0.0F, 0.0F, 0.125F);
-            this.getParentModel().copyPropertiesTo(this.elytraModel);
-            this.elytraModel.setupAnim(livingEntity, f, g, j, k, l);
-            VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(multiBufferSource, RenderType.armorCutoutNoCull(resourceLocation), itemStack.hasFoil());
-            this.elytraModel.renderToBuffer(poseStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY);
-            poseStack.popPose();
+        if (elytraModel == null) {
+            return;
         }
+
+        ItemStack itemStack = (BCLElytraUtils.slotProvider == null)
+                ? livingEntity.getItemBySlot(EquipmentSlot.CHEST)
+                : BCLElytraUtils.slotProvider.getElytra(livingEntity, livingEntity::getItemBySlot);
+        if (itemStack == null || itemStack.isEmpty()) {
+            return;
+        }
+
+        boolean isVanillaElytra = itemStack.is(Items.ELYTRA);
+        boolean isCustomElytra = itemStack.getItem() instanceof BCLElytraItem;
+        if (!isVanillaElytra && !isCustomElytra) {
+            return;
+        }
+
+        ResourceLocation resourceLocation = wingTextureOverride(livingEntity);
+        if (isVanillaElytra && livingEntity instanceof AbstractClientPlayer abstractClientPlayer) {
+            final PlayerSkin playerSkin = abstractClientPlayer.getSkin();
+            if (playerSkin.elytraTexture() != null) {
+                resourceLocation = playerSkin.elytraTexture();
+            } else if (playerSkin.capeTexture() != null && abstractClientPlayer.isModelPartShown(PlayerModelPart.CAPE)) {
+                resourceLocation = playerSkin.capeTexture();
+            }
+        }
+
+        poseStack.pushPose();
+        poseStack.translate(0.0F, 0.0F, 0.125F);
+        this.getParentModel().copyPropertiesTo(this.elytraModel);
+        this.elytraModel.setupAnim(livingEntity, f, g, j, k, l);
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(
+                multiBufferSource,
+                RenderType.armorCutoutNoCull(resourceLocation),
+                itemStack.hasFoil()
+        );
+        this.elytraModel.renderToBuffer(poseStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY);
+        poseStack.popPose();
     }
 }

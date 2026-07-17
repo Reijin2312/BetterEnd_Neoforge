@@ -212,9 +212,9 @@ public class LucerniaFeature extends DefaultFeature {
 
     static {
         REPLACE = (state) -> {
-			/*if (state.is(CommonBlockTags.END_STONES)) {
-				return true;
-			}*/
+            /*if (state.is(CommonBlockTags.END_STONES)) {
+                return true;
+            }*/
             if (state.getBlock() == EndBlocks.LUCERNIA_LEAVES) {
                 return true;
             }

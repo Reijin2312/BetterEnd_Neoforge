@@ -109,4 +109,3 @@ public class REIInfusionCategory implements DisplayCategory<REIInfusionDisplay> 
         return 104;
     }
 }
-

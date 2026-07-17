@@ -64,4 +64,3 @@ public class REIAnvilDisplay extends BasicDisplay implements SimpleGridMenuDispl
         return 1;
     }
 }
-
