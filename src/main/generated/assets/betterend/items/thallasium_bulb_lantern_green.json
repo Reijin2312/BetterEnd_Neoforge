@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "betterend:item/thallasium_bulb_lantern_green"
+    "model": "betterend:item/thallasium_bulb_lantern_green",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -3276954
+      }
+    ]
   }
 }

@@ -5,7 +5,10 @@ import org.betterx.bclib.interfaces.CustomColorProvider;
 import org.betterx.bclib.interfaces.ItemColorProvider;
 import org.betterx.bclib.util.BlocksHelper;
 import org.betterx.ui.ColorUtil;
+import org.betterx.wover.block.api.model.WoverBlockModelGenerators;
 
+import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BulbVineLanternColoredBlock extends BulbVineLanternBlock implements CustomColorProvider {
@@ -21,6 +24,18 @@ public class BulbVineLanternColoredBlock extends BulbVineLanternBlock implements
     @Override
     public ItemColorProvider getItemProvider() {
         return (stack, tintIndex) -> getColor();
+    }
+
+    @Override
+    public void provideBlockModels(Object modelGenerator) {
+        super.provideBlockModels(modelGenerator);
+
+        WoverBlockModelGenerators generator = (WoverBlockModelGenerators) modelGenerator;
+        generator.vanillaGenerator.registerSimpleTintedItemModel(
+                this,
+                ModelLocationUtils.getModelLocation(asItem()),
+                ItemModelUtils.constantTint(getColor())
+        );
     }
 
     private int getColor() {
