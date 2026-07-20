@@ -30,15 +30,17 @@ public class GlowingHymenophoreBlock extends BaseBlock.Wood implements AddMineab
             WoverBlockModelGenerators generator,
             Block glowingHymenophoreBlock
     ) {
+        final var model = EndModels.CUBE_NO_SHADE.create(
+                glowingHymenophoreBlock,
+                TextureMapping.defaultTexture(glowingHymenophoreBlock),
+                generator.modelOutput()
+        );
         generator.acceptBlockState(
                 WoverBlockModelGeneratorsAccess.createSimpleBlock(
                         glowingHymenophoreBlock,
-                        EndModels.CUBE_NO_SHADE.create(
-                                glowingHymenophoreBlock,
-                                TextureMapping.defaultTexture(glowingHymenophoreBlock),
-                                generator.modelOutput()
-                        )
+                        model
                 )
         );
+        generator.delegateItemModel(glowingHymenophoreBlock, model);
     }
 }

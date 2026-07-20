@@ -254,6 +254,10 @@ public class EndModelProvider extends WoverModelProvider {
                              .override(EndBlocks.TAIL_MOSS, generator::createFlatItem)
                              .override(EndBlocks.SULPHURIC_ROCK.stone, generator::delegateItemModel)
                              .override(EndBlocks.TENANEA_OUTER_LEAVES, generator::delegateItemModel)
+                             .override(EndBlocks.TENANEA_LEAVES, b -> generator.delegateItemModel(
+                                     b,
+                                     BetterEnd.C.mk("block/tenanea_leaves")
+                             ))
                              .override(EndBlocks.UMBRALITH.stone, b -> generator.delegateItemModel(b, BetterEnd.C.mk("block/umbralith_5")))
                              .override(EndBlocks.TWISTED_MOSS, generator::createFlatItem)
                              .override(EndBlocks.VAIOLUSH_FERN, generator::createFlatItem)
