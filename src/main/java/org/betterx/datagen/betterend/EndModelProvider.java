@@ -48,6 +48,8 @@ import com.google.gson.JsonPrimitive;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -895,11 +897,16 @@ public class EndModelProvider extends WoverModelProvider {
         if (generatedModels.contains(modelId)) {
             return true;
         }
-        Identifier resourceId = Identifier.fromNamespaceAndPath(
-                modelId.getNamespace(),
-                "models/" + modelId.getPath() + ".json"
-        );
-        return readResource(resourceId) != null;
+        String staticResourcesDir = System.getProperty("betterend.static-resources-dir");
+        if (staticResourcesDir == null || staticResourcesDir.isBlank()) {
+            return false;
+        }
+        Path modelPath = Path.of(staticResourcesDir)
+                             .resolve("assets")
+                             .resolve(modelId.getNamespace())
+                             .resolve("models")
+                             .resolve(modelId.getPath() + ".json");
+        return Files.isRegularFile(modelPath);
     }
 
     private void markGenerated(Identifier modelId) {

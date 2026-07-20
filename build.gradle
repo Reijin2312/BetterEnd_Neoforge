@@ -43,6 +43,7 @@ loom {
             vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
             vmArg "-Dfabric-api.datagen.strict-validation"
             vmArg "-Dfabric-api.datagen.modid=${project.modrinth_id}"
+            vmArg "-Dbetterend.static-resources-dir=${file("src/main/resources")}"
 
             runDir "build/datagen"
         }
@@ -68,33 +69,6 @@ sourceSets {
             ]
         }
     }
-}
-
-tasks.register("generateBetterEndResources") {
-    group = "fabric"
-    description = "Runs BetterEnd datagen before packaging the mod."
-    dependsOn(tasks.named("runDatagenClient"))
-}
-
-def generatedResourcesDir = file("src/main/generated")
-tasks.register("syncGeneratedResources", Copy) {
-    group = "fabric"
-    description = "Syncs generated datagen resources into build outputs."
-    from(generatedResourcesDir)
-    into(layout.buildDirectory.dir("resources/main"))
-    mustRunAfter(tasks.named("processResources"))
-    mustRunAfter(tasks.named("runDatagenClient"))
-}
-
-tasks.named("jar") {
-    dependsOn(tasks.named("generateBetterEndResources"))
-    dependsOn(tasks.named("syncGeneratedResources"))
-    from(generatedResourcesDir)
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.named("runDatagenClient") {
-    finalizedBy(tasks.named("syncGeneratedResources"))
 }
 
 subprojects { subproject ->
